@@ -1,5 +1,7 @@
 #include <sceneview/grid_renderer.hpp>
 
+#include <sceneview/camera_node.hpp>
+#include <sceneview/mesh_node.hpp>
 #include <sceneview/stock_resources.hpp>
 #include <sceneview/viewport.hpp>
 

@@ -5,14 +5,15 @@
 
 #include <QOpenGLWidget>
 
-#include <sceneview/camera_node.hpp>
-#include <sceneview/draw_scene.hpp>
-#include <sceneview/renderer.hpp>
 #include <sceneview/resource_manager.hpp>
 #include <sceneview/scene.hpp>
-#include <sceneview/input_handler.hpp>
 
 namespace sceneview {
+
+class DrawScene;
+class CameraNode;
+class InputHandler;
+class Renderer;
 
 class RendererList {
   public:

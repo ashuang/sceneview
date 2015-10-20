@@ -2,11 +2,6 @@
 
 #include <QTimer>
 
-#include <sceneview/camera_node.hpp>
-#include <sceneview/scene.hpp>
-#include <sceneview/resource_manager.hpp>
-#include <sceneview/stock_resources.hpp>
-
 namespace sv = sceneview;
 using sv::CameraNode;
 using sv::MaterialResource;

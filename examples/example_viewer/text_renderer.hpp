@@ -3,8 +3,7 @@
 
 #include <QTime>
 
-#include <sceneview/renderer.hpp>
-#include <sceneview/text_billboard.hpp>
+#include <sceneview/sceneview.hpp>
 
 namespace vis_examples {
 

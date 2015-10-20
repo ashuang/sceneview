@@ -3,6 +3,7 @@
 #include <algorithm>
 
 #include <QFontMetrics>
+#include <QOpenGLTexture>
 #include <QPixmap>
 #include <QPainter>
 

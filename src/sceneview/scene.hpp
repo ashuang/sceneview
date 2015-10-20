@@ -1,15 +1,18 @@
 #ifndef SCENEVIEW_SCENE_HPP__
 #define SCENEVIEW_SCENE_HPP__
 
+#include <map>
 #include <memory>
 
-#include <sceneview/scene_node.hpp>
-#include <sceneview/group_node.hpp>
-#include <sceneview/light_node.hpp>
-#include <sceneview/camera_node.hpp>
-#include <sceneview/mesh_node.hpp>
+#include <QString>
 
 namespace sceneview {
+
+class CameraNode;
+class GroupNode;
+class LightNode;
+class MeshNode;
+class SceneNode;
 
 /**
  * A scene graph.
@@ -30,7 +33,7 @@ class Scene {
      *
      * The root node of a scene is always a group node.
      */
-    GroupNode* Root() { return &root_node_; }
+    GroupNode* Root() { return root_node_; }
 
     bool ContainsNode(SceneNode* node) const;
 
@@ -96,7 +99,7 @@ class Scene {
 
     QString scene_name_;
 
-    GroupNode root_node_;
+    GroupNode* root_node_;
 
     int name_counter_;
 

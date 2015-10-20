@@ -6,8 +6,8 @@ add_definitions(-fPIC)
 qt5_add_resources(sceneview_resources
                   resources.qrc)
 
-add_library(sceneview
-            SHARED
+# Create the main sceneview library
+add_library(sceneview SHARED
             asset_importer.cpp
             axis_aligned_box.cpp
             internal_gl.cpp
@@ -43,6 +43,37 @@ add_library(sceneview
 target_link_libraries(sceneview ${OPENGL_LIBS} assimp Qt5::Widgets Qt5::Gui)
 
 install(TARGETS sceneview LIBRARY DESTINATION lib)
+
+# Install public header files
+install(FILES asset_importer.hpp
+              axis_aligned_box.hpp
+              camera_node.hpp
+              draw_scene.hpp
+              expander_widget.hpp
+              font_resource.hpp
+              geometry_resource.hpp
+              grid_renderer.hpp
+              group_node.hpp
+              input_handler.hpp
+              input_handler_widget.hpp
+              light_node.hpp
+              material_resource.hpp
+              mesh_node.hpp
+              param_widget.hpp
+              renderer.hpp
+              renderer_widget_stack.hpp
+              resource_manager.hpp
+              scene.hpp
+              scene_node.hpp
+              sceneview.hpp
+              shader_resource.hpp
+              shader_uniform.hpp
+              stock_resources.hpp
+              text_billboard.hpp
+              viewer.hpp
+              view_handler_horizontal.hpp
+              viewport.hpp
+        DESTINATION include/sceneview)
 
 # Create a .pc (pkg-config) file to install
 set(pc_fname ${CMAKE_CURRENT_BINARY_DIR}/sceneview.pc)

@@ -1,13 +1,14 @@
 #ifndef SCENEVIEW_DRAW_SCENE_HPP__
 #define SCENEVIEW_DRAW_SCENE_HPP__
 
-#include <sceneview/axis_aligned_box.hpp>
-#include <sceneview/camera_node.hpp>
-#include <sceneview/mesh_node.hpp>
 #include <sceneview/resource_manager.hpp>
 #include <sceneview/scene.hpp>
 
 namespace sceneview {
+
+class AxisAlignedBox;
+class CameraNode;
+class MeshNode;
 
 class DrawScene {
   public:

@@ -6,7 +6,12 @@
 
 #include <QOpenGLTexture>
 
+#include <sceneview/camera_node.hpp>
+#include <sceneview/group_node.hpp>
+#include <sceneview/light_node.hpp>
+#include <sceneview/mesh_node.hpp>
 #include <sceneview/resource_manager.hpp>
+#include <sceneview/scene_node.hpp>
 #include <sceneview/stock_resources.hpp>
 
 //#define dbg(fmt, ...) printf(fmt, __VA_ARGS__)

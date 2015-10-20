@@ -5,6 +5,7 @@
 #include <QPushButton>
 
 #include <sceneview/expander_widget.hpp>
+#include <sceneview/renderer.hpp>
 
 namespace sceneview {
 

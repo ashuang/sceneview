@@ -4,7 +4,8 @@
 #include <memory>
 
 #include <QFont>
-#include <QOpenGLTexture>
+
+class QOpenGLTexture;
 
 namespace sceneview {
 

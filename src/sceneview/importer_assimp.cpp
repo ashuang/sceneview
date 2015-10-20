@@ -7,8 +7,9 @@
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
 
+#include <sceneview/group_node.hpp>
+#include <sceneview/mesh_node.hpp>
 #include <sceneview/stock_resources.hpp>
-#include "importer_rwx.hpp"
 
 //#define dbg(...) printf(__VA_ARGS__)
 #define dbg(...)

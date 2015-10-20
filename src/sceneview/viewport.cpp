@@ -5,6 +5,12 @@
 #include <QOpenGLFunctions>
 #include <QTimer>
 
+#include <sceneview/camera_node.hpp>
+#include <sceneview/draw_scene.hpp>
+#include <sceneview/input_handler.hpp>
+#include <sceneview/light_node.hpp>
+#include <sceneview/renderer.hpp>
+
 namespace sceneview {
 
 Viewport::Viewport(const ResourceManager::Ptr& resources,

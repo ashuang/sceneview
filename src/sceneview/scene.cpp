@@ -3,6 +3,11 @@
 #include <cassert>
 #include <deque>
 
+#include <sceneview/camera_node.hpp>
+#include <sceneview/group_node.hpp>
+#include <sceneview/light_node.hpp>
+#include <sceneview/mesh_node.hpp>
+#include <sceneview/scene_node.hpp>
 #include <sceneview/stock_resources.hpp>
 
 namespace sceneview {
@@ -11,25 +16,23 @@ const QString Scene::kAutoName = "";
 
 Scene::Scene(const QString& name) :
   scene_name_(name),
-  root_node_("root"),
+  root_node_(new GroupNode("root")),
   name_counter_(0),
   lights_(),
   meshes_(),
   cameras_(),
-  nodes_({{ root_node_.Name(), &root_node_}}) {
+  nodes_({{ root_node_->Name(), root_node_}}) {
 }
 
 Scene::~Scene() {
   for (auto& item : nodes_) {
-    if (item.second != &root_node_) {
-      delete item.second;
-    }
+    delete item.second;
   }
 }
 
 bool Scene::ContainsNode(SceneNode* node) const {
   for (SceneNode* iter = node; iter; iter = node->ParentNode()) {
-    if (iter == &root_node_) {
+    if (iter == root_node_) {
       return true;
     }
   }
@@ -94,7 +97,7 @@ MeshNode* Scene::MakeMesh(GroupNode* parent, const QString& name) {
 }
 
 void Scene::DestroyNode(SceneNode* node) {
-  assert(node != &root_node_);
+  assert(node != root_node_);
   nodes_.erase(node->Name());
   switch (node->NodeType()) {
     case SceneNodeType::kGroupNode:
@@ -130,7 +133,7 @@ void Scene::DestroyNode(SceneNode* node) {
 }
 
 void Scene::PrintStats() {
-  std::deque<GroupNode*> to_count = { &root_node_ };
+  std::deque<GroupNode*> to_count = { root_node_ };
   int num_nodes = 1;
   while (!to_count.empty()) {
     GroupNode* node = to_count.front();

@@ -5,7 +5,6 @@
 #include <memory>
 
 #include <QString>
-#include <QVector>
 #include <QVector2D>
 #include <QVector3D>
 #include <QVector4D>

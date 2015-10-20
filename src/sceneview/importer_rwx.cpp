@@ -9,6 +9,8 @@
 #include <QVector3D>
 #include <QVector4D>
 
+#include <sceneview/group_node.hpp>
+#include <sceneview/mesh_node.hpp>
 #include <sceneview/stock_resources.hpp>
 
 //#define dbg(...) printf(__VA_ARGS__)

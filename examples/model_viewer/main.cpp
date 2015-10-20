@@ -1,8 +1,6 @@
 #include <QApplication>
 
-#include <sceneview/grid_renderer.hpp>
-#include <sceneview/viewer.hpp>
-#include <sceneview/view_handler_horizontal.hpp>
+#include <sceneview/sceneview.hpp>
 
 #include "model_renderer.hpp"
 

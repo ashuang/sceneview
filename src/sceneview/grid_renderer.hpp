@@ -3,7 +3,6 @@
 
 #include <sceneview/renderer.hpp>
 #include <sceneview/material_resource.hpp>
-#include <sceneview/mesh_node.hpp>
 
 namespace sceneview {
 

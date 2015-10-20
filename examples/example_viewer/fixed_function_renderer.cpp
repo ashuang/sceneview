@@ -10,8 +10,6 @@
 #include <GL/glext.h>
 #endif
 
-#include <sceneview/stock_resources.hpp>
-
 namespace sv = sceneview;
 using sv::Renderer;
 

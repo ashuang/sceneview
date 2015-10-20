@@ -3,14 +3,13 @@
 
 #include <QDockWidget>
 
-#include <sceneview/input_handler.hpp>
-
 class QComboBox;
 class QStackedWidget;
 class QVBoxLayout;
 
 namespace sceneview {
 
+class InputHandler;
 class Viewport;
 
 class InputHandlerWidget : public QDockWidget {

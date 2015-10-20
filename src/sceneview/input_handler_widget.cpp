@@ -3,6 +3,7 @@
 #include <QStackedWidget>
 #include <QVBoxLayout>
 
+#include <sceneview/input_handler.hpp>
 #include <sceneview/view_handler_horizontal.hpp>
 #include <sceneview/viewport.hpp>
 

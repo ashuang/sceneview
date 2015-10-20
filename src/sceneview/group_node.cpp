@@ -3,6 +3,9 @@
 #include <cassert>
 #include <deque>
 
+#include <sceneview/camera_node.hpp>
+#include <sceneview/light_node.hpp>
+#include <sceneview/mesh_node.hpp>
 #include <sceneview/scene.hpp>
 
 namespace sceneview {

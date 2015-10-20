@@ -1,4 +1,5 @@
 #include <sceneview/renderer.hpp>
+#include <sceneview/group_node.hpp>
 #include <sceneview/viewport.hpp>
 
 #include <string>

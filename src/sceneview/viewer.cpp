@@ -7,7 +7,10 @@
 #include <QMenuBar>
 #include <QSettings>
 
+#include <sceneview/camera_node.hpp>
 #include <sceneview/input_handler_widget.hpp>
+#include <sceneview/light_node.hpp>
+#include <sceneview/renderer.hpp>
 #include <sceneview/renderer_widget_stack.hpp>
 #include <sceneview/view_handler_horizontal.hpp>
 

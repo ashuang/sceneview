@@ -1,6 +1,8 @@
 #ifndef SCENEVIEW_ASSET_IMPORTER_HPP__
 #define SCENEVIEW_ASSET_IMPORTER_HPP__
 
+#include <QString>
+
 #include <sceneview/scene.hpp>
 #include <sceneview/resource_manager.hpp>
 

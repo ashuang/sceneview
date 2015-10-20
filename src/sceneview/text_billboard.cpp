@@ -2,6 +2,8 @@
 
 #include <QColor>
 
+#include <sceneview/group_node.hpp>
+#include <sceneview/mesh_node.hpp>
 #include <sceneview/stock_resources.hpp>
 
 namespace sceneview {

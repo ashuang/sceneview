@@ -1,11 +1,7 @@
 #ifndef SCENEVIEW_EXAMPLES_MODEL_RENDERER_HPP__
 #define SCENEVIEW_EXAMPLES_MODEL_RENDERER_HPP__
 
-#include <sceneview/renderer.hpp>
-#include <sceneview/group_node.hpp>
-#include <sceneview/mesh_node.hpp>
-#include <sceneview/material_resource.hpp>
-#include <sceneview/param_widget.hpp>
+#include <sceneview/sceneview.hpp>
 
 namespace vis_examples {
 

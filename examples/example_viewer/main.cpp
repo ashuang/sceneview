@@ -1,9 +1,7 @@
 #include <QApplication>
 #include <QSettings>
 
-#include <sceneview/grid_renderer.hpp>
-#include <sceneview/viewer.hpp>
-#include <sceneview/view_handler_horizontal.hpp>
+#include <sceneview/sceneview.hpp>
 
 #include "example_input_handler.hpp"
 #include "example_renderer.hpp"

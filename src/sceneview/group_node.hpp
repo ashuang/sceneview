@@ -1,10 +1,8 @@
 #ifndef SCENEVIEW_GROUP_NODE_HPP__
 #define SCENEVIEW_GROUP_NODE_HPP__
 
-#include <memory>
 #include <vector>
 
-#include <sceneview/camera_node.hpp>
 #include <sceneview/scene_node.hpp>
 
 namespace sceneview {

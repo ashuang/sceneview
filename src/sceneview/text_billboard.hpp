@@ -8,11 +8,13 @@
 #include <sceneview/font_resource.hpp>
 #include <sceneview/geometry_resource.hpp>
 #include <sceneview/material_resource.hpp>
-#include <sceneview/mesh_node.hpp>
 #include <sceneview/resource_manager.hpp>
 #include <sceneview/scene.hpp>
 
 namespace sceneview {
+
+class MeshNode;
+class GroupNode;
 
 /**
  * A text display that always faces the camera.

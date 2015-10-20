@@ -1,8 +1,7 @@
 #ifndef VIS_EXAMPLES_INPUT_HANDLER_HPP__
 #define VIS_EXAMPLES_INPUT_HANDLER_HPP__
 
-#include <sceneview/input_handler.hpp>
-#include <sceneview/viewport.hpp>
+#include <sceneview/sceneview.hpp>
 
 class QTimer;
 

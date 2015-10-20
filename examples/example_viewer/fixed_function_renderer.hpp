@@ -3,8 +3,7 @@
 
 #include <QTime>
 
-#include <sceneview/renderer.hpp>
-#include <sceneview/param_widget.hpp>
+#include <sceneview/sceneview.hpp>
 
 namespace vis_examples {
 

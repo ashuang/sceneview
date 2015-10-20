@@ -3,12 +3,12 @@
 
 #include <QDockWidget>
 
-#include <sceneview/renderer.hpp>
-
 class QScrollArea;
 class QVBoxLayout;
 
 namespace sceneview {
+
+class Renderer;
 
 class RendererWidgetStack : public QDockWidget {
   Q_OBJECT
