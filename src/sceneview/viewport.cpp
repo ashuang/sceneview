@@ -28,7 +28,7 @@ Viewport::Viewport(const ResourceManager::Ptr& resources,
   renderers_(),
   input_handlers_(),
   redraw_scheduled_(false),
-  m_context_(nullptr),
+  gl_context_(nullptr),
   background_color_(0, 0, 0, 1) {
   // Enable multisampling so that things draw a little smoother.
   QSurfaceFormat format = QSurfaceFormat::defaultFormat();
@@ -49,7 +49,7 @@ Viewport::~Viewport() {
     handler->ShutdownGL();
   }
   renderers_.clear();
-  m_context_ = nullptr;
+  gl_context_ = nullptr;
 }
 
 void Viewport::AddRenderer(Renderer* renderer) {
@@ -58,7 +58,7 @@ void Viewport::AddRenderer(Renderer* renderer) {
   renderer->SetBaseNode(scene_->MakeGroup(scene_->Root(),
         "basenode_" + renderer->Name()));
 
-  if (m_context_) {
+  if (gl_context_) {
     makeCurrent();
     renderer->InitializeGL();
   }
@@ -68,7 +68,7 @@ void Viewport::AddRenderer(Renderer* renderer) {
 
 void Viewport::AddInputHandler(InputHandler* handler) {
   input_handlers_.push_back(handler);
-  if (m_context_) {
+  if (gl_context_) {
     handler->InitializeGL();
   }
   emit InputHandlerAdded(handler);
@@ -112,7 +112,7 @@ void Viewport::ActivateInputHandler(InputHandler* handler) {
 }
 
 void Viewport::initializeGL() {
-  m_context_ = QOpenGLContext::currentContext();
+  gl_context_ = QOpenGLContext::currentContext();
 
   for (Renderer* renderer : renderers_) {
     renderer->InitializeGL();
@@ -143,7 +143,7 @@ static void CheckGLErrors(const QString& name) {
 void Viewport::paintGL() {
   redraw_scheduled_ = false;
 
-  QOpenGLFunctions* gl = m_context_->functions();
+  QOpenGLFunctions* gl = gl_context_->functions();
 
   // Clear the drawing area
   gl->glClearColor(background_color_.redF(),
@@ -192,7 +192,7 @@ void Viewport::paintGL() {
   }
 
   // All done drawing.
-  m_context_->swapBuffers(m_context_->surface());
+  gl_context_->swapBuffers(gl_context_->surface());
 }
 
 void Viewport::mousePressEvent(QMouseEvent *event) {

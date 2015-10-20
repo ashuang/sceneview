@@ -249,6 +249,16 @@ void DrawScene::DrawMeshCmoponent(const GeometryResource::Ptr& geometry,
     glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
   }
 
+  const float point_size = material->PointSize();
+  if (point_size > 0) {
+    glPointSize(point_size);
+  }
+
+  const float line_width = material->LineWidth();
+  if (line_width > 0) {
+    glLineWidth(line_width);
+  }
+
   glEnable(GL_BLEND);
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
@@ -276,6 +286,15 @@ void DrawScene::DrawMeshCmoponent(const GeometryResource::Ptr& geometry,
     program->release();
   }
   vbo->release();
+
+  // If we called glPointSize() earlier, then reset the value.
+  if (point_size > 0) {
+    glPointSize(1);
+  }
+
+  if (line_width > 0) {
+    glLineWidth(1);
+  }
 
   glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
 }

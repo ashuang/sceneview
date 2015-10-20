@@ -1,5 +1,6 @@
 add_executable(sv_example_viewer
                main.cpp
+               polylines_renderer.cpp
                example_input_handler.cpp
                fixed_function_renderer.cpp
                stock_shapes_renderer.cpp

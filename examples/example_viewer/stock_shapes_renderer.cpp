@@ -29,9 +29,9 @@ void StockShapesRenderer::InitializeGL() {
   // Create a material to share among several shapes
   StockResources stock(resources);
   material_ = stock.NewMaterial(StockResources::kUniformColorLighting);
-  material_->SetParam("diffuse", 1.0, 0.5, 0.5, 1.0);
-  material_->SetParam("specular", 1.0, 0.5, 0.5, 1.0);
-  material_->SetParam("shininess", 10.0f);
+  material_->SetParam(sv::kDiffuse, 1.0, 0.5, 0.5, 1.0);
+  material_->SetParam(sv::kSpecular, 1.0, 0.5, 0.5, 1.0);
+  material_->SetParam(sv::kShininess, 10.0f);
 
   // Create a bunch of shapes
   shapes_.push_back(scene->MakeMesh(base_node, stock.Cone(), material_));
@@ -62,7 +62,7 @@ void StockShapesRenderer::RenderBegin() {
     shape->SetRotation(rot);
   }
 
-  material_->SetParam("diffuse", sin(angle_), 0.5, 0.5, 1.0);
+  material_->SetParam(sv::kDiffuse, sin(angle_), 0.5, 0.5, 1.0);
 }
 
 QWidget* StockShapesRenderer::GetWidget() {

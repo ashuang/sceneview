@@ -12,6 +12,11 @@
 
 namespace sceneview {
 
+const QString kColor = "color";
+const QString kDiffuse = "diffuse";
+const QString kSpecular = "specular";
+const QString kShininess = "shininess";
+
 StockResources::StockResources(const ResourceManager::Ptr& resources) :
   resources_(resources) {}
 
@@ -67,6 +72,7 @@ static std::vector<StockShaderData> g_stock_shader_data = {
   { StockResources::kUniformColorNoLighting, "uniform_color_no_lighting" },
   { StockResources::kUniformColorLighting, "uniform_color_lighting" },
   { StockResources::kPerVertexColorLighting, "per_vertex_color_lighting" },
+  { StockResources::kPerVertexColorNoLighting, "per_vertex_color_no_lighting" },
   { StockResources::kBillboardTextured, "billboard_textured" },
   { StockResources::kBillboardUniformColor, "billboard_uniform_color" }
 };

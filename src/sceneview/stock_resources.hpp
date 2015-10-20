@@ -10,20 +10,117 @@
 namespace sceneview {
 
 /**
+ * String constant parameter name used by some stock shaders.
+ */
+extern const QString kColor;
+
+/**
+ * String constant parameter name used by some stock shaders.
+ */
+extern const QString kDiffuse;
+
+/**
+ * String constant parameter name used by some stock shaders.
+ */
+extern const QString kSpecular;
+
+/**
+ * String constant parameter name used by some stock shaders.
+ */
+extern const QString kShininess;
+
+/**
  * Functions to generate stock resources.
  */
 class StockResources {
   public:
     enum StockShaderId {
+      /**
+       * Color is identical for all vertices, and there is no lighting.
+       *
+       * To specify the color, use the MaterialResource parameter
+       * sceneview::kColor.
+       *
+       * For example:
+       * @code
+       *  ResourceManager::Ptr resources = GetResourceManager();
+       *  Scene::Ptr scene = GetScene();
+       *  StockResources stock(resources);
+       *
+       *  MaterialResource::Ptr material =
+       *      stock.NewMaterial(StockResources::kUniformColorNoLighting);
+       *  material->SetParam(sceneview::kColor, 0.0, 1.0, 0.0, 1.0);
+       *
+       *  scene->MakeMesh(scene->Root(), stock.Cube(), material);
+       * @endcode
+       */
       kUniformColorNoLighting,
       /**
-       * Has the following uniform properties:
-       *   "ambient": 4 floats
-       *   "diffuse": 4 floats
-       *   "specular": 4 floats
-       *   "shininess": 1 float
+       * Uses the stock lighting model with identical colors for all vertices.
+       * To specify the colors, use the following MaterialResource parameters:
+       *   - sceneview::kDiffuse : 4 floats
+       *   - sceneview::kSpecular : 4 floats
+       *   - sceneview::kShininess : 1 float
+       *
+       *  All parameters are optional, and if not specified default to 0.0.
+       *
+       *  For example:
+       *  @code
+       *  ResourceManager::Ptr resources = GetResourceManager();
+       *  Scene::Ptr scene = GetScene();
+       *  StockResources stock(resources);
+       *
+       *  MaterialResource::Ptr material =
+       *      stock.NewMaterial(StockResources::kUniformColorLighting);
+       *  material->SetParam(sceneview::kDiffuse, 0.9, 0.0, 0.0, 1.0);
+       *
+       *  scene->MakeMesh(scene->Root(), stock.Cube(), material);
+       *  @endcode
        */
       kUniformColorLighting,
+      /**
+       * Color is specified on a per-vertex basis, with no lighting
+       * calculations.
+       *
+       * To specify the vertex color, use the GeometryData::diffuse field.
+       */
+      kPerVertexColorNoLighting,
+      /**
+       * Uses the stock lighting model with colors specified on a per-vertex
+       * basis. To specify a vertex color, use the diffuse, specular, and
+       * shininess fields of the GeometryData structure. For example:
+       *
+       * @code
+       * GeometryData gdata;
+       * gdata.gl_mode = GL_TRIANGLES;
+       * gdata.vertices.emplace_back(0, 0, 0);
+       * gdata.vertices.emplace_back(1, 0, 0);
+       * gdata.vertices.emplace_back(0, 1, 0);
+       * gdata.normals.emplace_back(0, 0, 1);
+       * gdata.normals.emplace_back(0, 0, 1);
+       * gdata.normals.emplace_back(0, 0, 1);
+       * gdata.diffuse.emplace_back(1, 0, 0);
+       * gdata.diffuse.emplace_back(0, 1, 0);
+       * gdata.diffuse.emplace_back(0, 0, 1);
+       * gdata.specular.emplace_back(1, 0, 0);
+       * gdata.specular.emplace_back(0, 1, 0);
+       * gdata.specular.emplace_back(0, 0, 1);
+       * gdata.shininess.push_back(16);
+       * gdata.shininess.push_back(16);
+       * gdata.shininess.push_back(16);
+       *
+       * ResourceManager::Ptr resources = GetResourceManager();
+       * GeometryResource::Ptr geometry = resources->MakeGeometry();
+       * geometry->Load(gdata);
+       *
+       * StockResources stock(resources);
+       * MaterialResource::Ptr material =
+       *     stock.NewMaterial(kPerVertexColorLighting);
+       *
+       * Scene::Ptr scene = GetScene();
+       * scene->MakeMesh(scene->Root(), geometry, material);
+       * @endcode
+       */
       kPerVertexColorLighting,
       kBillboardTextured,
       kBillboardUniformColor

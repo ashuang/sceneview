@@ -14,7 +14,9 @@ MaterialResource::MaterialResource(const QString& name,
   two_sided_(false),
   depth_write_(true),
   depth_test_(true),
-  color_write_(true) {
+  color_write_(true),
+  point_size_(-1),
+  line_width_(-1) {
 }
 
 template<typename ValueType>

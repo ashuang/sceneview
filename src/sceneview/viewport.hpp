@@ -105,7 +105,7 @@ class Viewport : public QOpenGLWidget {
 
     bool redraw_scheduled_;
 
-    QOpenGLContext* m_context_;
+    QOpenGLContext* gl_context_;
 
     QColor background_color_;
 };

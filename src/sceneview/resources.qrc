@@ -4,6 +4,8 @@
 <file>icons/arrow_down.png</file>
 <file>stock_shaders/per_vertex_color_lighting.vshader</file>
 <file>stock_shaders/per_vertex_color_lighting.fshader</file>
+<file>stock_shaders/per_vertex_color_no_lighting.vshader</file>
+<file>stock_shaders/per_vertex_color_no_lighting.fshader</file>
 <file>stock_shaders/uniform_color_no_lighting.vshader</file>
 <file>stock_shaders/uniform_color_no_lighting.fshader</file>
 <file>stock_shaders/uniform_color_lighting.vshader</file>

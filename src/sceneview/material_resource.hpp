@@ -75,6 +75,14 @@ class MaterialResource {
 
     bool ColorWrite() const { return color_write_; }
 
+    void SetPointSize(float size) { point_size_ = size; }
+
+    float PointSize() const { return point_size_; }
+
+    void SetLineWidth(float line_width) { line_width_ = line_width; }
+
+    float LineWidth() const { return line_width_; }
+
   private:
     friend class ResourceManager;
 
@@ -93,6 +101,10 @@ class MaterialResource {
     bool depth_test_;
 
     bool color_write_;
+
+    float point_size_;
+
+    float line_width_;
 
     std::map<QString, QOpenGLTexture*> textures_;
 };

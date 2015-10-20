@@ -6,6 +6,7 @@
 #include "example_input_handler.hpp"
 #include "stock_shapes_renderer.hpp"
 #include "fixed_function_renderer.hpp"
+#include "polylines_renderer.hpp"
 #include "text_renderer.hpp"
 
 namespace sv = sceneview;
@@ -17,6 +18,7 @@ using sv::ViewHandlerHorizontal;
 using vis_examples::ExampleInputHandler;
 using vis_examples::StockShapesRenderer;
 using vis_examples::FixedFunctionRenderer;
+using vis_examples::PolylinesRenderer;
 using vis_examples::TextRenderer;
 
 int main(int argc, char *argv[]) {
@@ -37,6 +39,7 @@ int main(int argc, char *argv[]) {
   viewport->AddRenderer(new StockShapesRenderer("example", viewport));
   viewport->AddRenderer(new FixedFunctionRenderer("fixed_function", viewport));
   viewport->AddRenderer(new TextRenderer("text", viewport));
+  viewport->AddRenderer(new PolylinesRenderer("polylines", viewport));
 
   // Add input handlers
   viewport->AddInputHandler(new ViewHandlerHorizontal(viewport,
