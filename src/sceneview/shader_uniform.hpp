@@ -13,7 +13,8 @@ namespace sv {
 /**
  * Stores the location, type, and value for a GLSL shader uniform variable.
  *
- * The internals of this class are a bit messy, as multiple types are allowed.
+ * @ingroup sv_resources
+ * @headerfile sceneview/shader_uniform.hpp
  */
 class ShaderUniform {
   public:

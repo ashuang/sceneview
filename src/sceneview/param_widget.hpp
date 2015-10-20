@@ -17,6 +17,12 @@ class QSlider;
 
 namespace sv {
 
+/**
+ * A convenience widget to enable quickly exposing tunable parameters.
+ *
+ * @ingroup sv_gui
+ * @headerfile sceneview/param_widget.hpp
+ */
 class ParamWidget : public QWidget {
   Q_OBJECT
 

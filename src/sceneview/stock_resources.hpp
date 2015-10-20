@@ -10,6 +10,11 @@
 namespace sv {
 
 /**
+ * @ingroup sv_resources
+ * @{
+ */
+
+/**
  * String constant parameter name used by some stock shaders.
  */
 extern const QString kColor;
@@ -31,6 +36,46 @@ extern const QString kShininess;
 
 /**
  * Functions to generate stock resources.
+ *
+ *
+ * ## Stock geometry resources
+ * The following methods can be used to retrieve stock geometry resources:
+ * - Cone()
+ * - Cube()
+ * - Cylinder()
+ * - Sphere()
+ * - UnitAxes()
+ *
+ * When using these methods, each stock geometry resource is reused if it's
+ * already been created. They are maintained with a reference counted pointer,
+ * so when the last reference to the goes out of scope, the geometry is
+ * destroyed.
+ *
+ * e.g.,:
+ * @code
+ * ResourceManager::Ptr resources = GetResourceManager();
+ * StockResources stock(resources);
+ *
+ * GeometryResource::Ptr cone1 = stock.Cone();
+ * GeometryResource::Ptr cone2 = stock.Cone();
+ * // At this point, cone1 == cone2.
+ *
+ * cone1.reset();
+ * cone2.reset();
+ *
+ * // Now that the last reference to the cone geometry has gone out of scope,
+ * // the actual resources used by the cone geometry are released and
+ * // destroyed.
+ * @endcode
+ *
+ * ## Stock geometry data
+ * Similar to the methods for retrieving stock geometry resources, there are
+ * also static methods for generating the raw geometry data used by the
+ * resources. These methods might be useful if you're bypassing the Sceneview
+ * rendering engine, or you want to modify the data somehow before using it.
+ *
+ * @ingroup sv_resources
+ * @headerfile sceneview/stock_resources.hpp
  */
 class StockResources {
   public:
@@ -127,14 +172,43 @@ class StockResources {
     };
 
   public:
+    /**
+     * Constructor.
+     */
     explicit StockResources(const ResourceManager::Ptr& resources);
 
+    /**
+     * Retrieves the stock cone geometry resource.
+     *
+     * - Tip is at Z = +0.5
+     * - Base is at Z = -0.5
+     * - The cone fits in a unit cube centered on the origin.
+     */
     GeometryResource::Ptr Cone();
 
+    /**
+     * Retrieves the stock cone geometry resource.
+     *
+     * - Each dimension is unit length.
+     * - The cube is centered at the origin in model space.
+     */
     GeometryResource::Ptr Cube();
 
+    /**
+     * Retrieve the stock cylinder geometry resource.
+     *
+     * - Diameter 1 and length 1.
+     * - The axis of revolution is the Z axis.
+     * - Centered on the origin.
+     */
     GeometryResource::Ptr Cylinder();
 
+    /**
+     * Retrieve the stock sphere geometry resource.
+     *
+     * - Diameter 1
+     * - Centered on the origin.
+     */
     GeometryResource::Ptr Sphere();
 
     /**
@@ -155,6 +229,10 @@ class StockResources {
      */
     GeometryMaterialPair UnitAxes();
 
+    /**
+     * Retrieve the shader resource corresponding to the specified stock
+     * shader.
+     */
     ShaderResource::Ptr Shader(StockShaderId id);
 
     /**
@@ -164,11 +242,23 @@ class StockResources {
      * @code
      *   resources->MakeMaterial(stock_resources.Shader(id));
      * @endcode
+     *
+     * For information on how to adjust the material parameters, see the
+     * documentation for the specified stock shader id.
      */
     MaterialResource::Ptr NewMaterial(StockShaderId id);
 
     /**
-     * Generate a cube.
+     * Generate geometry data for a cone.
+     *
+     * - Tip is at Z = +0.5
+     * - Base is at Z = -0.5
+     * - The cone fits in a unit cube centered on the origin.
+     */
+    static GeometryData ConeData();
+
+    /**
+     * Generate geometry data for a unit cube.
      *
      * - Each dimension is unit length.
      * - The cube is centered at the origin in model space.
@@ -176,20 +266,8 @@ class StockResources {
     static GeometryData CubeData();
 
     /**
-     * Generate a sphere of diameter 1 centered at the origin.
-     */
-    static GeometryData SphereData();
-
-    /**
-     * Generate a cone that fits in a unit cube centered on the origin.
-     *
-     * - Tip is at Z = +0.5
-     * - Base is at Z = -0.5
-     */
-    static GeometryData ConeData();
-
-    /**
-     * Generate a cylinder that fits in a unit cube centered on the origin.
+     * Generate geometry data for a cylinder that fits in a unit cube centered
+     * on the origin.
      *
      * - Diameter 1 and length 1.
      * - The axis of revolution is the Z axis.
@@ -198,13 +276,23 @@ class StockResources {
     static GeometryData CylinderData();
 
     /**
-     * Generate a set of unit axes.
+     * Generate geometry data for a sphere of diameter 1 centered at the
+     * origin.
+     */
+    static GeometryData SphereData();
+
+    /**
+     * Generate geometry data for a set of unit axes.
      */
     static GeometryData UnitAxesData();
 
   private:
     ResourceManager::Ptr resources_;
 };
+
+/**
+ * @}
+ */
 
 }  // namespace sv
 

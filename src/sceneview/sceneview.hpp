@@ -14,14 +14,13 @@
 #include <sceneview/asset_importer.hpp>
 #include <sceneview/axis_aligned_box.hpp>
 #include <sceneview/camera_node.hpp>
-#include <sceneview/draw_scene.hpp>
 #include <sceneview/expander_widget.hpp>
 #include <sceneview/font_resource.hpp>
 #include <sceneview/geometry_resource.hpp>
 #include <sceneview/grid_renderer.hpp>
 #include <sceneview/group_node.hpp>
 #include <sceneview/input_handler.hpp>
-#include <sceneview/input_handler_widget.hpp>
+#include <sceneview/input_handler_widget_stack.hpp>
 #include <sceneview/light_node.hpp>
 #include <sceneview/material_resource.hpp>
 #include <sceneview/mesh_node.hpp>
@@ -39,5 +38,20 @@
 #include <sceneview/viewer.hpp>
 #include <sceneview/view_handler_horizontal.hpp>
 #include <sceneview/viewport.hpp>
+
+/**
+ * @defgroup sv_resources Resource System
+ * Resource system
+ */
+
+/**
+ * @defgroup sv_scenegraph Scene Graph
+ * Scene Graph
+ */
+
+/**
+ * @defgroup sv_gui GUI
+ * Building a 3D application with Sceneview
+ */
 
 #endif  // SCENEVIEW_SCENEVIEW_HPP__

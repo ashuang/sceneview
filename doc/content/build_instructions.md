@@ -3,12 +3,38 @@ Build instructions {#build_instructions}
 
 # Ubuntu
 
- TODO
+Install prerequisites
+
+    sudo apt-get install qtbase5-dev libassimp-dev cmake
+
+Download and build Sceneview
+
+    git clone git@github.com:ashuang/sceneview
+    cd sceneview
+    mkdir build
+    cd build
+    cmake ..
+    make
+    sudo make install
+    sudo ldconfig
 
 # OS/X (via Homebrew)
 
-    $ brew install qt5 assimp
+Install prerequisites
 
- TODO. some stuff about pointing CMake to the Qt5 install path.
+    brew install qt5 assimp cmake
 
-    $ mkdir build
+Does anyone know how to automatically point CMake to the qt5 install location?
+
+Otherwise:
+
+    git clone git@github.com:ashuang/sceneview
+    cd sceneview
+    mkdir build
+    cd build
+    cmake -DCMAKE_PREFIX_PATH=/usr/local/Cellar/qt5/5.5.0 ..
+    make
+    make install
+
+If you have a version of Qt5 other than 5.5.0, then replace the version number
+as appropriate.

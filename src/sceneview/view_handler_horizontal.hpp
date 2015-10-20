@@ -36,6 +36,9 @@ class Viewport;
  *
  * Scrolling the wheel moves the camera closer to or farther from the look at
  * point.
+ *
+ * @ingroup sv_gui
+ * @headerfile sceneview/view_handler_horizontal.hpp
  */
 class ViewHandlerHorizontal : public QObject, public InputHandler {
   Q_OBJECT

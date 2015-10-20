@@ -1,6 +1,6 @@
 // Copyright [2015] Albert Huang
 
-#include "sceneview/input_handler_widget.hpp"
+#include "sceneview/input_handler_widget_stack.hpp"
 
 #include <QStackedWidget>
 #include <QVBoxLayout>
@@ -11,7 +11,8 @@
 
 namespace sv {
 
-InputHandlerWidget::InputHandlerWidget(Viewport* viewport, QWidget* parent) :
+InputHandlerWidgetStack::InputHandlerWidgetStack(Viewport* viewport,
+    QWidget* parent) :
   QDockWidget(parent),
   viewport_(viewport) {
   setObjectName("sceneview/input_handler_stack");
@@ -30,13 +31,13 @@ InputHandlerWidget::InputHandlerWidget(Viewport* viewport, QWidget* parent) :
   }
 
   connect(viewport_, &Viewport::InputHandlerActivated,
-      this, &InputHandlerWidget::OnInputHandlerActivated);
+      this, &InputHandlerWidgetStack::OnInputHandlerActivated);
 
   connect(viewport_, &Viewport::InputHandlerAdded,
-      this, &InputHandlerWidget::AddInputHandler);
+      this, &InputHandlerWidgetStack::AddInputHandler);
 }
 
-void InputHandlerWidget::AddInputHandler(InputHandler* handler) {
+void InputHandlerWidgetStack::AddInputHandler(InputHandler* handler) {
   for (const HandlerData& hdata : handler_data_) {
     if (handler->Name() == hdata.handler->Name()) {
       throw std::invalid_argument("Duplicate input handlers named " +
@@ -56,14 +57,14 @@ void InputHandlerWidget::AddInputHandler(InputHandler* handler) {
   handler_data_.push_back(hdata);
 }
 
-void InputHandlerWidget::OnInputHandlerActivated(InputHandler* handler) {
+void InputHandlerWidgetStack::OnInputHandlerActivated(InputHandler* handler) {
   setWindowTitle("Input (" + handler->Name() + ")");
 
   HandlerData* hdata = GetHandlerData(handler);
   stack_->setCurrentIndex(hdata->stack_index);
 }
 
-InputHandlerWidget::HandlerData* InputHandlerWidget::GetHandlerData(
+InputHandlerWidgetStack::HandlerData* InputHandlerWidgetStack::GetHandlerData(
     InputHandler* handler) {
   for (HandlerData& hdata : handler_data_) {
     if (hdata.handler == handler) {

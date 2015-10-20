@@ -12,7 +12,10 @@ class QVBoxLayout;
 namespace sv {
 
 /**
- * Hides or shows a contained widget.
+ * Hides or shows a contained widget. Based on the GtkExpander widget in GTK.
+ *
+ * @ingroup sv_gui
+ * @headerfile sceneview/expander_widget.hpp
  */
 class ExpanderWidget : public QWidget {
   Q_OBJECT

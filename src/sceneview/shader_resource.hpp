@@ -12,6 +12,12 @@ namespace sv {
 
 extern int kShaderMaxLights;
 
+/**
+ * Holds the GLSL locations of light parameters in a shader program.
+ *
+ * @ingroup sv_resources
+ * @headerfile sceneview/shader_resource.hpp
+ */
 struct ShaderLightLocation {
   int is_directional;
   int position;
@@ -22,6 +28,14 @@ struct ShaderLightLocation {
   int cone_angle;
 };
 
+/**
+ * Holds the GLSL locations of shader variables.
+ *
+ * Queried via `glGetUniformLocation()` and `glGetVertexAttribPointer()`.
+ *
+ * @ingroup sv_resources
+ * @headerfile sceneview/shader_resource.hpp
+ */
 struct ShaderStandardVariables {
   // ============ Uniform variables
   // Automatically populated based on the scene graph structure
@@ -113,6 +127,15 @@ struct ShaderStandardVariables {
   int b3_tex_coords_0;
 };
 
+/**
+ * An OpenGL shader program.
+ *
+ * ShaderResource objects cannot be directly instantiated. Instead, use
+ * ResourceManager or StockResources.
+ *
+ * @ingroup sv_resources
+ * @headerfile sceneview/shader_resource.hpp
+ */
 class ShaderResource {
   public:
     typedef std::shared_ptr<ShaderResource> Ptr;
@@ -120,7 +143,7 @@ class ShaderResource {
     const QString Name() const { return name_; }
 
     /**
-     *
+     * Loads a vertex shader and fragment shader into this resource.
      */
     void LoadFromFiles(const QString& prefix);
 

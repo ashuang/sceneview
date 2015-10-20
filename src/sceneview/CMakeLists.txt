@@ -21,7 +21,7 @@ add_library(sceneview SHARED
             importer_assimp.cpp
             importer_rwx.cpp
             input_handler.cpp
-            input_handler_widget.cpp
+            input_handler_widget_stack.cpp
             light_node.cpp
             material_resource.cpp
             mesh_node.cpp
@@ -48,14 +48,13 @@ install(TARGETS sceneview LIBRARY DESTINATION lib)
 install(FILES asset_importer.hpp
               axis_aligned_box.hpp
               camera_node.hpp
-              draw_scene.hpp
               expander_widget.hpp
               font_resource.hpp
               geometry_resource.hpp
               grid_renderer.hpp
               group_node.hpp
               input_handler.hpp
-              input_handler_widget.hpp
+              input_handler_widget_stack.hpp
               light_node.hpp
               material_resource.hpp
               mesh_node.hpp

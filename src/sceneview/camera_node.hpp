@@ -15,6 +15,9 @@ namespace sv {
  * - eye space (the 3D Cartesian coordinate frame with the camera at the origin)
  * - projection space (3D OpenGL clip coordinates)
  * - screen space (2D window corresponding to the Viewport widget)
+ *
+ * @ingroup sv_scenegraph
+ * @headerfile sceneview/camera_node.hpp
  */
 class CameraNode : public SceneNode {
   public:

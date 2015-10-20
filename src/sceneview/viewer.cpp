@@ -10,7 +10,7 @@
 #include <QSettings>
 
 #include "sceneview/camera_node.hpp"
-#include "sceneview/input_handler_widget.hpp"
+#include "sceneview/input_handler_widget_stack.hpp"
 #include "sceneview/light_node.hpp"
 #include "sceneview/renderer.hpp"
 #include "sceneview/renderer_widget_stack.hpp"
@@ -62,7 +62,7 @@ Viewer::Viewer(QWidget* parent) :
   addDockWidget(Qt::LeftDockWidgetArea, renderer_widget_stack_);
 
   // Add the input controls dock widget
-  input_handler_widget_ = new InputHandlerWidget(viewport_, this);
+  input_handler_widget_ = new InputHandlerWidgetStack(viewport_, this);
 
   addDockWidget(Qt::LeftDockWidgetArea, input_handler_widget_);
 

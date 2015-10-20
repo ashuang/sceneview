@@ -17,6 +17,12 @@ class CameraNode;
 class InputHandler;
 class Renderer;
 
+/**
+ * Widget that draws a scene and manages Renderer and InputHandler objects.
+ *
+ * @ingroup sv_gui
+ * @headerfile sceneview/viewport.hpp
+ */
 class Viewport : public QOpenGLWidget {
   Q_OBJECT
 

@@ -17,23 +17,58 @@
 
 namespace sv {
 
+/**
+ * Geometry description to be used with GeometryResource.
+ *
+ * This struct contains the raw data for describing geometry.
+ *
+ * @ingroup sv_resources
+ * @headerfile sceneview/geometry_resource.hpp
+ */
 struct GeometryData {
+  /**
+   * Vertices of the geometry.
+   */
   std::vector<QVector3D> vertices;
 
+  /**
+   * Normal vectors. This must be either empty or the same size as vertices.
+   */
   std::vector<QVector3D> normals;
 
+  /**
+   * Diffuse color component. This must be either empty or the same size as
+   * vertices.
+   */
   std::vector<QVector4D> diffuse;
 
+  /**
+   * Specular color component. This must be either empty or the same size as
+   * vertices.
+   */
   std::vector<QVector4D> specular;
 
+  /**
+   * Shininess component. This must be either empty or the same size as
+   * vertices.
+   */
   std::vector<float> shininess;
 
-  // texture coordinates
+  /**
+   * Texture coordinates. This must be either empty or the same size as vertices.
+   */
   std::vector<QVector2D> tex_coords_0;
 
+  /**
+   * Vertex indices. If specified, then the geometry is drawn using
+   * glDrawElements(). If not, then the geometry is drawn with glDrawArrays().
+   */
   std::vector<uint32_t> indices;
 
-  // GL_TRIANGLES, GL_POINTS, etc ...
+  /**
+   * The OpenGL primitive type. Must be one of GL_TRIANGLES, GL_POINTS,
+   * GL_LINES, etc ...
+   */
   GLenum gl_mode;
 };
 
@@ -43,7 +78,13 @@ struct GeometryData {
  * A GeometryResource manages per-vertex attributes using a combination of
  * vertex buffer objects and index buffers.
  *
+ * GeometryResource objects cannot be directly instantiated. Instead, use
+ * ResourceManager or StockResources.
+ *
  * Typically the data is loaded from a GeometryData() object.
+ *
+ * @ingroup sv_resources
+ * @headerfile sceneview/geometry_resource.hpp
  */
 class GeometryResource {
   public:

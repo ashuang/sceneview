@@ -29,6 +29,9 @@ class Scene;
  * - The ResourceManager itself maintains a weak reference to each resource.
  * - If you create a resource (e.g., with MakeMaterial()) and do not retain the
  *   pointer, it gets immediately destroyed.
+ *
+ * @ingroup sv_resources
+ * @headerfile sceneview/resource_manager.hpp
  */
 class ResourceManager {
   public:

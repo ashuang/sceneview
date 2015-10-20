@@ -12,6 +12,17 @@ namespace sv {
 
 class Renderer;
 
+/**
+ * Contains and manages Renderer widgets.
+ *
+ * When an Renderer provides a widget by overriding Renderer::GetWidget(), the
+ * Viewer class places them inside an RendererWidgetStack widget.
+ *
+ * Sceneview users generally will not have to interact with this class.
+ *
+ * @ingroup sv_gui
+ * @headerfile sceneview/renderer_widget_stack.hpp
+ */
 class RendererWidgetStack : public QDockWidget {
   Q_OBJECT
 

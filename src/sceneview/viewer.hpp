@@ -24,9 +24,30 @@ class QSettings;
 namespace sv {
 
 class RendererWidgetStack;
-class InputHandlerWidget;
+class InputHandlerWidgetStack;
 class ViewHandler;
 
+/**
+ * A QMainWindow that can be used to provide an application-level UI.
+ *
+ * A Viewer contains:
+ * - a Viewport
+ * - a ResourceManager
+ * - a Scene
+ *
+ * Additionally, the viewer uses RendererWidgetStack and
+ * InputHandlerWidgetStack widgets to automatically display widgets provided by
+ * Renderer and InputHandler objects.
+ *
+ * The generally recommended way of building an application using Sceneview is to:
+ * 1. Instantiate a Viewer
+ * 2. Add at least one Renderer to the viewer's viewport.
+ * 3. Add at least one InputHandler to the viewer's viewport.
+ * 3. Run the application.
+ *
+ * @ingroup sv_gui
+ * @headerfile sceneview/viewer.hpp
+ */
 class Viewer : public QMainWindow {
   Q_OBJECT
 
@@ -68,7 +89,7 @@ class Viewer : public QMainWindow {
     Viewport* viewport_;
 
     RendererWidgetStack* renderer_widget_stack_;
-    InputHandlerWidget* input_handler_widget_;
+    InputHandlerWidgetStack* input_handler_widget_;
 
     QTimer redraw_timer_;
 

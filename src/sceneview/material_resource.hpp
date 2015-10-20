@@ -24,6 +24,12 @@ namespace sv {
  * - a set of parameters to pass to the shader.
  * - a set of standard parameters that affect OpenGL behavior outside of the
  *   shader.
+ *
+ * MaterialResource objects cannot be directly instantiated. Instead, use
+ * ResourceManager or StockResources.
+ *
+ * @ingroup sv_resources
+ * @headerfile sceneview/material_resource.hpp
  */
 class MaterialResource {
   public:

@@ -8,7 +8,7 @@ namespace vis_examples {
 class ModelRenderer : public sv::Renderer {
   Q_OBJECT
 
- public:
+  public:
     ModelRenderer(const QString& name, QObject* parent = 0);
 
     void InitializeGL() override;
@@ -19,10 +19,10 @@ class ModelRenderer : public sv::Renderer {
 
     void LoadModel(const QString& filename);
 
- private slots:
+  private slots:
     void ParamChanged(const QString& name);
 
- private:
+  private:
     void LoadModelGL();
 
     void ClearModel();

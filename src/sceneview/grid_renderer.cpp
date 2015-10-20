@@ -36,6 +36,21 @@ void GridRenderer::InitializeGL() {
   ResourceManager::Ptr resources = GetResources();
   StockResources stock(resources);
 
+  // Approach
+  // The grid is rendered as three layered geometries:
+  // 1. Base layer (a single rectangle)
+  // 2. Grid layer (the actual grid lines)
+  // 3. Depth write layer (a single rectangle)
+  //
+  // Layers 1 and 3 have identical geometries, but differ in their material
+  // properties:
+  // - Layer 1: depth write disabled, color write enabled
+  // - Layer 3: depth write enabled, color write disabled
+  //
+  // The purpose is to allow the grid lines to be rendered at the exact same
+  // depth as the base layer without having to fudge the depth test or mess
+  // with things like glPolygonOffset().
+
   // Base layer material
   base_material_ = stock.NewMaterial(StockResources::kUniformColorNoLighting);
   base_material_->SetDepthWrite(false);

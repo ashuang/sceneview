@@ -8,6 +8,14 @@
 
 namespace sv {
 
+/**
+ * A stock renderer provided as a basic utility and an example.
+ *
+ * Draws a grid in the scene.
+ *
+ * @ingroup sv_gui
+ * @headerfile sceneview/grid_renderer.hpp
+ */
 class GridRenderer : public Renderer {
   Q_OBJECT
 

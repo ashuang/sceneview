@@ -11,6 +11,18 @@ class QWidget;
 
 namespace sv {
 
+/**
+ * Receive and handle mouse/keyboard input events.
+ *
+ * This class is pure virtual and cannot be instantiated.
+ *
+ * Sceneview users can create subclasses of InputHandler to implement custom
+ * input handlers (e.g., to interact with objects in the scene, or to provide a
+ * command/control UI).
+ *
+ * @ingroup sv_gui
+ * @headerfile sceneview/input_handler.hpp
+ */
 class InputHandler {
   public:
     virtual ~InputHandler() {}
@@ -38,22 +50,56 @@ class InputHandler {
      */
     virtual void ShutdownGL() {}
 
+    /**
+     * Called when the mouse is pressed in the viewport.
+     */
     virtual void MousePressEvent(QMouseEvent* event);
 
+    /**
+     * Called when the mouse is moved in the viewport.
+     */
     virtual void MouseMoveEvent(QMouseEvent* event);
 
+    /**
+     * Called when the mouse is released in the viewport.
+     */
     virtual void MouseReleaseEvent(QMouseEvent* event);
 
+    /**
+     * Called when the mouse wheel is scrolled.
+     */
     virtual void WheelEvent(QWheelEvent* event);
 
+    /**
+     * Called when a key is pressed in the viewport.
+     */
     virtual void KeyPressEvent(QKeyEvent* event);
 
+    /**
+     * Called when a key is released in the viewport.
+     */
     virtual void KeyReleaseEvent(QKeyEvent* event);
 
+    /**
+     * Called to retrieve a widget for the InputHandler to manage.
+     *
+     * When subclassing from InputHandler, you can create a UI for your class
+     * by providing a widget here.
+     */
     virtual QWidget* GetWidget() { return nullptr; }
 
+    /**
+     * Called by the viewport to save the InputHandler state. If your input
+     * handler has any adjustable settings, then save them into the returned
+     * QVariant.
+     */
     virtual QVariant SaveState() { return QVariant(); }
 
+    /**
+     * Called by the viewport to restore the InputHandler state. If your input
+     * handler has any adjustable settings, then load them from the passed in
+     * QVariant here.
+     */
     virtual void LoadState(const QVariant& val) {}
 };
 

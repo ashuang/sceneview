@@ -15,6 +15,12 @@ namespace sv {
  * A font texture map, suitable for rendering fonts using texture-mapped quads.
  *
  * Only ASCII characters are supported.
+ *
+ * FontResource objects cannot be directly instantiated. Instead, use
+ * ResourceManager or StockResources.
+ *
+ * @ingroup sv_resources
+ * @headerfile sceneview/font_resource.hpp
  */
 class FontResource {
   public:
@@ -43,6 +49,8 @@ class FontResource {
      *
      * Then, set anchor = (anchor.x + width_to_height * line_height, anchor.y, 0)
      * to draw the next character.
+     *
+     * @headerfile sceneview/font_resource.hpp
      */
     struct CharData {
       // Texture left coordinate

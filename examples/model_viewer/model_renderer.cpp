@@ -38,11 +38,9 @@ void ModelRenderer::ShutdownGL() {
 }
 
 void ModelRenderer::LoadModel(const QString& filename) {
+  model_fname_ = filename;
   if (gl_initialized_) {
-    model_fname_ = filename;
     LoadModelGL();
-  } else {
-    model_fname_ = filename;
   }
 }
 
@@ -60,7 +58,6 @@ void ModelRenderer::ParamChanged(const QString& name) {
 }
 
 void ModelRenderer::LoadModelGL() {
-  printf("Loading %s\n", model_fname_.toStdString().c_str());
   Scene::Ptr scene = GetScene();
 
   // Clear out any previously loaded model.

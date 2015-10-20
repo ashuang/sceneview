@@ -10,12 +10,25 @@
 
 namespace sv {
 
+/**
+ * Specifies a light type.
+ *
+ * @ingroup sv_scenegraph
+ */
 enum class LightType {
   kPoint,
   kDirectional,
   kSpot
 };
 
+/**
+ * A light in a scene graph used by some shaders to calculate lighting effects.
+ *
+ * This class cannot be directly instantiated. Instead, use Scene.
+ *
+ * @ingroup sv_scenegraph
+ * @headerfile sceneview/light_node.hpp
+ */
 class LightNode : public SceneNode {
   public:
     virtual ~LightNode() {}

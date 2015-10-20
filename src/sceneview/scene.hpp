@@ -22,6 +22,15 @@ class SceneNode;
 
 /**
  * A scene graph.
+ *
+ * Scene objects are typically used to represent either a scene to be drawn, or
+ * a 3D model loaded into memory.
+ *
+ * Scene objects cannot be directly instantiated. Instead, use ResourceManager.
+ *
+ * @ingroup sv_resources
+ * @ingroup sv_scenegraph
+ * @headerfile sceneview/scene.hpp
  */
 class Scene {
   public:

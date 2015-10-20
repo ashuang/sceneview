@@ -33,6 +33,9 @@ class GroupNode;
  * - text color : SetTextColor()
  * - background color : SetBackgroundColor()
  * - position : Node()->SetTranslation()
+ *
+ * @ingroup sv_gui
+ * @headerfile sceneview/text_billboard.hpp
  */
 class TextBillboard {
   public:
