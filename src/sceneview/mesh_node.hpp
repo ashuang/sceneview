@@ -11,7 +11,7 @@
 #include <sceneview/geometry_resource.hpp>
 #include <sceneview/material_resource.hpp>
 
-namespace sceneview {
+namespace sv {
 
 /**
  * Renderable mesh with one or more geometry/material pairs.
@@ -58,6 +58,6 @@ class MeshNode : public SceneNode {
     std::vector<GeometryMaterialPair> components_;
 };
 
-}  // namespace sceneview
+}  // namespace sv
 
 #endif  // SCENEVIEW_MESH_NODE_HPP__

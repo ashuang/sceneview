@@ -2,7 +2,7 @@
 
 #include "sceneview/scene_node.hpp"
 
-namespace sceneview {
+namespace sv {
 
 SceneNode::SceneNode(const QString& node_name) :
   node_name_(node_name),
@@ -44,4 +44,4 @@ void SceneNode::SetParentNode(GroupNode* parent) {
   parent_node_ = parent;
 }
 
-}  // namespace sceneview
+}  // namespace sv

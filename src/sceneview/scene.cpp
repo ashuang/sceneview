@@ -13,7 +13,7 @@
 #include "sceneview/scene_node.hpp"
 #include "sceneview/stock_resources.hpp"
 
-namespace sceneview {
+namespace sv {
 
 const QString Scene::kAutoName = "";
 
@@ -183,4 +183,4 @@ QString Scene::PickName(const QString& name) {
   }
 }
 
-}  // namespace sceneview
+}  // namespace sv

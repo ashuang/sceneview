@@ -9,7 +9,7 @@
 #include "sceneview/expander_widget.hpp"
 #include "sceneview/renderer.hpp"
 
-namespace sceneview {
+namespace sv {
 
 RendererWidgetStack::RendererWidgetStack(QWidget* parent) :
   QDockWidget(parent) {
@@ -51,4 +51,4 @@ void RendererWidgetStack::AddRendererWidget(Renderer* renderer) {
   layout_->addStretch();
 }
 
-}  // namespace sceneview
+}  // namespace sv

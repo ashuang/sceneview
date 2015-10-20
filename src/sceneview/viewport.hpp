@@ -10,7 +10,7 @@
 #include <sceneview/resource_manager.hpp>
 #include <sceneview/scene.hpp>
 
-namespace sceneview {
+namespace sv {
 
 class DrawScene;
 class CameraNode;
@@ -110,6 +110,6 @@ class Viewport : public QOpenGLWidget {
     QColor background_color_;
 };
 
-}  // namespace sceneview
+}  // namespace sv
 
 #endif  // SCENEVIEW_VIEWPORT_HPP__

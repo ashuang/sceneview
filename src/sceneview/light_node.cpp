@@ -2,7 +2,7 @@
 
 #include "sceneview/light_node.hpp"
 
-namespace sceneview {
+namespace sv {
 
 LightNode::LightNode(const QString& name) :
   SceneNode(name),
@@ -20,4 +20,4 @@ void LightNode::SetScale(const QVector3D& vec) {
   SceneNode::SetScale(vec);
 }
 
-}  // namespace sceneview
+}  // namespace sv

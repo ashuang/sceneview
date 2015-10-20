@@ -7,7 +7,7 @@
 
 namespace vis_examples {
 
-class PolylinesRenderer : public sceneview::Renderer {
+class PolylinesRenderer : public sv::Renderer {
   Q_OBJECT
 
  public:
@@ -20,15 +20,15 @@ class PolylinesRenderer : public sceneview::Renderer {
  private:
     void UpdateGeometry();
 
-    sceneview::MaterialResource::Ptr material_;
-    sceneview::GeometryResource::Ptr geom_;
-    sceneview::MeshNode* mesh_;
+    sv::MaterialResource::Ptr material_;
+    sv::GeometryResource::Ptr geom_;
+    sv::MeshNode* mesh_;
 
     QTime start_time_;
     double angle_;
 
-    std::unique_ptr<sceneview::ParamWidget> widget_;
-    sceneview::GeometryData gdata_;
+    std::unique_ptr<sv::ParamWidget> widget_;
+    sv::GeometryData gdata_;
 };
 
 }  // namespace vis_examples

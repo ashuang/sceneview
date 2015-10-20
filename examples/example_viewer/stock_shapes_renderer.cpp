@@ -4,7 +4,6 @@
 
 #include <sceneview/stock_resources.hpp>
 
-namespace sv = sceneview;
 using sv::GroupNode;
 using sv::MeshNode;
 using sv::ParamWidget;

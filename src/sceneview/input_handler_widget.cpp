@@ -9,7 +9,7 @@
 #include "sceneview/view_handler_horizontal.hpp"
 #include "sceneview/viewport.hpp"
 
-namespace sceneview {
+namespace sv {
 
 InputHandlerWidget::InputHandlerWidget(Viewport* viewport, QWidget* parent) :
   QDockWidget(parent),
@@ -73,4 +73,4 @@ InputHandlerWidget::HandlerData* InputHandlerWidget::GetHandlerData(
   return nullptr;
 }
 
-}  // namespace sceneview
+}  // namespace sv

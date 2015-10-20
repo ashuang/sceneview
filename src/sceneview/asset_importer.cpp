@@ -5,7 +5,7 @@
 #include "sceneview/importer_assimp.hpp"
 #include "sceneview/importer_rwx.hpp"
 
-namespace sceneview {
+namespace sv {
 
 Scene::Ptr AssetImporter::ImportFile(ResourceManager::Ptr resources,
     const QString& fname) {
@@ -17,4 +17,4 @@ Scene::Ptr AssetImporter::ImportFile(ResourceManager::Ptr resources,
   return rwx_scene;
 }
 
-}  // namespace sceneview
+}  // namespace sv

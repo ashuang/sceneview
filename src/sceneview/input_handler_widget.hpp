@@ -11,7 +11,7 @@ class QComboBox;
 class QStackedWidget;
 class QVBoxLayout;
 
-namespace sceneview {
+namespace sv {
 
 class InputHandler;
 class Viewport;
@@ -42,6 +42,6 @@ class InputHandlerWidget : public QDockWidget {
     std::vector<HandlerData> handler_data_;
 };
 
-}  // namespace sceneview
+}  // namespace sv
 
 #endif  // SCENEVIEW_CAMERA_CONTROLS_WIDGET

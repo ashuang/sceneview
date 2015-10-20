@@ -9,7 +9,7 @@
 
 #include <sceneview/axis_aligned_box.hpp>
 
-namespace sceneview {
+namespace sv {
 
 enum class SceneNodeType {
   kGroupNode,
@@ -98,6 +98,6 @@ class SceneNode {
     bool visible_;
 };
 
-}  // namespace sceneview
+}  // namespace sv
 
 #endif  // SCENEVIEW_SCENE_NODE_HPP__

@@ -8,7 +8,7 @@
 #include <QMatrix4x4>
 #include <QString>
 
-namespace sceneview {
+namespace sv {
 
 AxisAlignedBox::AxisAlignedBox() :
   min_(std::numeric_limits<double>::max(),
@@ -83,4 +83,4 @@ QString AxisAlignedBox::ToString() const {
     .arg(max_.z(), 3);
 }
 
-}  // namespace sceneview
+}  // namespace sv

@@ -14,7 +14,7 @@
 
 class QOpenGLTexture;
 
-namespace sceneview {
+namespace sv {
 
 /**
  * Controls the appearance of a mesh or other renderable object.
@@ -112,6 +112,6 @@ class MaterialResource {
 typedef std::pair<GeometryResource::Ptr, MaterialResource::Ptr>
     GeometryMaterialPair;
 
-}  // namespace sceneview
+}  // namespace sv
 
 #endif  // SCENEVIEW_MATERIAL_RESOURCE_HPP__

@@ -10,7 +10,7 @@
 
 #include <QVector4D>
 
-namespace sceneview {
+namespace sv {
 
 const QString kColor = "color";
 const QString kDiffuse = "diffuse";
@@ -438,4 +438,4 @@ GeometryData StockResources::UnitAxesData() {
   return result;
 }
 
-}  // namespace sceneview
+}  // namespace sv

@@ -12,7 +12,7 @@
 #include <sceneview/shader_resource.hpp>
 #include <sceneview/scene.hpp>
 
-namespace sceneview {
+namespace sv {
 
 class Scene;
 
@@ -129,6 +129,6 @@ class ResourceManager {
     int64_t name_counter_;
 };
 
-}  // namespace sceneview
+}  // namespace sv
 
 #endif  // SCENEVIEW_RESOURCE_MANAGER_HPP__

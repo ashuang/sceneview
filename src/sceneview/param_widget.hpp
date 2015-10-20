@@ -15,7 +15,7 @@ class QCheckBox;
 class QSpinBox;
 class QSlider;
 
-namespace sceneview {
+namespace sv {
 
 class ParamWidget : public QWidget {
   Q_OBJECT
@@ -184,6 +184,6 @@ class ParamWidget : public QWidget {
     std::map<QString, QWidget*> widgets_;
 };
 
-}  // namespace sceneview
+}  // namespace sv
 
 #endif  // SCENEVIEW_PARAM_WIDGET_HPP__

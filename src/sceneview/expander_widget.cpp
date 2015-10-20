@@ -6,7 +6,7 @@
 #include <QStackedWidget>
 #include <QVBoxLayout>
 
-namespace sceneview {
+namespace sv {
 
 ExpanderWidget::ExpanderWidget(QWidget* parent) :
   QWidget(parent),
@@ -85,4 +85,4 @@ void ExpanderWidget::SetExpanded(bool val) {
   }
 }
 
-}  // namespace sceneview
+}  // namespace sv

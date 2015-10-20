@@ -6,7 +6,7 @@
 #include <sceneview/renderer.hpp>
 #include <sceneview/material_resource.hpp>
 
-namespace sceneview {
+namespace sv {
 
 class GridRenderer : public Renderer {
   Q_OBJECT
@@ -34,6 +34,6 @@ class GridRenderer : public Renderer {
     GeometryData gdata_;
 };
 
-}  // namespace sceneview
+}  // namespace sv
 
 #endif  // SCENEVIEW_GRID_RENDERER_HPP__

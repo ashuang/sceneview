@@ -9,7 +9,7 @@
 #include "sceneview/mesh_node.hpp"
 #include "sceneview/stock_resources.hpp"
 
-namespace sceneview {
+namespace sv {
 
 TextBillboard::Ptr TextBillboard::Create(const ResourceManager::Ptr& resources,
     const Scene::Ptr& scene,
@@ -259,4 +259,4 @@ void TextBillboard::Recompute() {
   rect_geom_->Load(rdata);
 }
 
-}  // namespace sceneview
+}  // namespace sv

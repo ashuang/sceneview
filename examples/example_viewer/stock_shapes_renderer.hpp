@@ -7,7 +7,7 @@
 
 namespace vis_examples {
 
-class StockShapesRenderer : public sceneview::Renderer {
+class StockShapesRenderer : public sv::Renderer {
   Q_OBJECT
 
  public:
@@ -27,13 +27,13 @@ class StockShapesRenderer : public sceneview::Renderer {
     void ParamChanged(const QString& name);
 
  private:
-    sceneview::MaterialResource::Ptr material_;
-    std::vector<sceneview::MeshNode*> shapes_;
+    sv::MaterialResource::Ptr material_;
+    std::vector<sv::MeshNode*> shapes_;
 
     QTime start_time_;
     double angle_;
 
-    std::unique_ptr<sceneview::ParamWidget> widget_;
+    std::unique_ptr<sv::ParamWidget> widget_;
 };
 
 }  // namespace vis_examples

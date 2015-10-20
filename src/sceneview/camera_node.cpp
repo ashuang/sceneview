@@ -7,7 +7,7 @@
 
 #include <QVector4D>
 
-namespace sceneview {
+namespace sv {
 
 CameraNode::CameraNode(const QString& name) :
   SceneNode(name),
@@ -243,4 +243,4 @@ void CameraNode::SetRotation(const QQuaternion& quat) {
   up_ = QVector3D(rot(0, 1), rot(1, 1), rot(2, 1));
 }
 
-}  // namespace sceneview
+}  // namespace sv

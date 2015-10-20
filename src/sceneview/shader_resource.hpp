@@ -8,7 +8,7 @@
 
 #include <QOpenGLShaderProgram>
 
-namespace sceneview {
+namespace sv {
 
 extern int kShaderMaxLights;
 
@@ -142,6 +142,6 @@ class ShaderResource {
     ShaderStandardVariables locations_;
 };
 
-}  // namespace sceneview
+}  // namespace sv
 
 #endif  // SCENEVIEW_SHADER_RESOURCE_HPP__

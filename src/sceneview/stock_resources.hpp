@@ -7,7 +7,7 @@
 #include <sceneview/geometry_resource.hpp>
 #include <sceneview/resource_manager.hpp>
 
-namespace sceneview {
+namespace sv {
 
 /**
  * String constant parameter name used by some stock shaders.
@@ -39,7 +39,7 @@ class StockResources {
        * Color is identical for all vertices, and there is no lighting.
        *
        * To specify the color, use the MaterialResource parameter
-       * sceneview::kColor.
+       * sv::kColor.
        *
        * For example:
        * @code
@@ -49,7 +49,7 @@ class StockResources {
        *
        *  MaterialResource::Ptr material =
        *      stock.NewMaterial(StockResources::kUniformColorNoLighting);
-       *  material->SetParam(sceneview::kColor, 0.0, 1.0, 0.0, 1.0);
+       *  material->SetParam(sv::kColor, 0.0, 1.0, 0.0, 1.0);
        *
        *  scene->MakeMesh(scene->Root(), stock.Cube(), material);
        * @endcode
@@ -58,9 +58,9 @@ class StockResources {
       /**
        * Uses the stock lighting model with identical colors for all vertices.
        * To specify the colors, use the following MaterialResource parameters:
-       *   - sceneview::kDiffuse : 4 floats
-       *   - sceneview::kSpecular : 4 floats
-       *   - sceneview::kShininess : 1 float
+       *   - sv::kDiffuse : 4 floats
+       *   - sv::kSpecular : 4 floats
+       *   - sv::kShininess : 1 float
        *
        *  All parameters are optional, and if not specified default to 0.0.
        *
@@ -72,7 +72,7 @@ class StockResources {
        *
        *  MaterialResource::Ptr material =
        *      stock.NewMaterial(StockResources::kUniformColorLighting);
-       *  material->SetParam(sceneview::kDiffuse, 0.9, 0.0, 0.0, 1.0);
+       *  material->SetParam(sv::kDiffuse, 0.9, 0.0, 0.0, 1.0);
        *
        *  scene->MakeMesh(scene->Root(), stock.Cube(), material);
        *  @endcode
@@ -206,6 +206,6 @@ class StockResources {
     ResourceManager::Ptr resources_;
 };
 
-}  // namespace sceneview
+}  // namespace sv
 
 #endif  // SCENEVIEW_STOCK_RESOURCES_HPP_

@@ -1,11 +1,11 @@
 // Copyright [2015] Albert Huang
 
-#include "sceneview/internal_gl.h"
+#include "sceneview/internal_gl.hpp"
 #include "sceneview/shader_uniform.hpp"
 
 #include <vector>
 
-namespace sceneview {
+namespace sv {
 
 ShaderUniform::ShaderUniform() :
   name_(),
@@ -122,7 +122,7 @@ void ShaderUniform::LoadToProgram(QOpenGLShaderProgram* program) {
   if (gl_err != GL_NO_ERROR) {
     printf("Error loading shader uniform %s: %s\n",
         name_.toStdString().c_str(),
-        sceneview::glErrorString(gl_err));
+        sv::glErrorString(gl_err));
   }
 }
 
@@ -145,4 +145,4 @@ ShaderUniform& ShaderUniform::operator=(const ShaderUniform& other) {
   return *this;
 }
 
-}  // namespace sceneview
+}  // namespace sv

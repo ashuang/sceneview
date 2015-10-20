@@ -7,7 +7,7 @@
 
 #include <QFile>
 
-namespace sceneview {
+namespace sv {
 
 int kShaderMaxLights = 4;
 
@@ -88,4 +88,4 @@ void ShaderResource::LoadLocations() {
   locations_.b3_tex_coords_0 = program_->attributeLocation("b3_tex_coords_0");
 }
 
-}  // namespace sceneview
+}  // namespace sv

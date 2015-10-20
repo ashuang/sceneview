@@ -5,7 +5,7 @@
 
 #include <QVector3D>
 
-namespace sceneview {
+namespace sv {
 
 class AxisAlignedBox {
   public:
@@ -40,6 +40,6 @@ class AxisAlignedBox {
     QVector3D max_;
 };
 
-}  // namespace sceneview
+}  // namespace sv
 
 #endif  // SCENEVIEW_AXIS_ALIGNED_BOUNDING_BOX_HPP__

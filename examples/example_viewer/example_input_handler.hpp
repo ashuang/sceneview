@@ -7,11 +7,11 @@ class QTimer;
 
 namespace vis_examples {
 
-class ExampleInputHandler : public QObject, public sceneview::InputHandler {
+class ExampleInputHandler : public QObject, public sv::InputHandler {
   Q_OBJECT
 
   public:
-    ExampleInputHandler(sceneview::Viewport* viewport,
+    ExampleInputHandler(sv::Viewport* viewport,
         QObject* parent = nullptr);
 
     QString Name() const override { return "Example controls"; }
@@ -54,8 +54,8 @@ class ExampleInputHandler : public QObject, public sceneview::InputHandler {
   private:
     void Update();
 
-    sceneview::Viewport* viewport_;
-    sceneview::MeshNode* shape_;
+    sv::Viewport* viewport_;
+    sv::MeshNode* shape_;
 
     QVector3D shape_dir_;
     QVector3D shape_pos_;

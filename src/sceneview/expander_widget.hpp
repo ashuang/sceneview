@@ -9,7 +9,7 @@ class QPushButton;
 class QStackedWidget;
 class QVBoxLayout;
 
-namespace sceneview {
+namespace sv {
 
 /**
  * Hides or shows a contained widget.
@@ -40,6 +40,6 @@ class ExpanderWidget : public QWidget {
     bool expanded_;
 };
 
-}  // namespace sceneview
+}  // namespace sv
 
 #endif  // SCENEVIEW_EXPANDER_WIDGET_HPP__

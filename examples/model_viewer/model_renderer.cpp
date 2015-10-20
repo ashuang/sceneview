@@ -2,7 +2,6 @@
 
 #include <QFileDialog>
 
-namespace sv = sceneview;
 using sv::AssetImporter;
 using sv::Renderer;
 using sv::ParamWidget;

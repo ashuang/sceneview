@@ -8,7 +8,7 @@
 class QScrollArea;
 class QVBoxLayout;
 
-namespace sceneview {
+namespace sv {
 
 class Renderer;
 
@@ -27,6 +27,6 @@ class RendererWidgetStack : public QDockWidget {
     QVBoxLayout* layout_;
 };
 
-}  // namespace sceneview
+}  // namespace sv
 
 #endif  // SCENEVIEW_RENDERER_WIDGET_STACK

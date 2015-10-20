@@ -23,7 +23,7 @@
 #define dbg(...)
 #endif
 
-namespace sceneview {
+namespace sv {
 
 namespace {
 
@@ -389,4 +389,4 @@ Scene::Ptr ImportRwxFile(ResourceManager::Ptr resources,
   return parser.Parse();
 }
 
-}  // namespace sceneview
+}  // namespace sv

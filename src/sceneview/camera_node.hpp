@@ -5,7 +5,7 @@
 
 #include <sceneview/scene_node.hpp>
 
-namespace sceneview {
+namespace sv {
 
 /**
  * Camera.
@@ -126,6 +126,6 @@ class CameraNode : public SceneNode {
     QMatrix4x4 projection_matrix_;
 };
 
-}  // namespace sceneview
+}  // namespace sv
 
 #endif  // SCENEVIEW_VISCAMERA_HPP__

@@ -7,7 +7,7 @@
 #include "sceneview/stock_resources.hpp"
 #include "sceneview/viewport.hpp"
 
-namespace sceneview {
+namespace sv {
 
 static double RoundTo125(double input) {
   double result = 0.001;
@@ -115,4 +115,4 @@ void GridRenderer::UpdateGeometry() {
   base_geom_->Load(bdata);
 }
 
-}  // namespace sceneview
+}  // namespace sv

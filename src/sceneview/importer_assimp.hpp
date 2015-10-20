@@ -6,7 +6,7 @@
 #include <sceneview/scene.hpp>
 #include <sceneview/resource_manager.hpp>
 
-namespace sceneview {
+namespace sv {
 
 /**
  * Imports assets from a file.
@@ -18,6 +18,6 @@ Scene::Ptr ImportAssimpFile(ResourceManager::Ptr resources,
     const QString& fname,
     const QString& scene_name = ResourceManager::kAutoName);
 
-}  // namespace sceneview
+}  // namespace sv
 
 #endif  // SCENEVIEW_ASSIMP_IMPORTER_HPP__

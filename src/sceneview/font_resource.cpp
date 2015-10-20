@@ -9,7 +9,7 @@
 #include <QPixmap>
 #include <QPainter>
 
-namespace sceneview {
+namespace sv {
 
 FontResource::Ptr FontResource::Create(const QFont& font) {
   return Ptr(new FontResource(font));
@@ -94,4 +94,4 @@ void FontResource::Build(const QFont& base_font) {
   texture_->setMagnificationFilter(QOpenGLTexture::Linear);
 }
 
-}  // namespace sceneview
+}  // namespace sv

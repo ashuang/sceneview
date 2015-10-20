@@ -10,7 +10,6 @@
 #include <GL/glext.h>
 #endif
 
-namespace sv = sceneview;
 using sv::Renderer;
 
 namespace vis_examples {

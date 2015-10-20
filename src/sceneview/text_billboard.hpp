@@ -14,7 +14,7 @@
 #include <sceneview/resource_manager.hpp>
 #include <sceneview/scene.hpp>
 
-namespace sceneview {
+namespace sv {
 
 class MeshNode;
 class GroupNode;
@@ -139,6 +139,6 @@ class TextBillboard {
     std::string text_;
 };
 
-}  // namespace sceneview
+}  // namespace sv
 
 #endif  // SCENEVIEW_TEXT_BILLBOARD__

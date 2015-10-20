@@ -4,7 +4,7 @@
 
 #include <vector>
 
-namespace sceneview {
+namespace sv {
 
 MeshNode::MeshNode(const QString& name) :
   SceneNode(name),
@@ -39,4 +39,4 @@ AxisAlignedBox MeshNode::GeometryBoundingBox() {
 }
 
 
-}  // namespace sceneview
+}  // namespace sv

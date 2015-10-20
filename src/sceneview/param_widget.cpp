@@ -16,7 +16,7 @@
 #include <QMap>
 #include <QString>
 
-namespace sceneview {
+namespace sv {
 
 ParamWidget::ParamWidget(QWidget* parent) :
  layout_(new QVBoxLayout(this)),
@@ -420,4 +420,4 @@ QWidget* ParamWidget::GetWidget(const QString& name) {
   return iter->second;
 }
 
-}  // namespace sceneview
+}  // namespace sv

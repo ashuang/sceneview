@@ -8,7 +8,7 @@
 #include <QPlainTextEdit>
 #include <QPushButton>
 
-using sceneview::ExpanderWidget;
+using sv::ExpanderWidget;
 
 int main(int argc, char *argv[]) {
   QApplication app(argc, argv);

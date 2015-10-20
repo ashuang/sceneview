@@ -5,7 +5,7 @@
 
 namespace vis_examples {
 
-class ModelRenderer : public sceneview::Renderer {
+class ModelRenderer : public sv::Renderer {
   Q_OBJECT
 
  public:
@@ -27,11 +27,11 @@ class ModelRenderer : public sceneview::Renderer {
 
     void ClearModel();
 
-    sceneview::MaterialResource::Ptr material_;
-    std::vector<sceneview::MeshNode*> shapes_;
+    sv::MaterialResource::Ptr material_;
+    std::vector<sv::MeshNode*> shapes_;
 
-    std::unique_ptr<sceneview::ParamWidget> params_;
-    sceneview::GroupNode* node_;
+    std::unique_ptr<sv::ParamWidget> params_;
+    sv::GroupNode* node_;
 
     bool gl_initialized_;
     QString model_fname_;

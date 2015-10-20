@@ -7,7 +7,7 @@
 
 namespace vis_examples {
 
-class TextRenderer : public sceneview::Renderer {
+class TextRenderer : public sv::Renderer {
   Q_OBJECT
 
  public:
@@ -22,7 +22,7 @@ class TextRenderer : public sceneview::Renderer {
  private:
     void UpdateText();
 
-    sceneview::TextBillboard::Ptr text_billboard_;
+    sv::TextBillboard::Ptr text_billboard_;
 
     QTime timer_;
 };

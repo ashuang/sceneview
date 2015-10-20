@@ -8,7 +8,7 @@
 
 #include <sceneview/scene_node.hpp>
 
-namespace sceneview {
+namespace sv {
 
 enum class LightType {
   kPoint,
@@ -91,6 +91,6 @@ class LightNode : public SceneNode {
     float cone_angle_deg_;
 };
 
-}  // namespace sceneview
+}  // namespace sv
 
 #endif  // SCENEVIEW_LIGHT_NODE_HPP__

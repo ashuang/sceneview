@@ -15,7 +15,7 @@
 
 #include <sceneview/axis_aligned_box.hpp>
 
-namespace sceneview {
+namespace sv {
 
 struct GeometryData {
   std::vector<QVector3D> vertices;
@@ -136,6 +136,6 @@ class GeometryResource {
     AxisAlignedBox bounding_box_;
 };
 
-}  // namespace sceneview
+}  // namespace sv
 
 #endif  // SCENEVIEW_GEOMETRY_RESOURCE_HPP__

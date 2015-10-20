@@ -16,7 +16,7 @@
 #include "sceneview/renderer_widget_stack.hpp"
 #include "sceneview/view_handler_horizontal.hpp"
 
-namespace sceneview {
+namespace sv {
 
 Viewer::Viewer(QWidget* parent) :
   QMainWindow(parent),
@@ -209,4 +209,4 @@ void Viewer::SetupShowHideAction(QAction* action, QDockWidget* widget) {
       action, &QAction::setChecked);
 }
 
-}  // namespace sceneview
+}  // namespace sv

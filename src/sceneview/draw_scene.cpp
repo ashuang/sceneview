@@ -1,6 +1,6 @@
 // Copyright [2015] Albert Huang
 
-#include "sceneview/internal_gl.h"
+#include "sceneview/internal_gl.hpp"
 
 #include "sceneview/draw_scene.hpp"
 
@@ -23,7 +23,7 @@
 #define dbg(...)
 #endif
 
-namespace sceneview {
+namespace sv {
 
 DrawScene::DrawScene(const ResourceManager::Ptr& resources,
     const Scene::Ptr& scene) :
@@ -275,7 +275,7 @@ void DrawScene::DrawMeshCmoponent(const GeometryResource::Ptr& geometry,
 
   GLenum gl_err = glGetError();
   if (gl_err != GL_NO_ERROR) {
-    printf("OpenGL: %s\n", sceneview::glErrorString(gl_err));
+    printf("OpenGL: %s\n", sv::glErrorString(gl_err));
   }
 
   // TODO(albert) check if we should call glDrawElements() instead of
@@ -341,4 +341,4 @@ void DrawScene::DrawBoundingBox(const AxisAlignedBox& box) {
 }
 
 
-}  // namespace sceneview
+}  // namespace sv

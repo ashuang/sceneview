@@ -4,7 +4,7 @@
 
 #include <vector>
 
-namespace sceneview {
+namespace sv {
 
 MaterialResource::MaterialResource(const QString& name,
     ShaderResource::Ptr shader) :
@@ -80,4 +80,4 @@ void MaterialResource::SetTwoSided(bool two_sided) {
   two_sided_ = two_sided;
 }
 
-}  // namespace sceneview
+}  // namespace sv

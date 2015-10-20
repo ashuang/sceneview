@@ -1,6 +1,6 @@
 // Copyright [2015] Albert Huang
 
-#include "sceneview/internal_gl.h"
+#include "sceneview/internal_gl.hpp"
 #include "sceneview/viewport.hpp"
 
 #include <iostream>
@@ -15,7 +15,7 @@
 #include "sceneview/light_node.hpp"
 #include "sceneview/renderer.hpp"
 
-namespace sceneview {
+namespace sv {
 
 Viewport::Viewport(const ResourceManager::Ptr& resources,
     const Scene::Ptr& scene, QWidget* parent) :
@@ -133,7 +133,7 @@ static void CheckGLErrors(const QString& name) {
   GLenum err_code = glGetError();
   const char *err_str;
   while (err_code != GL_NO_ERROR) {
-    err_str = sceneview::glErrorString(err_code);
+    err_str = sv::glErrorString(err_code);
     fprintf(stderr, "OpenGL Error (%s)\n", name.toStdString().c_str());
     fprintf(stderr, "%s\n", err_str);
     err_code = glGetError();
@@ -303,4 +303,4 @@ void Viewport::PrepareFixedFunctionPipeline() {
   glEnable(GL_DEPTH_TEST);
 }
 
-}  // namespace sceneview
+}  // namespace sv

@@ -21,7 +21,7 @@ class QMenu;
 class QMenuBar;
 class QSettings;
 
-namespace sceneview {
+namespace sv {
 
 class RendererWidgetStack;
 class InputHandlerWidget;
@@ -80,6 +80,6 @@ class Viewer : public QMainWindow {
     std::map<InputHandler*, QAction*> input_handler_actions_;
 };
 
-}  // namespace sceneview
+}  // namespace sv
 
 #endif  // SCENEVIEW_VIEWER_HPP__

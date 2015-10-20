@@ -13,7 +13,7 @@
 
 #include <string>
 
-namespace sceneview {
+namespace sv {
 
 const char* glErrorString(GLenum error);
 

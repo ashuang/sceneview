@@ -18,7 +18,7 @@
 #include "sceneview/stock_resources.hpp"
 #include "sceneview/viewport.hpp"
 
-namespace sceneview {
+namespace sv {
 
 ViewHandlerHorizontal::ViewHandlerHorizontal(Viewport* viewport,
     const QVector3D& zenith_dir,
@@ -248,4 +248,4 @@ void ViewHandlerHorizontal::OnProjectionSelectionChanged() {
   viewport_->ScheduleRedraw();
 }
 
-}  // namespace sceneview
+}  // namespace sv

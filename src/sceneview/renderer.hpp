@@ -11,7 +11,7 @@
 #include <sceneview/scene.hpp>
 #include <sceneview/resource_manager.hpp>
 
-namespace sceneview {
+namespace sv {
 
 class Viewport;
 
@@ -100,6 +100,6 @@ class Renderer : public QObject {
     bool enabled_;
 };
 
-}  // namespace sceneview
+}  // namespace sv
 
 #endif  // SCENEVIEW_RENDERER_HPP__

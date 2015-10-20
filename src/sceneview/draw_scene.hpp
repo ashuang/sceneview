@@ -6,7 +6,7 @@
 #include <sceneview/resource_manager.hpp>
 #include <sceneview/scene.hpp>
 
-namespace sceneview {
+namespace sv {
 
 class AxisAlignedBox;
 class CameraNode;
@@ -40,6 +40,6 @@ class DrawScene {
     bool draw_bounding_boxes_;
 };
 
-}  // namespace sceneview
+}  // namespace sv
 
 #endif  // SCENEVIEW_DRAW_SCENE_HPP__

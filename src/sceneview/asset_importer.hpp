@@ -8,7 +8,7 @@
 #include <sceneview/scene.hpp>
 #include <sceneview/resource_manager.hpp>
 
-namespace sceneview {
+namespace sv {
 
 class AssetImporter {
   public:
@@ -23,6 +23,6 @@ class AssetImporter {
 };
 
 
-}  // namespace sceneview
+}  // namespace sv
 
 #endif  // SCENEVIEW_ASSET_IMPORTER_HPP__

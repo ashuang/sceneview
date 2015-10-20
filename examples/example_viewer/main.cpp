@@ -9,7 +9,6 @@
 #include "polylines_renderer.hpp"
 #include "text_renderer.hpp"
 
-namespace sv = sceneview;
 using sv::Viewport;
 using sv::Viewer;
 using sv::GridRenderer;

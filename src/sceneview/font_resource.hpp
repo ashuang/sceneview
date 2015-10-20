@@ -9,7 +9,7 @@
 
 class QOpenGLTexture;
 
-namespace sceneview {
+namespace sv {
 
 /**
  * A font texture map, suitable for rendering fonts using texture-mapped quads.
@@ -106,6 +106,6 @@ class FontResource {
     std::unique_ptr<QOpenGLTexture> texture_;
 };
 
-}  // namespace sceneview
+}  // namespace sv
 
 #endif  // SCENEVIEW_FONT_RESOURCE_HPP__

@@ -11,7 +11,7 @@ class QComboBox;
 class QMouseEvent;
 class QTimer;
 
-namespace sceneview {
+namespace sv {
 
 class CameraNode;
 class MeshNode;
@@ -100,6 +100,6 @@ class ViewHandlerHorizontal : public QObject, public InputHandler {
     QComboBox* projection_combo_;
 };
 
-}  // namespace sceneview
+}  // namespace sv
 
 #endif  // SCENEVIEW_VIEW_HANDLER_HORIZONTAL__

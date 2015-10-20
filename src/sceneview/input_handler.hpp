@@ -9,7 +9,7 @@
 
 class QWidget;
 
-namespace sceneview {
+namespace sv {
 
 class InputHandler {
   public:
@@ -57,6 +57,6 @@ class InputHandler {
     virtual void LoadState(const QVariant& val) {}
 };
 
-}  // namespace sceneview
+}  // namespace sv
 
 #endif  // SCENEVIEW_VIEW_HANDLER_HPP__

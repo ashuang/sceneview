@@ -9,7 +9,7 @@
 #define dbg(...)
 #endif
 
-namespace sceneview {
+namespace sv {
 
 const QString ResourceManager::kAutoName = "";
 
@@ -151,4 +151,4 @@ void ResourceManager::PrintStats() {
   printf("scenes: %d\n", static_cast<int>(scenes_.size()));
 }
 
-}  // namespace sceneview
+}  // namespace sv

@@ -4,7 +4,6 @@
 
 #include <sceneview/stock_resources.hpp>
 
-namespace sv = sceneview;
 using sv::StockResources;
 
 namespace vis_examples {
@@ -54,8 +53,8 @@ void PolylinesRenderer::UpdateGeometry() {
     const double y0 = radius * sin0;
     const double x1 = radius * cos1;
     const double y1 = radius * sin1;
-    gdata_.vertices.emplace_back(x0, y0, 0);
-    gdata_.vertices.emplace_back(x1, y1, 0);
+    gdata_.vertices.emplace_back(x0, y0, -0.05);
+    gdata_.vertices.emplace_back(x1, y1, -0.05);
 
     const float r0 = cos0 * 0.5 + 0.5;
     const float g0 = sin0 * 0.5 + 0.5;

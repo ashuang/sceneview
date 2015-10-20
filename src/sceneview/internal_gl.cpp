@@ -1,8 +1,8 @@
 // Copyright [2015] Albert Huang
 
-#include "sceneview/internal_gl.h"
+#include "sceneview/internal_gl.hpp"
 
-namespace sceneview {
+namespace sv {
 
 const char* glErrorString(GLenum error) {
   switch (error) {
@@ -27,4 +27,4 @@ const char* glErrorString(GLenum error) {
   }
 }
 
-}  // namespace sceneview
+}  // namespace sv

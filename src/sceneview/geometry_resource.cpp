@@ -10,7 +10,7 @@
 #define dbg(...)
 #endif
 
-namespace sceneview {
+namespace sv {
 
 GeometryResource::GeometryResource(const QString& name) :
   name_(name),
@@ -178,4 +178,4 @@ QOpenGLBuffer* GeometryResource::IndexBuffer() {
   return num_indices_ ? &index_buffer_ : nullptr;
 }
 
-}  // namespace sceneview
+}  // namespace sv

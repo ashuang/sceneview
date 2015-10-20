@@ -4,7 +4,6 @@
 
 #include "model_renderer.hpp"
 
-namespace sv = sceneview;
 using sv::Viewport;
 using sv::Viewer;
 using sv::GridRenderer;

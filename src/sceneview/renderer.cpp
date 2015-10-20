@@ -6,7 +6,7 @@
 
 #include <string>
 
-namespace sceneview {
+namespace sv {
 
 Renderer::Renderer(const QString& name, QObject* parent) :
   QObject(parent),
@@ -44,4 +44,4 @@ void Renderer::SetEnabled(bool enabled) {
   OnEnableChanged(enabled_);
 }
 
-}  // namespace sceneview
+}  // namespace sv

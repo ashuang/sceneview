@@ -8,7 +8,7 @@
 
 #include <QOpenGLShaderProgram>
 
-namespace sceneview {
+namespace sv {
 
 /**
  * Stores the location, type, and value for a GLSL shader uniform variable.
@@ -73,6 +73,6 @@ class ShaderUniform {
 
 typedef std::map<QString, ShaderUniform> ShaderUniformMap;
 
-}  // namespace sceneview
+}  // namespace sv
 
 #endif  // SCENEVIEW_SHADER_UNIFORM_HPP__

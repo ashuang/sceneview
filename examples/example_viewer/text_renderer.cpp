@@ -2,7 +2,6 @@
 
 #include <QColor>
 
-namespace sv = sceneview;
 using sv::TextBillboard;
 
 namespace vis_examples {

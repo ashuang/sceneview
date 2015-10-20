@@ -12,7 +12,7 @@
 #include <sceneview/geometry_resource.hpp>
 #include <sceneview/material_resource.hpp>
 
-namespace sceneview {
+namespace sv {
 
 class CameraNode;
 class GroupNode;
@@ -120,6 +120,6 @@ class Scene {
     std::map<QString, SceneNode*> nodes_;
 };
 
-}  // namespace sceneview
+}  // namespace sv
 
 #endif  // SCENEVIEW_SCENE_HPP__

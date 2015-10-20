@@ -10,7 +10,7 @@ namespace vis_examples {
 /**
  * Demonstrates rendering using the OpenGL fixed function pipeline.
  */
-class FixedFunctionRenderer : public sceneview::Renderer {
+class FixedFunctionRenderer : public sv::Renderer {
   Q_OBJECT
 
  public:

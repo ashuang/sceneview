@@ -4,7 +4,7 @@
 
 #include "sceneview/axis_aligned_box.hpp"
 
-using sceneview::AxisAlignedBox;
+using sv::AxisAlignedBox;
 
 TEST(AxisAlignedBox, OnePoint) {
   for (double x = -100; x < 100; ++x) {

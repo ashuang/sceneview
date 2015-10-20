@@ -21,7 +21,7 @@
 #define dbg(...)
 #endif
 
-namespace sceneview {
+namespace sv {
 
 namespace {
 
@@ -333,4 +333,4 @@ Scene::Ptr ImportAssimpFile(ResourceManager::Ptr resources,
   return Importer(resources).ImportFile(fname, scene_name);
 }
 
-}  // namespace sceneview
+}  // namespace sv

@@ -11,7 +11,7 @@
 #include "sceneview/mesh_node.hpp"
 #include "sceneview/scene.hpp"
 
-namespace sceneview {
+namespace sv {
 
 GroupNode::GroupNode(const QString& name) :
   SceneNode(name) {
@@ -109,4 +109,4 @@ void GroupNode::RemoveChild(SceneNode* child) {
   }
 }
 
-}  // namespace sceneview
+}  // namespace sv

@@ -6,7 +6,7 @@
 #include <sceneview/scene.hpp>
 #include <sceneview/resource_manager.hpp>
 
-namespace sceneview {
+namespace sv {
 
 /**
  * Imports a model from a .rwx file (Renderware)
@@ -15,6 +15,6 @@ Scene::Ptr ImportRwxFile(ResourceManager::Ptr resources,
         const QString& fname,
         const QString& resource_name = ResourceManager::kAutoName);
 
-}  // namespace sceneview
+}  // namespace sv
 
 #endif  // SCENEVIEW_IMPORTER_RWX_HPP__

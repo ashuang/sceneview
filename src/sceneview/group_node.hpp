@@ -7,7 +7,7 @@
 
 #include <sceneview/scene_node.hpp>
 
-namespace sceneview {
+namespace sv {
 
 class Scene;
 
@@ -37,6 +37,6 @@ class GroupNode : public SceneNode {
     std::vector<SceneNode*> children_;
 };
 
-}  // namespace sceneview
+}  // namespace sv
 
 #endif  // SCENEVIEW_GROUP_NODE_HPP__

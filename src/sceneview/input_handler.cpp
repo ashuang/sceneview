@@ -2,7 +2,7 @@
 
 #include "sceneview/input_handler.hpp"
 
-namespace sceneview {
+namespace sv {
 
 void InputHandler::MousePressEvent(QMouseEvent* event) {
   event->ignore();
@@ -28,4 +28,4 @@ void InputHandler::KeyReleaseEvent(QKeyEvent* event) {
   event->ignore();
 }
 
-}  // namespace sceneview
+}  // namespace sv
