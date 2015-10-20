@@ -7,6 +7,10 @@
 
 namespace vis_examples {
 
+/**
+ * Demonstrates drawing billboard text in the scene that always faces the
+ * camera.
+ */
 class TextRenderer : public sv::Renderer {
   Q_OBJECT
 

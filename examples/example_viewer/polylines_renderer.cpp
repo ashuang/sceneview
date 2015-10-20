@@ -19,7 +19,10 @@ void PolylinesRenderer::InitializeGL() {
 
   geom_ = GetResources()->MakeGeometry();
   material_ = stock.NewMaterial(StockResources::kPerVertexColorNoLighting);
+
+  // Draw fat thick lines.
   material_->SetLineWidth(5.0f);
+
   mesh_ = GetScene()->MakeMesh(GetBaseNode(), geom_, material_);
 
   UpdateGeometry();
@@ -56,6 +59,11 @@ void PolylinesRenderer::UpdateGeometry() {
     gdata_.vertices.emplace_back(x0, y0, -0.05);
     gdata_.vertices.emplace_back(x1, y1, -0.05);
 
+    // Since we chose the material kPerVertexColorNoLighting, specify the color
+    // in the per-vertex geometry data.
+    //
+    // If we used a different material, then color would be specified some
+    // other way.
     const float r0 = cos0 * 0.5 + 0.5;
     const float g0 = sin0 * 0.5 + 0.5;
     const float r1 = cos1 * 0.5 + 0.5;

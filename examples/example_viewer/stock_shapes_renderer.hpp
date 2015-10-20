@@ -7,6 +7,11 @@
 
 namespace vis_examples {
 
+/**
+ * Demonstrates instantiating stock shapes and inserting them into the scene.
+ *
+ * Also demonstrates the use of ParamWidget.
+ */
 class StockShapesRenderer : public sv::Renderer {
   Q_OBJECT
 

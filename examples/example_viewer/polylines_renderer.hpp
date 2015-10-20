@@ -7,6 +7,9 @@
 
 namespace vis_examples {
 
+/**
+ * This renderer demonstrates building a mesh node with custom geometry.
+ */
 class PolylinesRenderer : public sv::Renderer {
   Q_OBJECT
 

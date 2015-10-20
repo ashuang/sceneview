@@ -7,6 +7,10 @@ class QTimer;
 
 namespace vis_examples {
 
+/**
+ * Demonstrates creating a custom input handler that can be selected instead of
+ * the default input handler.
+ */
 class ExampleInputHandler : public QObject, public sv::InputHandler {
   Q_OBJECT
 
