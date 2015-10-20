@@ -1,7 +1,11 @@
+// Copyright [2015] Albert Huang
+
 #ifndef SCENEVIEW_RESOURCE_MANAGER_HPP__
 #define SCENEVIEW_RESOURCE_MANAGER_HPP__
 
 #include <cstdint>
+#include <map>
+
 #include <sceneview/font_resource.hpp>
 #include <sceneview/geometry_resource.hpp>
 #include <sceneview/material_resource.hpp>
@@ -33,7 +37,6 @@ class ResourceManager {
     static const QString kAutoName;
 
   public:
-
     static Ptr Create();
 
     /**

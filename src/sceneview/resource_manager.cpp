@@ -1,8 +1,13 @@
-#include <sceneview/resource_manager.hpp>
-#include <sceneview/scene.hpp>
+// Copyright [2015] Albert Huang
 
-//#define dbg(fmt, ...) printf(fmt, __VA_ARGS__)
+#include "sceneview/resource_manager.hpp"
+#include "sceneview/scene.hpp"
+
+#if 0
+#define dbg(fmt, ...) printf(fmt, __VA_ARGS__)
+#else
 #define dbg(...)
+#endif
 
 namespace sceneview {
 
@@ -15,13 +20,13 @@ ResourceManager::Ptr ResourceManager::Create() {
 ResourceManager::ResourceManager() :
   name_counter_(0) {}
 
-MaterialResource::Ptr ResourceManager::MakeMaterial(const ShaderResource::Ptr& shader,
-    const QString& name) {
+MaterialResource::Ptr ResourceManager::MakeMaterial(
+    const ShaderResource::Ptr& shader, const QString& name) {
   QString actual_name = PickName(name);
   MaterialResource::Ptr result(new MaterialResource(actual_name, shader));
   materials_[actual_name] = result;
   dbg("MakeMaterial: -> %s (total: %d)\n",
-      actual_name.c_str(), (int)materials_.size());
+      actual_name.c_str(), static_cast<int>(materials_.size()));
   return result;
 }
 
@@ -30,7 +35,7 @@ ShaderResource::Ptr ResourceManager::MakeShader(const QString& name) {
   ShaderResource::Ptr result(new ShaderResource(actual_name));
   shaders_[actual_name] = result;
   dbg("MakeShader: -> %s (total: %d)\n",
-      actual_name.c_str(), (int)shaders_.size());
+      actual_name.c_str(), static_cast<int>(shaders_.size()));
   return result;
 }
 
@@ -39,7 +44,7 @@ GeometryResource::Ptr ResourceManager::MakeGeometry(const QString& name) {
   GeometryResource::Ptr result(new GeometryResource(actual_name));
   geometries_[actual_name] = result;
   dbg("MakeGeometry: -> %s (total: %d)\n",
-      actual_name.c_str(), (int)geometries_.size());
+      actual_name.c_str(), static_cast<int>(geometries_.size()));
   return result;
 }
 
@@ -48,7 +53,7 @@ Scene::Ptr ResourceManager::MakeScene(const QString& name) {
   Scene::Ptr result(new Scene(actual_name));
   scenes_[actual_name] = result;
   dbg("MakeScene: -> %s (total: %d)\n",
-      actual_name.c_str(), (int)scenes_.size());
+      actual_name.c_str(), static_cast<int>(scenes_.size()));
   return result;
 }
 
@@ -140,10 +145,10 @@ bool ResourceManager::NameExists(const QString& name) {
 
 void ResourceManager::PrintStats() {
   Cleanup();
-  printf("materials: %d\n", (int)materials_.size());
-  printf("shaders: %d\n", (int)shaders_.size());
-  printf("geometries: %d\n", (int)geometries_.size());
-  printf("scenes: %d\n", (int)scenes_.size());
+  printf("materials: %d\n", static_cast<int>(materials_.size()));
+  printf("shaders: %d\n", static_cast<int>(shaders_.size()));
+  printf("geometries: %d\n", static_cast<int>(geometries_.size()));
+  printf("scenes: %d\n", static_cast<int>(scenes_.size()));
 }
 
 }  // namespace sceneview

@@ -1,9 +1,11 @@
-#include "internal_gl.h"
+// Copyright [2015] Albert Huang
+
+#include "sceneview/internal_gl.h"
 
 namespace sceneview {
 
 const char* glErrorString(GLenum error) {
-  switch(error) {
+  switch (error) {
     case GL_NO_ERROR:
       return "No error";
     case GL_INVALID_ENUM:

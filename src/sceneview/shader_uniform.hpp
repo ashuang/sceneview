@@ -1,3 +1,5 @@
+// Copyright [2015] Albert Huang
+
 #ifndef SCENEVIEW_SHADER_UNIFORM_HPP__
 #define SCENEVIEW_SHADER_UNIFORM_HPP__
 
@@ -23,11 +25,11 @@ class ShaderUniform {
 
     ShaderUniform();
 
-    ShaderUniform(const QString& name);
-
-    ~ShaderUniform();
+    explicit ShaderUniform(const QString& name);
 
     ShaderUniform(const ShaderUniform& other) = delete;
+
+    ~ShaderUniform();
 
     void SetLocation(int location) { location_ = location; }
 

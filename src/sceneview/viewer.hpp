@@ -1,7 +1,11 @@
+// Copyright [2015] Albert Huang
+
 #ifndef SCENEVIEW_VIEWER_HPP__
 #define SCENEVIEW_VIEWER_HPP__
 
+#include <map>
 #include <memory>
+
 #include <QMainWindow>
 #include <QTimer>
 
@@ -27,7 +31,7 @@ class Viewer : public QMainWindow {
   Q_OBJECT
 
   public:
-    Viewer(QWidget* parent = nullptr);
+    explicit Viewer(QWidget* parent = nullptr);
 
     Viewport* GetViewport() { return viewport_; }
 

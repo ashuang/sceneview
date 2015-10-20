@@ -1,3 +1,5 @@
+// Copyright [2015] Albert Huang
+
 #ifndef BOT3_CAMERA_NODE_HPP__
 #define BOT3_CAMERA_NODE_HPP__
 
@@ -15,7 +17,7 @@ namespace sceneview {
  * - screen space (2D window corresponding to the Viewport widget)
  */
 class CameraNode : public SceneNode {
- public:
+  public:
     enum ProjectionType {
       kOrthographic,
       kPerspective
@@ -96,10 +98,10 @@ class CameraNode : public SceneNode {
      */
     QMatrix4x4 GetViewProjectionMatrix();
 
- private:
+  private:
     friend class Scene;
 
-    CameraNode(const QString& name);
+    explicit CameraNode(const QString& name);
 
     void ComputeProjectionMatrix();
 

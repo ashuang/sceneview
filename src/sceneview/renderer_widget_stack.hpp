@@ -1,3 +1,5 @@
+// Copyright [2015] Albert Huang
+
 #ifndef SCENEVIEW_RENDERER_WIDGET_STACK
 #define SCENEVIEW_RENDERER_WIDGET_STACK
 
@@ -14,7 +16,7 @@ class RendererWidgetStack : public QDockWidget {
   Q_OBJECT
 
   public:
-    RendererWidgetStack(QWidget* parent = nullptr);
+    explicit RendererWidgetStack(QWidget* parent = nullptr);
 
   public slots:
     void AddRendererWidget(Renderer* renderer);

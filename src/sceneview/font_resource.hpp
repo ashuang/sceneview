@@ -1,3 +1,5 @@
+// Copyright [2015] Albert Huang
+
 #ifndef SCENEVIEW_FONT_RESOURCE_HPP__
 #define SCENEVIEW_FONT_RESOURCE_HPP__
 
@@ -91,7 +93,7 @@ class FontResource {
 
     static Ptr Create(const QFont& font);
 
-    FontResource(const QFont& font);
+    explicit FontResource(const QFont& font);
 
     void Build(const QFont& font);
 

@@ -1,4 +1,6 @@
-#include <sceneview/expander_widget.hpp>
+// Copyright [2015] Albert Huang
+
+#include "sceneview/expander_widget.hpp"
 
 #include <QApplication>
 #include <QMainWindow>

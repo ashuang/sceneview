@@ -1,3 +1,5 @@
+// Copyright [2015] Albert Huang
+
 #ifndef SCENEVIEW_RENDERER_HPP__
 #define SCENEVIEW_RENDERER_HPP__
 
@@ -16,8 +18,8 @@ class Viewport;
 class Renderer : public QObject {
   Q_OBJECT
 
- public:
-    Renderer(const QString& name, QObject* parent = 0);
+  public:
+    explicit Renderer(const QString& name, QObject* parent = 0);
 
     Renderer(const Renderer&) = delete;
 
@@ -73,16 +75,16 @@ class Renderer : public QObject {
 
     virtual void LoadState(const QVariant& val) {}
 
- public slots:
+  public slots:
     void SetEnabled(bool enabled);
 
- protected:
+  protected:
     /**
      *
      */
     virtual void OnEnableChanged(bool enabled) {}
 
- private:
+  private:
     friend class Viewport;
 
     void SetViewport(Viewport* viewport);

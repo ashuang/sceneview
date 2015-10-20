@@ -1,4 +1,6 @@
-#include <sceneview/viewer.hpp>
+// Copyright [2015] Albert Huang
+
+#include "sceneview/viewer.hpp"
 
 #include <QAction>
 #include <QCoreApplication>
@@ -7,12 +9,12 @@
 #include <QMenuBar>
 #include <QSettings>
 
-#include <sceneview/camera_node.hpp>
-#include <sceneview/input_handler_widget.hpp>
-#include <sceneview/light_node.hpp>
-#include <sceneview/renderer.hpp>
-#include <sceneview/renderer_widget_stack.hpp>
-#include <sceneview/view_handler_horizontal.hpp>
+#include "sceneview/camera_node.hpp"
+#include "sceneview/input_handler_widget.hpp"
+#include "sceneview/light_node.hpp"
+#include "sceneview/renderer.hpp"
+#include "sceneview/renderer_widget_stack.hpp"
+#include "sceneview/view_handler_horizontal.hpp"
 
 namespace sceneview {
 
@@ -21,7 +23,6 @@ Viewer::Viewer(QWidget* parent) :
   resources_(ResourceManager::Create()),
   default_scene_(resources_->MakeScene("default_scene")),
   viewport_(new Viewport(resources_, default_scene_, this)) {
-
   // Add a couple lights
   LightNode* light0 = default_scene_->MakeLight(default_scene_->Root());
   light0->SetDirection(QVector3D(1, 1, -1));
@@ -149,7 +150,8 @@ void Viewer::OnInputHandlerAdded(InputHandler* handler) {
 
   input_handler_actions_[handler] = action;
 
-  // When the item is activated, command the viewport to activate the input handler.
+  // When the item is activated, command the viewport to activate the input
+  // handler.
   connect(action, &QAction::toggled,
       [this, handler](bool checked) {
         if (checked) {

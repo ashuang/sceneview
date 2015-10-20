@@ -1,7 +1,10 @@
+// Copyright [2015] Albert Huang
+
 #ifndef SCENEVIEW_TEXT_BILLBOARD__
 #define SCENEVIEW_TEXT_BILLBOARD__
 
 #include <memory>
+#include <string>
 
 #include <QFont>
 

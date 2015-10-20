@@ -1,7 +1,10 @@
+// Copyright [2015] Albert Huang
+
 #ifndef SCENEVIEW_SHADER_RESOURCE_HPP__
 #define SCENEVIEW_SHADER_RESOURCE_HPP__
 
 #include <memory>
+#include <vector>
 
 #include <QOpenGLShaderProgram>
 
@@ -128,7 +131,7 @@ class ShaderResource {
   private:
     friend class ResourceManager;
 
-    ShaderResource(const QString& name);
+    explicit ShaderResource(const QString& name);
 
     void LoadLocations();
 

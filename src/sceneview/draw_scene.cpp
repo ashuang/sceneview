@@ -1,21 +1,27 @@
-#include "internal_gl.h"
+// Copyright [2015] Albert Huang
 
-#include <sceneview/draw_scene.hpp>
+#include "sceneview/internal_gl.h"
+
+#include "sceneview/draw_scene.hpp"
 
 #include <cmath>
+#include <vector>
 
 #include <QOpenGLTexture>
 
-#include <sceneview/camera_node.hpp>
-#include <sceneview/group_node.hpp>
-#include <sceneview/light_node.hpp>
-#include <sceneview/mesh_node.hpp>
-#include <sceneview/resource_manager.hpp>
-#include <sceneview/scene_node.hpp>
-#include <sceneview/stock_resources.hpp>
+#include "sceneview/camera_node.hpp"
+#include "sceneview/group_node.hpp"
+#include "sceneview/light_node.hpp"
+#include "sceneview/mesh_node.hpp"
+#include "sceneview/resource_manager.hpp"
+#include "sceneview/scene_node.hpp"
+#include "sceneview/stock_resources.hpp"
 
-//#define dbg(fmt, ...) printf(fmt, __VA_ARGS__)
+#if 0
+#define dbg(fmt, ...) printf(fmt, __VA_ARGS__)
+#else
 #define dbg(...)
+#endif
 
 namespace sceneview {
 
@@ -30,7 +36,7 @@ DrawScene::DrawScene(const ResourceManager::Ptr& resources,
 void DrawScene::Draw(CameraNode* camera) {
   cur_camera_ = camera;
 
-  // TODO sort the meshes
+  // TODO(albert) sort the meshes
 
   // render each mesh
   for (MeshNode* mesh : scene_->Meshes()) {
@@ -40,7 +46,8 @@ void DrawScene::Draw(CameraNode* camera) {
 
     if (draw_bounding_boxes_) {
       QMatrix4x4 mesh_to_world = mesh->GetTransform();
-      for (SceneNode* node = mesh->ParentNode(); node; node = node->ParentNode()) {
+      for (SceneNode* node = mesh->ParentNode(); node;
+          node = node->ParentNode()) {
         mesh_to_world = node->GetTransform() * mesh_to_world;
       }
       const AxisAlignedBox box_orig = mesh->GeometryBoundingBox();
@@ -123,13 +130,15 @@ void DrawScene::DrawMeshCmoponent(const GeometryResource::Ptr& geometry,
       program->setUniformValue(locs.b3_model_mat, model_mat);
     }
     if (locs.b3_mvp_mat >= 0) {
-      program->setUniformValue(locs.b3_mvp_mat, proj_mat * view_mat * model_mat);
+      program->setUniformValue(locs.b3_mvp_mat,
+          proj_mat * view_mat * model_mat);
     }
     if (locs.b3_mv_mat >= 0) {
       program->setUniformValue(locs.b3_mv_mat, view_mat * model_mat);
     }
     if (locs.b3_model_normal_mat >= 0) {
-      program->setUniformValue(locs.b3_model_normal_mat, model_mat.normalMatrix());
+      program->setUniformValue(locs.b3_model_normal_mat,
+          model_mat.normalMatrix());
     }
 
     const std::vector<LightNode*>& lights = scene_->Lights();
@@ -259,7 +268,8 @@ void DrawScene::DrawMeshCmoponent(const GeometryResource::Ptr& geometry,
     printf("OpenGL: %s\n", sceneview::glErrorString(gl_err));
   }
 
-  // TODO check if we should call glDrawElements() instead of glDrawArrays()
+  // TODO(albert) check if we should call glDrawElements() instead of
+  // glDrawArrays()
 
   // Done. Release resources
   if (program) {

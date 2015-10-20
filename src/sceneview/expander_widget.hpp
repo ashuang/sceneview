@@ -1,3 +1,5 @@
+// Copyright [2015] Albert Huang
+
 #ifndef SCENEVIEW_EXPANDER_WIDGET_HPP__
 #define SCENEVIEW_EXPANDER_WIDGET_HPP__
 
@@ -16,7 +18,7 @@ class ExpanderWidget : public QWidget {
   Q_OBJECT
 
   public:
-    ExpanderWidget(QWidget* parent = nullptr);
+    explicit ExpanderWidget(QWidget* parent = nullptr);
 
     void SetWidget(QWidget* widget);
 

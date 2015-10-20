@@ -1,4 +1,6 @@
-#include <sceneview/axis_aligned_box.hpp>
+// Copyright [2015] Albert Huang
+
+#include "sceneview/axis_aligned_box.hpp"
 
 #include <algorithm>
 #include <limits>

@@ -1,3 +1,5 @@
+// Copyright [2015] Albert Huang
+
 #ifndef SCENEVIEW_GRID_RENDERER_HPP__
 #define SCENEVIEW_GRID_RENDERER_HPP__
 
@@ -9,14 +11,14 @@ namespace sceneview {
 class GridRenderer : public Renderer {
   Q_OBJECT
 
- public:
-    GridRenderer(const QString& name, QObject* parent = 0);
+  public:
+    explicit GridRenderer(const QString& name, QObject* parent = 0);
 
     void InitializeGL() override;
 
     void RenderBegin() override;
 
- private:
+  private:
     void UpdateGeometry();
 
     MaterialResource::Ptr base_material_;

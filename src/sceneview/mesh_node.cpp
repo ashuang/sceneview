@@ -1,4 +1,8 @@
-#include <sceneview/mesh_node.hpp>
+// Copyright [2015] Albert Huang
+
+#include "sceneview/mesh_node.hpp"
+
+#include <vector>
 
 namespace sceneview {
 
@@ -8,7 +12,7 @@ MeshNode::MeshNode(const QString& name) :
 }
 
 void MeshNode::Add(const GeometryResource::Ptr& geometry,
-    const MaterialResource::Ptr material) {
+    const MaterialResource::Ptr& material) {
   components_.emplace_back(geometry, material);
 }
 

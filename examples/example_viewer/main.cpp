@@ -4,7 +4,7 @@
 #include <sceneview/sceneview.hpp>
 
 #include "example_input_handler.hpp"
-#include "example_renderer.hpp"
+#include "stock_shapes_renderer.hpp"
 #include "fixed_function_renderer.hpp"
 #include "text_renderer.hpp"
 
@@ -15,7 +15,7 @@ using sv::GridRenderer;
 using sv::ViewHandlerHorizontal;
 
 using vis_examples::ExampleInputHandler;
-using vis_examples::ExampleRenderer;
+using vis_examples::StockShapesRenderer;
 using vis_examples::FixedFunctionRenderer;
 using vis_examples::TextRenderer;
 
@@ -34,7 +34,7 @@ int main(int argc, char *argv[]) {
 
   // Add renderers
   viewport->AddRenderer(new GridRenderer("grid", viewport));
-  viewport->AddRenderer(new ExampleRenderer("example", viewport));
+  viewport->AddRenderer(new StockShapesRenderer("example", viewport));
   viewport->AddRenderer(new FixedFunctionRenderer("fixed_function", viewport));
   viewport->AddRenderer(new TextRenderer("text", viewport));
 

@@ -35,8 +35,7 @@ void ExampleInputHandler::InitializeGL() {
     stock.NewMaterial(StockResources::kUniformColorLighting);
   material->SetParam("diffuse", 1.0, 0.2, 1.0, 0.75);
 
-  shape_ = scene->MakeMesh(scene->Root());
-  shape_->Add(stock.Sphere(), material);
+  shape_ = scene->MakeMesh(scene->Root(), stock.Sphere(), material);
   shape_->SetVisible(false);
 }
 

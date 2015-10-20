@@ -1,3 +1,5 @@
+// Copyright [2015] Albert Huang
+
 #ifndef SCENEVIEW_VIEWPORT_HPP__
 #define SCENEVIEW_VIEWPORT_HPP__
 
@@ -15,14 +17,10 @@ class CameraNode;
 class InputHandler;
 class Renderer;
 
-class RendererList {
-  public:
-};
-
 class Viewport : public QOpenGLWidget {
   Q_OBJECT
 
- public:
+  public:
     explicit Viewport(const ResourceManager::Ptr& resources,
         const Scene::Ptr& scene,
         QWidget* parent = nullptr);
@@ -54,10 +52,10 @@ class Viewport : public QOpenGLWidget {
 
     std::vector<InputHandler*> GetInputHandlers() { return input_handlers_; }
 
- public slots:
+  public slots:
     void ScheduleRedraw();
 
- signals:
+  signals:
     void RendererAdded(Renderer* renderer);
 
     void InputHandlerAdded(InputHandler* handler);
@@ -66,7 +64,7 @@ class Viewport : public QOpenGLWidget {
 
     void CameraChanged(CameraNode* camera_node);
 
- protected:
+  protected:
     void initializeGL() override;
 
     void resizeGL(int width, int height) override;
@@ -85,10 +83,10 @@ class Viewport : public QOpenGLWidget {
 
     void keyReleaseEvent(QKeyEvent* event) override;
 
- private slots:
-    void Render();
+    private slots:
+      void Render();
 
- private:
+  private:
     void PrepareFixedFunctionPipeline();
 
     ResourceManager::Ptr resources_;

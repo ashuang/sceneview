@@ -1,5 +1,9 @@
-#include "internal_gl.h"
-#include <sceneview/shader_uniform.hpp>
+// Copyright [2015] Albert Huang
+
+#include "sceneview/internal_gl.h"
+#include "sceneview/shader_uniform.hpp"
+
+#include <vector>
 
 namespace sceneview {
 
@@ -13,30 +17,6 @@ ShaderUniform::ShaderUniform(const QString& name) :
   type_(Type::kInvalid),
   location_(-1) {
 }
-
-//ShaderUniform::ShaderUniform(int val) :
-//  type_(Type::kInt),
-//  location_(-1) {
-//  new(&(value_.int_data)) IntVec({val});
-//}
-//
-//ShaderUniform::ShaderUniform(const std::vector<int>& val) :
-//  type_(Type::kInt),
-//  location_(-1) {
-//  new(&(value_.int_data)) IntVec(val);
-//}
-//
-//ShaderUniform::ShaderUniform(float val) :
-//  type_(Type::kFloat),
-//  location_(-1) {
-//  new(&(value_.float_data)) FloatVec({val});
-//}
-//
-//ShaderUniform::ShaderUniform(const std::vector<float>& val) :
-//  type_(Type::kFloat),
-//  location_(-1) {
-//  new(&(value_.float_data)) FloatVec(val);
-//}
 
 ShaderUniform::~ShaderUniform() {
   Clear();
@@ -84,7 +64,8 @@ void ShaderUniform::LoadToProgram(QOpenGLShaderProgram* program) {
   if (location_ < 0) {
     location_ = program->uniformLocation(name_);
     if (location_ < 0) {
-      printf("Warning: Unable to find uniform %s\n", name_.toStdString().c_str());
+      printf("Warning: Unable to find uniform %s\n",
+          name_.toStdString().c_str());
       return;
     }
   }

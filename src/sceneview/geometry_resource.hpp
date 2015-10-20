@@ -1,8 +1,11 @@
+// Copyright [2015] Albert Huang
+
 #ifndef SCENEVIEW_GEOMETRY_RESOURCE_HPP__
 #define SCENEVIEW_GEOMETRY_RESOURCE_HPP__
 
 #include <cstdint>
 #include <memory>
+#include <vector>
 
 #include <QString>
 #include <QVector2D>
@@ -102,7 +105,7 @@ class GeometryResource {
   private:
     friend class ResourceManager;
 
-    GeometryResource(const QString& name);
+    explicit GeometryResource(const QString& name);
 
     const QString name_;
 

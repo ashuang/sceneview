@@ -1,3 +1,5 @@
+// Copyright [2015] Albert Huang
+
 #ifndef SCENEVIEW_DRAW_SCENE_HPP__
 #define SCENEVIEW_DRAW_SCENE_HPP__
 

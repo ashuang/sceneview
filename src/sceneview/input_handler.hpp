@@ -1,3 +1,5 @@
+// Copyright [2015] Albert Huang
+
 #ifndef SCENEVIEW_INPUT_HANDLER_HPP__
 #define SCENEVIEW_INPUT_HANDLER_HPP__
 
@@ -10,7 +12,7 @@ class QWidget;
 namespace sceneview {
 
 class InputHandler {
- public:
+  public:
     virtual ~InputHandler() {}
 
     virtual QString Name() const = 0;

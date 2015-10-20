@@ -1,3 +1,5 @@
+// Copyright [2015] Albert Huang
+
 #ifndef SCENEVIEW_AXIS_ALIGNED_BOX_HPP__
 #define SCENEVIEW_AXIS_ALIGNED_BOX_HPP__
 

@@ -1,5 +1,5 @@
-#ifndef SCENEVIEW_EXAMPLE_RENDERER_HPP__
-#define SCENEVIEW_EXAMPLE_RENDERER_HPP__
+#ifndef SCENEVIEW_STOCK_SHAPES_RENDERER_HPP__
+#define SCENEVIEW_STOCK_SHAPES_RENDERER_HPP__
 
 #include <QTime>
 
@@ -7,11 +7,11 @@
 
 namespace vis_examples {
 
-class ExampleRenderer : public sceneview::Renderer {
+class StockShapesRenderer : public sceneview::Renderer {
   Q_OBJECT
 
  public:
-    ExampleRenderer(const QString& name, QObject* parent = 0);
+    StockShapesRenderer(const QString& name, QObject* parent = 0);
 
     void InitializeGL() override;
 
@@ -38,4 +38,4 @@ class ExampleRenderer : public sceneview::Renderer {
 
 }  // namespace vis_examples
 
-#endif  // SCENEVIEW_EXAMPLE_RENDERER_HPP__
+#endif  // SCENEVIEW_STOCK_SHAPES_RENDERER_HPP__

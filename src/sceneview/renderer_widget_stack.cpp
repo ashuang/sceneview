@@ -1,11 +1,13 @@
-#include <sceneview/renderer_widget_stack.hpp>
+// Copyright [2015] Albert Huang
+
+#include "sceneview/renderer_widget_stack.hpp"
 
 #include <QVBoxLayout>
 #include <QScrollArea>
 #include <QPushButton>
 
-#include <sceneview/expander_widget.hpp>
-#include <sceneview/renderer.hpp>
+#include "sceneview/expander_widget.hpp"
+#include "sceneview/renderer.hpp"
 
 namespace sceneview {
 

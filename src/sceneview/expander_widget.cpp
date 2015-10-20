@@ -1,4 +1,6 @@
-#include <sceneview/expander_widget.hpp>
+// Copyright [2015] Albert Huang
+
+#include "sceneview/expander_widget.hpp"
 
 #include <QPushButton>
 #include <QStackedWidget>
@@ -12,12 +14,12 @@ ExpanderWidget::ExpanderWidget(QWidget* parent) :
   widget_(nullptr),
   layout_(new QVBoxLayout(this)),
   expanded_(true) {
-
   button_->setText("");
   button_->setFlat(true);
   button_->setStyleSheet("text-align: left; border: none;");
   button_->setIcon(QIcon(":/sceneview/icons/arrow_down.png"));
-  connect(button_, &QPushButton::clicked, this, &ExpanderWidget::ToggleExpanded);
+  connect(button_, &QPushButton::clicked, this,
+      &ExpanderWidget::ToggleExpanded);
 
   layout_->addWidget(button_, 0, Qt::AlignTop);
   layout_->setSpacing(0);

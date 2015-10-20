@@ -1,3 +1,5 @@
+// Copyright [2015] Albert Huang
+
 #ifndef SCENEVIEW_ASSIMP_IMPORTER_HPP__
 #define SCENEVIEW_ASSIMP_IMPORTER_HPP__
 

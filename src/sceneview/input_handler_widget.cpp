@@ -1,11 +1,13 @@
-#include <sceneview/input_handler_widget.hpp>
+// Copyright [2015] Albert Huang
+
+#include "sceneview/input_handler_widget.hpp"
 
 #include <QStackedWidget>
 #include <QVBoxLayout>
 
-#include <sceneview/input_handler.hpp>
-#include <sceneview/view_handler_horizontal.hpp>
-#include <sceneview/viewport.hpp>
+#include "sceneview/input_handler.hpp"
+#include "sceneview/view_handler_horizontal.hpp"
+#include "sceneview/viewport.hpp"
 
 namespace sceneview {
 

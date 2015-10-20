@@ -1,4 +1,6 @@
-#include <sceneview/view_handler_horizontal.hpp>
+// Copyright [2015] Albert Huang
+
+#include "sceneview/view_handler_horizontal.hpp"
 
 #include <cmath>
 #include <iostream>
@@ -11,10 +13,10 @@
 #include <QScrollArea>
 #include <QTimer>
 
-#include <sceneview/camera_node.hpp>
-#include <sceneview/mesh_node.hpp>
-#include <sceneview/stock_resources.hpp>
-#include <sceneview/viewport.hpp>
+#include "sceneview/camera_node.hpp"
+#include "sceneview/mesh_node.hpp"
+#include "sceneview/stock_resources.hpp"
+#include "sceneview/viewport.hpp"
 
 namespace sceneview {
 
@@ -83,7 +85,8 @@ void ViewHandlerHorizontal::MouseMoveEvent(QMouseEvent *event) {
     // Raise / lower the camera
     const QVector3D motion = screen_dy * movement_scale_ * zenith_dir_;
     const QVector3D new_eye = eye_start_ + motion;
-    camera_->LookAt(new_eye, new_eye + look_start_ * PivotDistance(), up_start_);
+    camera_->LookAt(new_eye, new_eye + look_start_ * PivotDistance(),
+        up_start_);
     UpdateMeshTransform();
     viewport_->ScheduleRedraw();
   } else if (buttons & Qt::RightButton) {
@@ -187,7 +190,8 @@ void ViewHandlerHorizontal::MakeShape() {
   GroupNode* root = scene->Root();
   StockResources stock(resources);
 
-  MaterialResource::Ptr material = stock.NewMaterial(StockResources::kUniformColorLighting);
+  MaterialResource::Ptr material =
+    stock.NewMaterial(StockResources::kUniformColorLighting);
   material->SetParam("diffuse", 0, 1.0, 0, 1.0);
 
   look_at_mesh_ = scene->MakeMesh(root, "vhz:shape");
@@ -238,7 +242,8 @@ void ViewHandlerHorizontal::OnProjectionSelectionChanged() {
   const double z_far = camera->GetZFar();
   const double vfov_deg = camera->GetVFovDeg();
   CameraNode::ProjectionType proj_type =
-    static_cast<CameraNode::ProjectionType>(projection_combo_->currentData().toInt());
+    static_cast<CameraNode::ProjectionType>(
+        projection_combo_->currentData().toInt());
   camera->SetProjectionParams(proj_type, vfov_deg, z_near, z_far);
   viewport_->ScheduleRedraw();
 }

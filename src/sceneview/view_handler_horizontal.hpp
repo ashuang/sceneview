@@ -1,3 +1,5 @@
+// Copyright [2015] Albert Huang
+
 #ifndef SCENEVIEW_VIEW_HANDLER_HORIZONTAL__
 #define SCENEVIEW_VIEW_HANDLER_HORIZONTAL__
 

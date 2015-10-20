@@ -1,3 +1,5 @@
+// Copyright [2015] Albert Huang
+
 #ifndef SCENEVIEW_LIGHT_NODE_HPP__
 #define SCENEVIEW_LIGHT_NODE_HPP__
 
@@ -15,10 +17,11 @@ enum class LightType {
 };
 
 class LightNode : public SceneNode {
- public:
+  public:
     virtual ~LightNode() {}
 
-    SceneNodeType NodeType() const override { return SceneNodeType::kLightNode; }
+    SceneNodeType NodeType() const override {
+      return SceneNodeType::kLightNode; }
 
     /**
      * Sets the light type.
@@ -75,10 +78,10 @@ class LightNode : public SceneNode {
      */
     void SetScale(const QVector3D& vec) override;
 
- private:
+  private:
     friend class Scene;
 
-    LightNode(const QString& name);
+    explicit LightNode(const QString& name);
 
     LightType light_type_;
     QVector3D direction_;

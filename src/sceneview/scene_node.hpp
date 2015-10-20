@@ -1,3 +1,5 @@
+// Copyright [2015] Albert Huang
+
 #ifndef SCENEVIEW_SCENE_NODE_HPP__
 #define SCENEVIEW_SCENE_NODE_HPP__
 
@@ -80,7 +82,7 @@ class SceneNode {
     /**
      * Constructs a scene node with an identity transform.
      */
-    SceneNode(const QString& name);
+    explicit SceneNode(const QString& name);
 
   private:
     const QString node_name_;

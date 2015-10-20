@@ -1,25 +1,32 @@
+// Copyright [2015] Albert Huang
+
 #include "importer_assimp.hpp"
 
 #include <cassert>
 #include <deque>
+#include <map>
+#include <vector>
 
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
 
-#include <sceneview/group_node.hpp>
-#include <sceneview/mesh_node.hpp>
-#include <sceneview/stock_resources.hpp>
+#include "sceneview/group_node.hpp"
+#include "sceneview/mesh_node.hpp"
+#include "sceneview/stock_resources.hpp"
 
-//#define dbg(...) printf(__VA_ARGS__)
+#if 0
+#define dbg(...) printf(__VA_ARGS__)
+#else
 #define dbg(...)
+#endif
 
 namespace sceneview {
 
 namespace {
 
 struct AssimpMaterial {
-  AssimpMaterial(const aiMaterial& mat);
+  explicit AssimpMaterial(const aiMaterial& mat);
 
   void Print() const;
 
@@ -54,7 +61,7 @@ struct AssimpMaterial {
 
   float index_of_refraction;
 
-  // TODO add texture fields
+  // TODO(albert) add texture fields
 };
 
 static bool LoadColor(const aiMaterial& mat,
@@ -75,8 +82,7 @@ AssimpMaterial::AssimpMaterial(const aiMaterial& mat) :
   emissive({0, 0, 0}),
   transparent({0, 0, 0}),
   wireframe(false),
-  two_sided(false)
-{
+  two_sided(false) {
   have_diffuse = LoadColor(mat, AI_MATKEY_COLOR_DIFFUSE, &diffuse);
   have_specular = LoadColor(mat, AI_MATKEY_COLOR_SPECULAR, &specular);
   have_ambient = LoadColor(mat, AI_MATKEY_COLOR_AMBIENT, &ambient);
@@ -130,7 +136,7 @@ void AssimpMaterial::Print() const {
 
 class Importer {
   public:
-    Importer(ResourceManager::Ptr resources);
+    explicit Importer(ResourceManager::Ptr resources);
 
     Scene::Ptr ImportFile(const QString& fname, const QString& scene_name);
 
@@ -170,16 +176,17 @@ Scene::Ptr Importer::ImportFile(const QString& fname,
   StockResources stock(resources_);
 
   // Add materials
-  for (size_t mat_index = 0; mat_index < ai_scene_->mNumMaterials; ++mat_index) {
+  for (size_t mat_index = 0; mat_index < ai_scene_->mNumMaterials;
+      ++mat_index) {
     const AssimpMaterial ai_mat(*ai_scene_->mMaterials[mat_index]);
 
 #if dbg
-    dbg("material: %d\n", (int)mat_index);
+    dbg("material: %d\n", static_cast<int>(mat_index));
     ai_mat.Print();
 #endif
 
     MaterialResource::Ptr material =
-      resources_->MakeMaterial(stock.Shader(StockResources::kUniformColorLighting));
+      stock.NewMaterial(StockResources::kUniformColorLighting);
 
     material->SetParam("diffuse",
         ai_mat.diffuse[0],
@@ -200,16 +207,19 @@ Scene::Ptr Importer::ImportFile(const QString& fname,
     materials_.push_back(material);
   }
 
-  // TODO add textures
+  // TODO(albert) add textures
 
   // Add meshes
-  for (size_t mesh_index = 0; mesh_index < ai_scene_->mNumMeshes; ++mesh_index) {
+  for (size_t mesh_index = 0; mesh_index < ai_scene_->mNumMeshes;
+      ++mesh_index) {
     const aiMesh* mesh = ai_scene_->mMeshes[mesh_index];
 
-    dbg("Loading mesh %d / %d\n", (int)mesh_index, (int)ai_scene_->mNumMeshes);
+    dbg("Loading mesh %d / %d\n", static_cast<int>(mesh_index),
+        static_cast<int>(ai_scene_->mNumMeshes));
 
     if (mesh->mPrimitiveTypes != aiPrimitiveType_TRIANGLE) {
-      dbg("Skipping mesh %d - not of type TRIANGLE\n", (int)mesh_index);
+      dbg("Skipping mesh %d - not of type TRIANGLE\n",
+          static_cast<int>(mesh_index));
       continue;
     }
 
@@ -289,18 +299,19 @@ Scene::Ptr Importer::ImportFile(const QString& fname,
     node_mapping[ai_node] = group;
   }
 
-  dbg("loaded %d nodes\n", (int)groups.size());
+  dbg("loaded %d nodes\n", static_cast<int>(groups.size()));
 
 #if dbg
   for (size_t i = 0; i < groups.size(); ++i) {
-    dbg("node %d\n", (int)i);
+    dbg("node %d\n", static_cast<int>(i));
     GroupNode* group = groups[i];
     const QVector3D pos = group->Translation();
     const QQuaternion rot = group->Rotation();
     const QVector3D scale = group->Scale();
-    dbg("   children: %d\n", (int)group->Children().size());
+    dbg("   children: %d\n", static_cast<int>(group->Children().size()));
     dbg("   pos   %.3f, %.3f, %.3f\n", pos.x(), pos.y(), pos.z());
-    dbg("   quat  %.3f, %.3f, %.3f, %.3f\n", rot.x(), rot.y(), rot.z(), rot.w());
+    dbg("   quat  %.3f, %.3f, %.3f, %.3f\n",
+        rot.x(), rot.y(), rot.z(), rot.w());
     dbg("   scale %.3f, %.3f, %.3f\n", scale.x(), scale.y(), scale.z());
     AxisAlignedBox box = group->BoundingBox();
     dbg("    bounding box: %s\n", box.ToString().c_str());
@@ -308,14 +319,14 @@ Scene::Ptr Importer::ImportFile(const QString& fname,
 
   GroupNode* group = model->Root();
   AxisAlignedBox box = group->BoundingBox();
-  dbg("model: %d children\n", (int)group->Children().size());
+  dbg("model: %d children\n", static_cast<int>(group->Children().size()));
   dbg("    bounding box: %s\n", box.ToString().c_str());
 #endif
 
   return model;
 }
 
-}
+}  // namespace
 
 Scene::Ptr ImportAssimpFile(ResourceManager::Ptr resources,
     const QString& fname, const QString& scene_name) {

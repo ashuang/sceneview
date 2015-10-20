@@ -1,6 +1,8 @@
-#include <sceneview/renderer.hpp>
-#include <sceneview/group_node.hpp>
-#include <sceneview/viewport.hpp>
+// Copyright [2015] Albert Huang
+
+#include "sceneview/renderer.hpp"
+#include "sceneview/group_node.hpp"
+#include "sceneview/viewport.hpp"
 
 #include <string>
 

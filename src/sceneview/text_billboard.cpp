@@ -1,10 +1,13 @@
-#include <sceneview/text_billboard.hpp>
+// Copyright [2015] Albert Huang
+
+#include "sceneview/text_billboard.hpp"
 
 #include <QColor>
+#include <algorithm>
 
-#include <sceneview/group_node.hpp>
-#include <sceneview/mesh_node.hpp>
-#include <sceneview/stock_resources.hpp>
+#include "sceneview/group_node.hpp"
+#include "sceneview/mesh_node.hpp"
+#include "sceneview/stock_resources.hpp"
 
 namespace sceneview {
 
@@ -28,8 +31,7 @@ TextBillboard::TextBillboard(const ResourceManager::Ptr& resources,
   margin_bottom_(0.2),
   margin_right_(0.2),
   qfont_("Helvetica"),
-  text_()
-{
+  text_() {
   // Implementation details
   // The text display is rendered as three layered geometries:
   // 1. Background layer (a single rectangle)

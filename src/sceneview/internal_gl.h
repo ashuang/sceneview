@@ -1,3 +1,5 @@
+// Copyright [2015] Albert Huang
+
 #ifndef INTERNAL_GL_H__
 #define INTERNAL_GL_H__
 

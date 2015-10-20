@@ -1,3 +1,5 @@
+// Copyright [2015] Albert Huang
+
 #include <gtest/gtest.h>
 
 #include "sceneview/axis_aligned_box.hpp"

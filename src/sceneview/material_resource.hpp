@@ -1,7 +1,12 @@
+// Copyright [2015] Albert Huang
+
 #ifndef SCENEVIEW_MATERIAL_RESOURCE_HPP__
 #define SCENEVIEW_MATERIAL_RESOURCE_HPP__
 
+#include <map>
 #include <memory>
+#include <utility>
+#include <vector>
 
 #include <sceneview/shader_resource.hpp>
 #include <sceneview/geometry_resource.hpp>
@@ -19,8 +24,6 @@ namespace sceneview {
  * - a set of parameters to pass to the shader.
  * - a set of standard parameters that affect OpenGL behavior outside of the
  *   shader.
- *
- *
  */
 class MaterialResource {
   public:

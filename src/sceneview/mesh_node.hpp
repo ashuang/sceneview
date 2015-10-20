@@ -1,3 +1,5 @@
+// Copyright [2015] Albert Huang
+
 #ifndef SCENEVIEW_MESH_NODE_HPP__
 #define SCENEVIEW_MESH_NODE_HPP__
 
@@ -15,14 +17,13 @@ namespace sceneview {
  * Renderable mesh with one or more geometry/material pairs.
  */
 class MeshNode : public SceneNode {
- public:
- public:
+  public:
     virtual ~MeshNode() {}
 
     SceneNodeType NodeType() const override { return SceneNodeType::kMeshNode; }
 
     void Add(const GeometryResource::Ptr& geometry,
-        const MaterialResource::Ptr material);
+        const MaterialResource::Ptr& material);
 
     void Add(GeometryMaterialPair component);
 
@@ -41,7 +42,7 @@ class MeshNode : public SceneNode {
      * bounding_box(L * M * vertices_of(GeometryBoundingBox()));
      * @endcode
      */
-    virtual AxisAlignedBox BoundingBox(
+    AxisAlignedBox BoundingBox(
         const QMatrix4x4& lhs_transform = QMatrix4x4()) override;
 
     /**
@@ -49,10 +50,10 @@ class MeshNode : public SceneNode {
      */
     AxisAlignedBox GeometryBoundingBox();
 
- private:
+  private:
     friend class Scene;
 
-    MeshNode(const QString& name);
+    explicit MeshNode(const QString& name);
 
     std::vector<GeometryMaterialPair> components_;
 };

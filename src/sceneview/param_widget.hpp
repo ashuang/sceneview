@@ -1,3 +1,5 @@
+// Copyright [2015] Albert Huang
+
 #ifndef SCENEVIEW_PARAM_WIDGET_HPP__
 #define SCENEVIEW_PARAM_WIDGET_HPP__
 
@@ -29,7 +31,7 @@ class ParamWidget : public QWidget {
     typedef std::pair<QString, int> EnumItem;
     typedef std::vector<EnumItem> EnumVector;
 
-    ParamWidget(QWidget* parent = nullptr);
+    explicit ParamWidget(QWidget* parent = nullptr);
 
     struct BoolItem {
       QString name;

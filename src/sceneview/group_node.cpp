@@ -1,12 +1,15 @@
-#include <sceneview/group_node.hpp>
+// Copyright [2015] Albert Huang
+
+#include "sceneview/group_node.hpp"
 
 #include <cassert>
 #include <deque>
+#include <vector>
 
-#include <sceneview/camera_node.hpp>
-#include <sceneview/light_node.hpp>
-#include <sceneview/mesh_node.hpp>
-#include <sceneview/scene.hpp>
+#include "sceneview/camera_node.hpp"
+#include "sceneview/light_node.hpp"
+#include "sceneview/mesh_node.hpp"
+#include "sceneview/scene.hpp"
 
 namespace sceneview {
 
@@ -16,7 +19,7 @@ GroupNode::GroupNode(const QString& name) :
 
 SceneNode* GroupNode::AddChild(SceneNode* child) {
   children_.push_back(child);
-  assert (!child->ParentNode());
+  assert(!child->ParentNode());
   child->SetParentNode(this);
   return child;
 }

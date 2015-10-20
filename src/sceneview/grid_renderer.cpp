@@ -1,14 +1,15 @@
-#include <sceneview/grid_renderer.hpp>
+// Copyright [2015] Albert Huang
 
-#include <sceneview/camera_node.hpp>
-#include <sceneview/mesh_node.hpp>
-#include <sceneview/stock_resources.hpp>
-#include <sceneview/viewport.hpp>
+#include "sceneview/grid_renderer.hpp"
+
+#include "sceneview/camera_node.hpp"
+#include "sceneview/mesh_node.hpp"
+#include "sceneview/stock_resources.hpp"
+#include "sceneview/viewport.hpp"
 
 namespace sceneview {
 
-static double RoundTo125(double input)
-{
+static double RoundTo125(double input) {
   double result = 0.001;
   while (result < input) {
     if (result < input) {

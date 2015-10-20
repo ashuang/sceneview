@@ -1,4 +1,6 @@
-#include <sceneview/input_handler.hpp>
+// Copyright [2015] Albert Huang
+
+#include "sceneview/input_handler.hpp"
 
 namespace sceneview {
 

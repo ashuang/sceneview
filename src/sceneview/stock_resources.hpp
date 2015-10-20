@@ -1,3 +1,5 @@
+// Copyright [2015] Albert Huang
+
 #ifndef SCENEVIEW_STOCK_RESOURCES_HPP_
 #define SCENEVIEW_STOCK_RESOURCES_HPP_
 
@@ -28,7 +30,7 @@ class StockResources {
     };
 
   public:
-    StockResources(const ResourceManager::Ptr& resources);
+    explicit StockResources(const ResourceManager::Ptr& resources);
 
     GeometryResource::Ptr Cone();
 

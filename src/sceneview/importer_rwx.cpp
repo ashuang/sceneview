@@ -1,20 +1,27 @@
+// Copyright [2015] Albert Huang
+
 #include "importer_rwx.hpp"
 
 #include <cstdlib>
 #include <istream>
+#include <map>
 #include <sstream>
 #include <string>
+#include <vector>
 
 #include <QFile>
 #include <QVector3D>
 #include <QVector4D>
 
-#include <sceneview/group_node.hpp>
-#include <sceneview/mesh_node.hpp>
-#include <sceneview/stock_resources.hpp>
+#include "sceneview/group_node.hpp"
+#include "sceneview/mesh_node.hpp"
+#include "sceneview/stock_resources.hpp"
 
-//#define dbg(...) printf(__VA_ARGS__)
+#if 0
+#define dbg(...) printf(__VA_ARGS__)
+#else
 #define dbg(...)
+#endif
 
 namespace sceneview {
 
@@ -159,13 +166,14 @@ class Parser {
 #if 0
       const std::vector<SceneNode*>& children = scene_->Root()->Children();
       for (size_t i = 0; i < children.size(); ++i) {
-        dbg("node %d\n", (int)i);
+        dbg("node %d\n", static_cast<int>(i));
         MeshNode* mesh = dynamic_cast<MeshNode*>(children[i]);
         const QVector3D pos = mesh->Translation();
         const QQuaternion rot = mesh->Rotation();
         const QVector3D scale = mesh->Scale();
         dbg("   pos   %.3f, %.3f, %.3f\n", pos.x(), pos.y(), pos.z());
-        dbg("   quat  %.3f, %.3f, %.3f, %.3f\n", rot.x(), rot.y(), rot.z(), rot.scalar());
+        dbg("   quat  %.3f, %.3f, %.3f, %.3f\n",
+            rot.x(), rot.y(), rot.z(), rot.scalar());
         dbg("   scale %.3f, %.3f, %.3f\n", scale.x(), scale.y(), scale.z());
         AxisAlignedBox box = mesh->BoundingBox();
         dbg("    bounding box: %s\n", box.ToString().toStdString().c_str());
@@ -173,7 +181,7 @@ class Parser {
 
       GroupNode* group = scene_->Root();
       AxisAlignedBox box = group->BoundingBox();
-      dbg("model: %d children\n", (int)group->Children().size());
+      dbg("model: %d children\n", static_cast<int>(group->Children().size()));
       dbg("    bounding box: %s\n", box.ToString().toStdString().c_str());
 #endif
 
@@ -366,7 +374,7 @@ class Parser {
     Token next_tok_;
 };
 
-}
+}  // namespace
 
 Scene::Ptr ImportRwxFile(ResourceManager::Ptr resources,
         const QString& fname, const QString& resource_name) {

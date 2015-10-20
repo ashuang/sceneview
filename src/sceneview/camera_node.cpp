@@ -1,4 +1,6 @@
-#include <sceneview/camera_node.hpp>
+// Copyright [2015] Albert Huang
+
+#include "sceneview/camera_node.hpp"
 
 #include <cmath>
 #include <iostream>

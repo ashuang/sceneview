@@ -1,4 +1,6 @@
-#include <sceneview/scene_node.hpp>
+// Copyright [2015] Albert Huang
+
+#include "sceneview/scene_node.hpp"
 
 namespace sceneview {
 

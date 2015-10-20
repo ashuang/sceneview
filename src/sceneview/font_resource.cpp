@@ -1,4 +1,6 @@
-#include <sceneview/font_resource.hpp>
+// Copyright [2015] Albert Huang
+
+#include "sceneview/font_resource.hpp"
 
 #include <algorithm>
 

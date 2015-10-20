@@ -1,15 +1,19 @@
-#include "internal_gl.h"
-#include <sceneview/viewport.hpp>
+// Copyright [2015] Albert Huang
+
+#include "sceneview/internal_gl.h"
+#include "sceneview/viewport.hpp"
 
 #include <iostream>
+#include <vector>
+
 #include <QOpenGLFunctions>
 #include <QTimer>
 
-#include <sceneview/camera_node.hpp>
-#include <sceneview/draw_scene.hpp>
-#include <sceneview/input_handler.hpp>
-#include <sceneview/light_node.hpp>
-#include <sceneview/renderer.hpp>
+#include "sceneview/camera_node.hpp"
+#include "sceneview/draw_scene.hpp"
+#include "sceneview/input_handler.hpp"
+#include "sceneview/light_node.hpp"
+#include "sceneview/renderer.hpp"
 
 namespace sceneview {
 
@@ -26,7 +30,6 @@ Viewport::Viewport(const ResourceManager::Ptr& resources,
   redraw_scheduled_(false),
   m_context_(nullptr),
   background_color_(0, 0, 0, 1) {
-
   // Enable multisampling so that things draw a little smoother.
   QSurfaceFormat format = QSurfaceFormat::defaultFormat();
   format.setSamples(2);
@@ -127,7 +130,7 @@ void Viewport::resizeGL(int width, int height) {
 }
 
 static void CheckGLErrors(const QString& name) {
-  GLenum err_code = glGetError ();
+  GLenum err_code = glGetError();
   const char *err_str;
   while (err_code != GL_NO_ERROR) {
     err_str = sceneview::glErrorString(err_code);

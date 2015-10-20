@@ -1,4 +1,9 @@
-#include <sceneview/shader_resource.hpp>
+// Copyright [2015] Albert Huang
+
+#include "sceneview/shader_resource.hpp"
+
+#include <string>
+#include <vector>
 
 #include <QFile>
 
@@ -19,20 +24,22 @@ void ShaderResource::LoadFromFiles(const QString& prefix) {
   const std::string cprefix = prefix.toStdString();
 
   if (QFile(vshader_fname).exists()) {
-    if (!program_->addShaderFromSourceFile(QOpenGLShader::Vertex, vshader_fname)) {
+    if (!program_->addShaderFromSourceFile(
+          QOpenGLShader::Vertex, vshader_fname)) {
       throw std::runtime_error("Failed to load vertex shader " + cprefix +
           "\n" + program_->log().toStdString());
     }
   }
 
   if (QFile(fshader_fname).exists()) {
-    if (!program_->addShaderFromSourceFile(QOpenGLShader::Fragment, fshader_fname)) {
+    if (!program_->addShaderFromSourceFile(
+          QOpenGLShader::Fragment, fshader_fname)) {
       throw std::runtime_error("Failed to load vertex shader " + cprefix +
           "\n" + program_->log().toStdString());
     }
   }
 
-  // TODO add other shader types
+  // TODO(albert) add other shader types
   if (!program_->link()) {
     throw std::runtime_error("Failed to link shader " + cprefix + "\n" +
         program_->log().toStdString());
@@ -55,7 +62,8 @@ void ShaderResource::LoadLocations() {
   locations_.b3_model_mat = program_->uniformLocation("b3_model_mat");
   locations_.b3_mvp_mat = program_->uniformLocation("b3_mvp_mat");
   locations_.b3_mv_mat = program_->uniformLocation("b3_mv_mat");
-  locations_.b3_model_normal_mat = program_->uniformLocation("b3_model_normal_mat");
+  locations_.b3_model_normal_mat =
+    program_->uniformLocation("b3_model_normal_mat");
 
   locations_.b3_lights.resize(kShaderMaxLights);
 

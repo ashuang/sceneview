@@ -1,7 +1,14 @@
-#include <sceneview/geometry_resource.hpp>
+// Copyright [2015] Albert Huang
 
-//#define dbg(fmt, ...) printf(fmt, __VA_ARGS__)
+#include "sceneview/geometry_resource.hpp"
+
+#include <vector>
+
+#if 0
+#define dbg(fmt, ...) printf(fmt, __VA_ARGS__)
+#else
 #define dbg(...)
+#endif
 
 namespace sceneview {
 
@@ -83,7 +90,8 @@ void GeometryResource::Load(const GeometryData& data) {
   const int specular_size = num_specular * 4 * sizeof(GLfloat);
   const int shininess_size = num_shininess * 1 * sizeof(GLfloat);
   const int tex_coords_0_size = num_tex_coords_0 * 2 * sizeof(GLfloat);
-  const int total_size = vertices_size + normals_size + diffuse_size + tex_coords_0_size;
+  const int total_size =
+    vertices_size + normals_size + diffuse_size + tex_coords_0_size;
 
   vbo_.allocate(total_size);
 
@@ -145,7 +153,7 @@ void GeometryResource::Load(const GeometryData& data) {
       index_buffer_.allocate(indices_byte.data(),
           num_indices_ * sizeof(uint8_t));
       index_type_ = GL_UNSIGNED_BYTE;
-    } if (num_vertices < 65536) {
+    } else if (num_vertices < 65536) {
       // Optimize and convert the indices into a vector of unsigned shorts.
       std::vector<uint16_t> indices_short(data.indices.begin(),
           data.indices.end());
@@ -153,7 +161,8 @@ void GeometryResource::Load(const GeometryData& data) {
           num_indices_ * sizeof(uint16_t));
       index_type_ = GL_UNSIGNED_SHORT;
     } else {
-      index_buffer_.allocate(data.indices.data(), num_indices_ * sizeof(uint32_t));
+      index_buffer_.allocate(data.indices.data(),
+          num_indices_ * sizeof(uint32_t));
       index_type_ = GL_UNSIGNED_INT;
     }
   }

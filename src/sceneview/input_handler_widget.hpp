@@ -1,5 +1,9 @@
+// Copyright [2015] Albert Huang
+
 #ifndef SCENEVIEW_INPUT_HANDLER_WIDGET
 #define SCENEVIEW_INPUT_HANDLER_WIDGET
+
+#include <vector>
 
 #include <QDockWidget>
 
@@ -16,7 +20,7 @@ class InputHandlerWidget : public QDockWidget {
   Q_OBJECT
 
   public:
-    InputHandlerWidget(Viewport* viewport, QWidget* parent = nullptr);
+    explicit InputHandlerWidget(Viewport* viewport, QWidget* parent = nullptr);
 
   private:
     struct HandlerData {

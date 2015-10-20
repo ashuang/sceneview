@@ -1,10 +1,16 @@
+// Copyright [2015] Albert Huang
+
 #ifndef SCENEVIEW_SCENE_HPP__
 #define SCENEVIEW_SCENE_HPP__
 
 #include <map>
 #include <memory>
+#include <vector>
 
 #include <QString>
+
+#include <sceneview/geometry_resource.hpp>
+#include <sceneview/material_resource.hpp>
 
 namespace sceneview {
 
@@ -67,6 +73,11 @@ class Scene {
     MeshNode* MakeMesh(GroupNode* parent,
         const QString& name = kAutoName);
 
+    MeshNode* MakeMesh(GroupNode* parent,
+        const GeometryResource::Ptr& geometry,
+        const MaterialResource::Ptr& material,
+        const QString& name = kAutoName);
+
     /**
      * Destroys a node and all of its children.
      */
@@ -91,7 +102,7 @@ class Scene {
   private:
     friend class ResourceManager;
 
-    Scene(const QString& name);
+    explicit Scene(const QString& name);
 
     QString AutogenerateName();
 

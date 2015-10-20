@@ -1,4 +1,8 @@
-#include <sceneview/material_resource.hpp>
+// Copyright [2015] Albert Huang
+
+#include "sceneview/material_resource.hpp"
+
+#include <vector>
 
 namespace sceneview {
 
@@ -49,7 +53,8 @@ void MaterialResource::SetParam(const QString& name,
 
 void MaterialResource::SetParam(const QString& name,
     float val1, float val2, float val3, float val4) {
-  SUMapSet(&shader_parameters_, name, std::vector<float>({val1, val2, val3, val4}));
+  SUMapSet(&shader_parameters_, name, std::vector<float>(
+        {val1, val2, val3, val4}));
 }
 
 void MaterialResource::SetParam(const QString& name,

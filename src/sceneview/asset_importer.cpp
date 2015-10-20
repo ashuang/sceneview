@@ -1,7 +1,9 @@
-#include <sceneview/asset_importer.hpp>
+// Copyright [2015] Albert Huang
 
-#include "importer_assimp.hpp"
-#include "importer_rwx.hpp"
+#include "sceneview/asset_importer.hpp"
+
+#include "sceneview/importer_assimp.hpp"
+#include "sceneview/importer_rwx.hpp"
 
 namespace sceneview {
 

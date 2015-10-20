@@ -1,28 +1,27 @@
-#include "example_renderer.hpp"
+#include "stock_shapes_renderer.hpp"
 
 #include <cmath>
 
 #include <sceneview/stock_resources.hpp>
 
 namespace sv = sceneview;
-using sv::ParamWidget;
-using sv::MeshNode;
-using sv::Renderer;
-using sv::Scene;
 using sv::GroupNode;
+using sv::MeshNode;
+using sv::ParamWidget;
+using sv::Renderer;
 using sv::ResourceManager;
+using sv::Scene;
 using sv::StockResources;
-using sv::MaterialResource;
 
 namespace vis_examples {
 
-ExampleRenderer::ExampleRenderer(const QString& name, QObject* parent) :
+StockShapesRenderer::StockShapesRenderer(const QString& name, QObject* parent) :
   Renderer(name, parent),
   start_time_(QTime::currentTime()),
   angle_(0) {
 }
 
-void ExampleRenderer::InitializeGL() {
+void StockShapesRenderer::InitializeGL() {
   Scene::Ptr scene = GetScene();
   ResourceManager::Ptr resources = GetResources();
   GroupNode* base_node = GetBaseNode();
@@ -35,24 +34,16 @@ void ExampleRenderer::InitializeGL() {
   material_->SetParam("shininess", 10.0f);
 
   // Create a bunch of shapes
-  MeshNode* cone = scene->MakeMesh(base_node);
-  MeshNode* cube = scene->MakeMesh(base_node);
-  MeshNode* cylinder = scene->MakeMesh(base_node);
-  MeshNode* sphere = scene->MakeMesh(base_node);
+  shapes_.push_back(scene->MakeMesh(base_node, stock.Cone(), material_));
+  shapes_.push_back(scene->MakeMesh(base_node, stock.Cube(), material_));
+  shapes_.push_back(scene->MakeMesh(base_node, stock.Cylinder(), material_));
+  shapes_.push_back(scene->MakeMesh(base_node, stock.Sphere(), material_));
+
   MeshNode* axes = scene->MakeMesh(base_node);
-
-  cone->Add(stock.Cone(), material_);
-  cube->Add(stock.Cube(), material_);
-  cylinder->Add(stock.Cylinder(), material_);
-  sphere->Add(stock.Sphere(), material_);
   axes->Add(stock.UnitAxes());
-
-  shapes_.push_back(cone);
-  shapes_.push_back(cube);
-  shapes_.push_back(cylinder);
-  shapes_.push_back(sphere);
   shapes_.push_back(axes);
 
+  // Move the shapes so they're not all on top of each other.
   const double spacing = 2.0;
   const double x_start = - spacing * shapes_.size() / 2;
   for (size_t i = 0; i < shapes_.size(); ++i) {
@@ -60,7 +51,7 @@ void ExampleRenderer::InitializeGL() {
   }
 }
 
-void ExampleRenderer::RenderBegin() {
+void StockShapesRenderer::RenderBegin() {
   const double elapsed = start_time_.restart() / 1000.;
   const double speed = widget_->GetDouble("speed");
   angle_ += elapsed * speed;
@@ -74,7 +65,7 @@ void ExampleRenderer::RenderBegin() {
   material_->SetParam("diffuse", sin(angle_), 0.5, 0.5, 1.0);
 }
 
-QWidget* ExampleRenderer::GetWidget() {
+QWidget* StockShapesRenderer::GetWidget() {
   if (widget_) {
     return widget_.get();
   }
@@ -90,20 +81,20 @@ QWidget* ExampleRenderer::GetWidget() {
        2, ParamWidget::kComboBox);
   pwidget->AddInt("int-slider", 0, 100, 1, 50, ParamWidget::kSlider);
   pwidget->AddInt("int-spinbox", 0, 100, 1, 50, ParamWidget::kSpinBox);
-  connect(pwidget, &ParamWidget::ParamChanged, this, &ExampleRenderer::ParamChanged);
+  connect(pwidget, &ParamWidget::ParamChanged, this, &StockShapesRenderer::ParamChanged);
   widget_.reset(pwidget);
   return pwidget;
 }
 
-QVariant ExampleRenderer::SaveState() {
+QVariant StockShapesRenderer::SaveState() {
   return widget_->SaveState();
 }
 
-void ExampleRenderer::LoadState(const QVariant& val) {
+void StockShapesRenderer::LoadState(const QVariant& val) {
   widget_->LoadState(val);
 }
 
-void ExampleRenderer::ParamChanged(const QString& name) {
+void StockShapesRenderer::ParamChanged(const QString& name) {
   if (name == "enum") {
     printf("enum: %d\n", widget_->GetEnum(name));
   } else if (name == "double-spinbox") {

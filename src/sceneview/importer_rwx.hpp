@@ -1,3 +1,5 @@
+// Copyright [2015] Albert Huang
+
 #ifndef SCENEVIEW_IMPORTER_RWX_HPP__
 #define SCENEVIEW_IMPORTER_RWX_HPP__
 

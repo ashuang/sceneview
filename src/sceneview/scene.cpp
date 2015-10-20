@@ -1,14 +1,17 @@
-#include <sceneview/scene.hpp>
+// Copyright [2015] Albert Huang
+
+#include "sceneview/scene.hpp"
 
 #include <cassert>
 #include <deque>
+#include <vector>
 
-#include <sceneview/camera_node.hpp>
-#include <sceneview/group_node.hpp>
-#include <sceneview/light_node.hpp>
-#include <sceneview/mesh_node.hpp>
-#include <sceneview/scene_node.hpp>
-#include <sceneview/stock_resources.hpp>
+#include "sceneview/camera_node.hpp"
+#include "sceneview/group_node.hpp"
+#include "sceneview/light_node.hpp"
+#include "sceneview/mesh_node.hpp"
+#include "sceneview/scene_node.hpp"
+#include "sceneview/stock_resources.hpp"
 
 namespace sceneview {
 
@@ -96,6 +99,15 @@ MeshNode* Scene::MakeMesh(GroupNode* parent, const QString& name) {
   return node;
 }
 
+MeshNode* Scene::MakeMesh(GroupNode* parent,
+        const GeometryResource::Ptr& geometry,
+        const MaterialResource::Ptr& material,
+        const QString& name) {
+  MeshNode* node = MakeMesh(parent, name);
+  node->Add(geometry, material);
+  return node;
+}
+
 void Scene::DestroyNode(SceneNode* node) {
   assert(node != root_node_);
   nodes_.erase(node->Name());
@@ -147,8 +159,8 @@ void Scene::PrintStats() {
     }
   }
 
-  printf("nodes: %d\n", (int)num_nodes);
-  printf("nodes in map: %d\n", (int)nodes_.size());
+  printf("nodes: %d\n", static_cast<int>(num_nodes));
+  printf("nodes in map: %d\n", static_cast<int>(nodes_.size()));
 }
 
 QString Scene::AutogenerateName() {

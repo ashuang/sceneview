@@ -1,7 +1,12 @@
-#include <sceneview/stock_resources.hpp>
+// Copyright [2015] Albert Huang
+
+#include "sceneview/stock_resources.hpp"
 
 #include <cassert>
 #include <cmath>
+#include <map>
+#include <utility>
+#include <vector>
 
 #include <QVector4D>
 
@@ -99,39 +104,39 @@ GeometryData StockResources::CubeData() {
   GeometryData result;
   const double t = 0.5;
 
-  // TODO use GL_TRIANGLE_STRIP instead of GL_TRIANGLES
+  // TODO(albert) use GL_TRIANGLE_STRIP instead of GL_TRIANGLES
   result.gl_mode = GL_TRIANGLES;
 
   result.vertices = {
-    QVector3D(t,  t,  t),
-    QVector3D(t, -t,  t),
+    QVector3D(t, t, t),
+    QVector3D(t, -t, t),
     QVector3D(t, -t, -t),
-    QVector3D(t,  t, -t),
+    QVector3D(t, t, -t),
 
-    QVector3D( t, t,  t),
-    QVector3D( t, t, -t),
+    QVector3D(t, t, t),
+    QVector3D(t, t, -t),
     QVector3D(-t, t, -t),
-    QVector3D(-t, t,  t),
+    QVector3D(-t, t, t),
 
-    QVector3D( t,  t, t),
-    QVector3D(-t,  t, t),
+    QVector3D(t, t, t),
+    QVector3D(-t, t, t),
     QVector3D(-t, -t, t),
-    QVector3D( t, -t, t),
+    QVector3D(t, -t, t),
 
-    QVector3D(-t,  t,  t),
-    QVector3D(-t,  t, -t),
+    QVector3D(-t, t, t),
+    QVector3D(-t, t, -t),
     QVector3D(-t, -t, -t),
-    QVector3D(-t, -t,  t),
+    QVector3D(-t, -t, t),
 
-    QVector3D( t, -t,  t),
-    QVector3D(-t, -t,  t),
+    QVector3D(t, -t, t),
+    QVector3D(-t, -t, t),
     QVector3D(-t, -t, -t),
-    QVector3D( t, -t, -t),
+    QVector3D(t, -t, -t),
 
-    QVector3D( t,  t, -t),
-    QVector3D( t, -t, -t),
+    QVector3D(t, t, -t),
+    QVector3D(t, -t, -t),
     QVector3D(-t, -t, -t),
-    QVector3D(-t,  t, -t)
+    QVector3D(-t, t, -t)
   };
 
   for (int i = 0; i < 4; ++i) { result.normals.emplace_back(1, 0, 0); }
@@ -151,7 +156,7 @@ GeometryData StockResources::CubeData() {
   };
 
   return result;
-};
+}
 
 /**
  * Subdivides the triangles of a sphere.
@@ -167,7 +172,7 @@ GeometryData StockResources::CubeData() {
 struct SphereSubdivider {
   typedef std::pair<int, int> VertexPair;
 
-  SphereSubdivider(const GeometryData& input) : input(input) {
+  explicit SphereSubdivider(const GeometryData& input) : input(input) {
     output.gl_mode = GL_TRIANGLES;
     output.vertices = input.vertices;
 
