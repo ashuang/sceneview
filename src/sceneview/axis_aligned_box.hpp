@@ -19,7 +19,7 @@ class AxisAlignedBox {
      * Constructs an invalid box.
      *
      * The box can be made valid by including at least one point (e.g., by
-     * calling IncludePoint with a finite value).
+     * calling IncludePoint() with a finite value).
      */
     AxisAlignedBox();
 
@@ -39,7 +39,7 @@ class AxisAlignedBox {
     void IncludePoint(const QVector3D& point);
 
     /**
-     * Modifies the box to fully cnotain the specified other box.
+     * Modifies the box to fully contain the specified other box.
      */
     void IncludeBox(const AxisAlignedBox& other);
 

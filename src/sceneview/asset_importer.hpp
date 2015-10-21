@@ -29,9 +29,14 @@ class AssetImporter {
      * - Renderware (.RWX) files.
      *
      * Textures are not currently supported.
+     *
+     * On a successful import, a new Scene graph resource is created and added
+     * to the resource manager. To incorporate the imported asset into an
+     * existing scene, call Scene::MakeGroupFromScene() on the existing scene.
      */
     static Scene::Ptr ImportFile(ResourceManager::Ptr resources,
-        const QString& fname);
+        const QString& fname,
+        const QString& resource_name = ResourceManager::kAutoName);
 };
 
 

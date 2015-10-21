@@ -8,12 +8,12 @@
 namespace sv {
 
 Scene::Ptr AssetImporter::ImportFile(ResourceManager::Ptr resources,
-    const QString& fname) {
-  Scene::Ptr assimp_scene = ImportAssimpFile(resources, fname);
+    const QString& fname, const QString& resource_name) {
+  Scene::Ptr assimp_scene = ImportAssimpFile(resources, fname, resource_name);
   if (assimp_scene) {
     return assimp_scene;
   }
-  Scene::Ptr rwx_scene = ImportRwxFile(resources, fname);
+  Scene::Ptr rwx_scene = ImportRwxFile(resources, fname, resource_name);
   return rwx_scene;
 }
 

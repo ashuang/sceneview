@@ -39,6 +39,12 @@ class CameraNode : public SceneNode {
      */
     void CopyFrom(const CameraNode& other);
 
+    /**
+     * Sets the size of the viewport.
+     *
+     * You generally don't need to call this method. When a camera is attached
+     * to the viewport, the Viewport class automatically calls this method.
+     */
     void SetViewportSize(int width, int height);
 
     /**
@@ -52,8 +58,14 @@ class CameraNode : public SceneNode {
     void SetProjectionParams(ProjectionType type,
         double vfov_deg, double z_near, double z_far);
 
+    /**
+     * Retrieve the current projection type.
+     */
     ProjectionType GetProjectionType() const { return proj_type_; }
 
+    /**
+     * Rotate and translate the camera to look at the specified point.
+     */
     void LookAt(const QVector3D& eye, const QVector3D& look_at,
         const QVector3D& up);
 
@@ -62,22 +74,28 @@ class CameraNode : public SceneNode {
      */
     double GetVFovDeg() const { return vfov_deg_; }
 
+    /**
+     * Retrieve the near clipping plane.
+     */
     double GetZNear() const { return z_near_; }
 
+    /**
+     * Retrieve the far clipping plane.
+     */
     double GetZFar() const { return z_far_; }
 
     /**
-     * @return the direction the camera is facing.
+     * Retrieve the direction the camera is facing.
      */
     QVector3D GetLookDir() const;
 
     /**
-     * @return the look at point.
+     * Retrieve the look at point.
      */
     QVector3D GetLookAt() const;
 
     /**
-     * @return the camera's up vector.
+     * Retrieve the camera's up vector.
      */
     QVector3D GetUpDir() const;
 
@@ -87,8 +105,17 @@ class CameraNode : public SceneNode {
      */
     QVector3D Unproject(double x, double y);
 
+    /**
+     * Retrieve the camera projection matrix.
+     */
     QMatrix4x4 GetProjectionMatrix();
 
+    /**
+     * Retrieve the camera view matrix.
+     *
+     * The view matrix transforms from world Cartesian coordinates to
+     * camera-centric Cartesian coordinates.
+     */
     QMatrix4x4 GetViewMatrix();
 
     /**
