@@ -52,7 +52,6 @@ QSize ExpanderWidget::sizeHint() const {
 void ExpanderWidget::ToggleExpanded() {
   expanded_ = !expanded_;
 
-  QSize sz = size();
   if (expanded_) {
     if (widget_) {
       layout_->addWidget(widget_);
