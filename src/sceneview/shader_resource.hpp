@@ -44,49 +44,49 @@ struct ShaderStandardVariables {
    * Transforms from camera eye space to clip space.
    * Type: mat4
    */
-  int b3_proj_mat;
+  int sv_proj_mat;
 
   /** View matrix.
    * Transforms from world space to camera eye space.
    * Type: mat4
    */
-  int b3_view_mat;
+  int sv_view_mat;
 
   /** View matrix inverse.
    * Transforms from camera eye space to world space.
    * Type: mat4
    */
-  int b3_view_mat_inv;
+  int sv_view_mat_inv;
 
   /** Model matrix.
    * Transforms from model space to world space.
    * Type: mat4
    **/
-  int b3_model_mat;
+  int sv_model_mat;
 
   /**
    * Model-view-projection matrix.
    * Composition of matrices: mvp = projection * view * model
    * Type: mat4
    */
-  int b3_mvp_mat;
+  int sv_mvp_mat;
 
   /**
    * Model-view matrix.
    * Composition of matrices: mv = view * model
    * Type: mat4
    */
-  int b3_mv_mat;
+  int sv_mv_mat;
 
   /**
    * Model normal matrix.
    * Transforms normals from model space to world space.
    * Type: mat3
    */
-  int b3_model_normal_mat;
+  int sv_model_normal_mat;
 
   // Lights
-  std::vector<ShaderLightLocation> b3_lights;
+  std::vector<ShaderLightLocation> sv_lights;
 
   // ============== Per-vertex attributes
   // Automatically populated based on the mesh geometry
@@ -94,37 +94,37 @@ struct ShaderStandardVariables {
   /**
    * Vertex position.
    */
-  int b3_vert_pos;
+  int sv_vert_pos;
 
   /**
    * Vertex normal vector.
    */
-  int b3_normal;
+  int sv_normal;
 
   /**
    * Per-vertex diffuse color.
    */
-  int b3_diffuse;
+  int sv_diffuse;
 
   /**
    * Per-vertex ambient color.
    */
-  int b3_ambient;
+  int sv_ambient;
 
   /**
    * Per-vertex specular color.
    */
-  int b3_specular;
+  int sv_specular;
 
   /**
    * Per-vertex shininess.
    */
-  int b3_shininess;
+  int sv_shininess;
 
   /**
    * Texture coordinates set 0
    */
-  int b3_tex_coords_0;
+  int sv_tex_coords_0;
 };
 
 /**

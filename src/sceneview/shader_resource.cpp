@@ -56,20 +56,20 @@ const ShaderStandardVariables& ShaderResource::StandardVariables() const {
 }
 
 void ShaderResource::LoadLocations() {
-  locations_.b3_proj_mat = program_->uniformLocation("b3_proj_mat");
-  locations_.b3_view_mat = program_->uniformLocation("b3_view_mat");
-  locations_.b3_view_mat_inv = program_->uniformLocation("b3_view_mat_inv");
-  locations_.b3_model_mat = program_->uniformLocation("b3_model_mat");
-  locations_.b3_mvp_mat = program_->uniformLocation("b3_mvp_mat");
-  locations_.b3_mv_mat = program_->uniformLocation("b3_mv_mat");
-  locations_.b3_model_normal_mat =
-    program_->uniformLocation("b3_model_normal_mat");
+  locations_.sv_proj_mat = program_->uniformLocation("sv_proj_mat");
+  locations_.sv_view_mat = program_->uniformLocation("sv_view_mat");
+  locations_.sv_view_mat_inv = program_->uniformLocation("sv_view_mat_inv");
+  locations_.sv_model_mat = program_->uniformLocation("sv_model_mat");
+  locations_.sv_mvp_mat = program_->uniformLocation("sv_mvp_mat");
+  locations_.sv_mv_mat = program_->uniformLocation("sv_mv_mat");
+  locations_.sv_model_normal_mat =
+    program_->uniformLocation("sv_model_normal_mat");
 
-  locations_.b3_lights.resize(kShaderMaxLights);
+  locations_.sv_lights.resize(kShaderMaxLights);
 
   for (int light_ind = 0; light_ind < kShaderMaxLights; ++light_ind) {
-    const QString prefix = "b3_lights[" + QString::number(light_ind) + "].";
-    ShaderLightLocation& light = locations_.b3_lights[light_ind];
+    const QString prefix = "sv_lights[" + QString::number(light_ind) + "].";
+    ShaderLightLocation& light = locations_.sv_lights[light_ind];
     light.is_directional = program_->uniformLocation(prefix + "is_directional");
     light.position = program_->uniformLocation(prefix + "position");
     light.direction = program_->uniformLocation(prefix + "direction");
@@ -79,13 +79,13 @@ void ShaderResource::LoadLocations() {
     light.cone_angle = program_->uniformLocation(prefix + "cone_angle");
   }
 
-  locations_.b3_vert_pos = program_->attributeLocation("b3_vert_pos");
-  locations_.b3_normal = program_->attributeLocation("b3_normal");
-  locations_.b3_diffuse = program_->attributeLocation("b3_diffuse");
-  locations_.b3_ambient = program_->attributeLocation("b3_ambient");
-  locations_.b3_specular = program_->attributeLocation("b3_specular");
-  locations_.b3_shininess = program_->attributeLocation("b3_shininess");
-  locations_.b3_tex_coords_0 = program_->attributeLocation("b3_tex_coords_0");
+  locations_.sv_vert_pos = program_->attributeLocation("sv_vert_pos");
+  locations_.sv_normal = program_->attributeLocation("sv_normal");
+  locations_.sv_diffuse = program_->attributeLocation("sv_diffuse");
+  locations_.sv_ambient = program_->attributeLocation("sv_ambient");
+  locations_.sv_specular = program_->attributeLocation("sv_specular");
+  locations_.sv_shininess = program_->attributeLocation("sv_shininess");
+  locations_.sv_tex_coords_0 = program_->attributeLocation("sv_tex_coords_0");
 }
 
 }  // namespace sv

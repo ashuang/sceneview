@@ -81,6 +81,8 @@ class ViewHandlerHorizontal : public QObject, public InputHandler {
 
     void UpdateMeshTransform();
 
+    void UpdateNearFarPlanes();
+
     double PivotDistance() const;
 
     double mouse_speed_;

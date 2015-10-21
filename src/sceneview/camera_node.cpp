@@ -129,7 +129,7 @@ void CameraNode::LookAt(const QVector3D& eye, const QVector3D& look_at,
     const QVector3D& up_denorm) {
   look_at_ = look_at;
   const QVector3D look_denorm = look_at - eye;
-  if (look_denorm.lengthSquared() < 1e-9) {
+  if (look_denorm.length() < 1e-9) {
     throw std::invalid_argument("eye and look_at are too close!");
   }
   const QVector3D look = look_denorm.normalized();

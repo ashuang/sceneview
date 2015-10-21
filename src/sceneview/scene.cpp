@@ -166,7 +166,7 @@ void Scene::PrintStats() {
 QString Scene::AutogenerateName() {
   QString name;
   do {
-    name = "b3_" + QString::number(name_counter_);
+    name = "sv_" + QString::number(name_counter_);
     name_counter_++;
   } while (nodes_.find(name) != nodes_.end());
   return name;

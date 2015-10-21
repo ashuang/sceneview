@@ -133,10 +133,19 @@ void ViewHandlerHorizontal::WheelEvent(QWheelEvent* event) {
   // When the mouse wheel scrolls, move the camera so that it's closer or
   // farther from the look at point, without actually changing the look at
   // point.
-  const QVector3D new_eye = camera_->Translation() +
-    camera_->GetLookDir() * event->delta() * PivotDistance() * .001;
+  const double distance = PivotDistance();
+  if ((event->delta() > 0 && distance < 1e-3) ||
+      (event->delta() < 0 && distance > 1e7)) {
+    viewport_->ScheduleRedraw();
+    return;
+  }
+  const double new_distance = event->delta() * PivotDistance() * .001;
+
+  const QVector3D new_eye = camera_->Translation() + camera_->GetLookDir() * new_distance;
+
   camera_->LookAt(new_eye, camera_->GetLookAt(), camera_->GetUpDir());
   UpdateMeshTransform();
+  UpdateNearFarPlanes();
   viewport_->ScheduleRedraw();
 }
 
@@ -233,6 +242,16 @@ void ViewHandlerHorizontal::UpdateMeshTransform() {
   }
 
   hide_mesh_timer_->start(500);
+}
+
+void ViewHandlerHorizontal::UpdateNearFarPlanes() {
+  CameraNode* camera = viewport_->GetCamera();
+  const double distance = PivotDistance();
+  const double z_near = distance / 100;
+  const double z_far = distance * 1000;
+  const double vfov_deg = camera->GetVFovDeg();
+  const CameraNode::ProjectionType proj_type = camera->GetProjectionType();
+  camera->SetProjectionParams(proj_type, vfov_deg, z_near, z_far);
 }
 
 void ViewHandlerHorizontal::OnProjectionSelectionChanged() {

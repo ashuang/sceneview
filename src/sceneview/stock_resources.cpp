@@ -32,27 +32,27 @@ static GeometryResource::Ptr GetOrMakeGeometry(const QString& name,
 }
 
 GeometryResource::Ptr StockResources::Cone() {
-  return GetOrMakeGeometry("geom:b3_cone", ConeData, resources_);
+  return GetOrMakeGeometry("geom:sv_cone", ConeData, resources_);
 }
 
 GeometryResource::Ptr StockResources::Cube() {
-  return GetOrMakeGeometry("geom:b3_cube", CubeData, resources_);
+  return GetOrMakeGeometry("geom:sv_cube", CubeData, resources_);
 }
 
 GeometryResource::Ptr StockResources::Cylinder() {
-  return GetOrMakeGeometry("geom:b3_cylinder", CylinderData, resources_);
+  return GetOrMakeGeometry("geom:sv_cylinder", CylinderData, resources_);
 }
 
 GeometryResource::Ptr StockResources::Sphere() {
-  return GetOrMakeGeometry("geom:b3_sphere", SphereData, resources_);
+  return GetOrMakeGeometry("geom:sv_sphere", SphereData, resources_);
 }
 
 GeometryMaterialPair StockResources::UnitAxes() {
-  GeometryResource::Ptr geom = GetOrMakeGeometry("geom:b3_unit_axes",
+  GeometryResource::Ptr geom = GetOrMakeGeometry("geom:sv_unit_axes",
       UnitAxesData, resources_);
 
   MaterialResource::Ptr material =
-    resources_->GetMaterial("mat:b3_unit_axes");
+    resources_->GetMaterial("mat:sv_unit_axes");
   if (!material) {
     material = resources_->MakeMaterial(Shader(kPerVertexColorLighting));
   }
@@ -89,7 +89,7 @@ static const StockShaderData& GetStockShaderData(
 
 ShaderResource::Ptr StockResources::Shader(StockShaderId id) {
   const StockShaderData& sdata = GetStockShaderData(id);
-  const QString shader_name = "b3_stock_shader:" + QString::number(sdata.id);
+  const QString shader_name = "sv_stock_shader:" + QString::number(sdata.id);
 
   ShaderResource::Ptr shader = resources_->GetShader(shader_name);
   if (!shader) {

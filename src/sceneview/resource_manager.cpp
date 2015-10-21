@@ -113,7 +113,7 @@ void ResourceManager::Cleanup() {
 QString ResourceManager::AutogenerateName() {
   QString name;
   do {
-    name = "b3_" + QString::number(name_counter_);
+    name = "sv_" + QString::number(name_counter_);
     name_counter_++;
   } while (NameExists(name));
   return name;

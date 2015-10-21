@@ -1,8 +1,8 @@
 // Input vertex position (model space)
-attribute vec4 b3_vert_pos;
+attribute vec4 sv_vert_pos;
 
 // Input vertex normal vector
-attribute vec3 b3_normal;
+attribute vec3 sv_normal;
 
 #define B3_MAX_LIGHTS 4
 uniform struct Light {
@@ -13,19 +13,19 @@ uniform struct Light {
   float ambient;
   float attenuation;
   float cone_angle;
-} b3_lights[B3_MAX_LIGHTS];
+} sv_lights[B3_MAX_LIGHTS];
 
 // Model-view-projection matrix
-uniform mat4 b3_mvp_mat;
+uniform mat4 sv_mvp_mat;
 
 // View matrix inverse
-uniform mat4 b3_view_mat_inv;
+uniform mat4 sv_view_mat_inv;
 
 // Model matrix
-uniform mat4 b3_model_mat;
+uniform mat4 sv_model_mat;
 
 // Normal vector transformation matrix
-uniform mat3 b3_model_normal_mat;
+uniform mat3 sv_model_normal_mat;
 
 uniform float shininess;
 uniform vec4 ambient;
@@ -83,18 +83,18 @@ vec4 LightContribution(Light light, vec3 surface_pos, vec3 eye_pos,
 
 void main(void)
 {
-  vec3 normal = normalize(b3_model_normal_mat * b3_normal);
-  vec3 surface_pos = vec3(b3_model_mat * b3_vert_pos);
-  vec3 eye_pos = b3_view_mat_inv[2].xyz;
+  vec3 normal = normalize(sv_model_normal_mat * sv_normal);
+  vec3 surface_pos = vec3(sv_model_mat * sv_vert_pos);
+  vec3 eye_pos = sv_view_mat_inv[2].xyz;
   vec3 surface_to_eye = normalize(eye_pos - surface_pos);
 
   color = vec4(0);
   for (int light_ind = 0; light_ind < B3_MAX_LIGHTS; ++light_ind) {
-    color += LightContribution(b3_lights[light_ind],
+    color += LightContribution(sv_lights[light_ind],
         surface_pos, eye_pos, surface_to_eye, normal);
   }
 
-  gl_Position = b3_mvp_mat * b3_vert_pos;
+  gl_Position = sv_mvp_mat * sv_vert_pos;
 }
 
 // vim: ft=glsl

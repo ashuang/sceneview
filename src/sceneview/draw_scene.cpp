@@ -117,27 +117,27 @@ void DrawScene::DrawMeshCmoponent(const GeometryResource::Ptr& geometry,
     const QMatrix4x4 view_mat = cur_camera_->GetViewMatrix();
 
     // Set uniform variables
-    if (locs.b3_proj_mat >= 0) {
-      program->setUniformValue(locs.b3_proj_mat, proj_mat);
+    if (locs.sv_proj_mat >= 0) {
+      program->setUniformValue(locs.sv_proj_mat, proj_mat);
     }
-    if (locs.b3_view_mat >= 0) {
-      program->setUniformValue(locs.b3_view_mat, view_mat);
+    if (locs.sv_view_mat >= 0) {
+      program->setUniformValue(locs.sv_view_mat, view_mat);
     }
-    if (locs.b3_view_mat_inv >= 0) {
-      program->setUniformValue(locs.b3_view_mat_inv, view_mat.inverted());
+    if (locs.sv_view_mat_inv >= 0) {
+      program->setUniformValue(locs.sv_view_mat_inv, view_mat.inverted());
     }
-    if (locs.b3_model_mat >= 0) {
-      program->setUniformValue(locs.b3_model_mat, model_mat);
+    if (locs.sv_model_mat >= 0) {
+      program->setUniformValue(locs.sv_model_mat, model_mat);
     }
-    if (locs.b3_mvp_mat >= 0) {
-      program->setUniformValue(locs.b3_mvp_mat,
+    if (locs.sv_mvp_mat >= 0) {
+      program->setUniformValue(locs.sv_mvp_mat,
           proj_mat * view_mat * model_mat);
     }
-    if (locs.b3_mv_mat >= 0) {
-      program->setUniformValue(locs.b3_mv_mat, view_mat * model_mat);
+    if (locs.sv_mv_mat >= 0) {
+      program->setUniformValue(locs.sv_mv_mat, view_mat * model_mat);
     }
-    if (locs.b3_model_normal_mat >= 0) {
-      program->setUniformValue(locs.b3_model_normal_mat,
+    if (locs.sv_model_normal_mat >= 0) {
+      program->setUniformValue(locs.sv_model_normal_mat,
           model_mat.normalMatrix());
     }
 
@@ -150,7 +150,7 @@ void DrawScene::DrawMeshCmoponent(const GeometryResource::Ptr& geometry,
 
     for (int light_ind = 0; light_ind < num_lights; ++light_ind) {
       const LightNode* light_node = lights[light_ind];
-      const ShaderLightLocation light_loc = locs.b3_lights[light_ind];
+      const ShaderLightLocation light_loc = locs.sv_lights[light_ind];
       LightType light_type = light_node->GetLightType();
 
       if (light_loc.is_directional >= 0) {
@@ -205,17 +205,17 @@ void DrawScene::DrawMeshCmoponent(const GeometryResource::Ptr& geometry,
     }
 
     // Per-vertex attribute arrays
-    SetupAttributeArray(program, locs.b3_vert_pos,
+    SetupAttributeArray(program, locs.sv_vert_pos,
         geometry->NumVertices(), GL_FLOAT, geometry->VertexOffset(), 3);
-    SetupAttributeArray(program, locs.b3_normal,
+    SetupAttributeArray(program, locs.sv_normal,
         geometry->NumNormals(), GL_FLOAT, geometry->NormalOffset(), 3);
-    SetupAttributeArray(program, locs.b3_diffuse,
+    SetupAttributeArray(program, locs.sv_diffuse,
         geometry->NumDiffuse(), GL_FLOAT, geometry->DiffuseOffset(), 4);
-    SetupAttributeArray(program, locs.b3_specular,
+    SetupAttributeArray(program, locs.sv_specular,
         geometry->NumSpecular(), GL_FLOAT, geometry->SpecularOffset(), 4);
-    SetupAttributeArray(program, locs.b3_shininess,
+    SetupAttributeArray(program, locs.sv_shininess,
         geometry->NumShininess(), GL_FLOAT, geometry->ShininessOffset(), 1);
-    SetupAttributeArray(program, locs.b3_tex_coords_0,
+    SetupAttributeArray(program, locs.sv_tex_coords_0,
         geometry->NumTexCoords0(), GL_FLOAT, geometry->TexCoords0Offset(), 2);
   } else {
     glUseProgram(0);

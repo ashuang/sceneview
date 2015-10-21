@@ -53,7 +53,6 @@ void ExpanderWidget::ToggleExpanded() {
   expanded_ = !expanded_;
 
   QSize sz = size();
-  printf("size was: %d x %d\n", sz.width(), sz.height());
   if (expanded_) {
     if (widget_) {
       layout_->addWidget(widget_);
