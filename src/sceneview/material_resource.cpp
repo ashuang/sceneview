@@ -16,7 +16,10 @@ MaterialResource::MaterialResource(const QString& name,
   depth_test_(true),
   color_write_(true),
   point_size_(-1),
-  line_width_(-1) {
+  line_width_(-1),
+  blend_(false),
+  blend_sfactor_(GL_ONE),
+  blend_dfactor_(GL_ZERO) {
 }
 
 template<typename ValueType>

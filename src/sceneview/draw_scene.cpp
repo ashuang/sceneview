@@ -259,8 +259,15 @@ void DrawScene::DrawMeshCmoponent(const GeometryResource::Ptr& geometry,
     glLineWidth(line_width);
   }
 
-  glEnable(GL_BLEND);
-  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+  if (material->Blend()) {
+    glEnable(GL_BLEND);
+    GLenum sfactor;
+    GLenum dfactor;
+    material->BlendFunc(&sfactor, &dfactor);
+    glBlendFunc(sfactor, dfactor);
+  } else {
+    glDisable(GL_BLEND);
+  }
 
   // Draw the mesh geometry
   QOpenGLBuffer* index_buffer = geometry->IndexBuffer();
@@ -277,9 +284,6 @@ void DrawScene::DrawMeshCmoponent(const GeometryResource::Ptr& geometry,
   if (gl_err != GL_NO_ERROR) {
     printf("OpenGL: %s\n", sv::glErrorString(gl_err));
   }
-
-  // TODO(albert) check if we should call glDrawElements() instead of
-  // glDrawArrays()
 
   // Done. Release resources
   if (program) {

@@ -89,6 +89,20 @@ class MaterialResource {
 
     float LineWidth() const { return line_width_; }
 
+    void SetBlend(bool value) { blend_ = value; }
+
+    bool Blend() const { return blend_; }
+
+    void SetBlendFunc(GLenum sfactor, GLenum dfactor) {
+      blend_sfactor_ = sfactor;
+      blend_dfactor_ = dfactor;
+    }
+
+    void BlendFunc(GLenum* sfactor, GLenum* dfactor) {
+      *sfactor = blend_sfactor_;
+      *dfactor = blend_dfactor_;
+    }
+
   private:
     friend class ResourceManager;
 
@@ -111,6 +125,12 @@ class MaterialResource {
     float point_size_;
 
     float line_width_;
+
+    bool blend_;
+
+    GLenum blend_sfactor_;
+
+    GLenum blend_dfactor_;
 
     std::map<QString, QOpenGLTexture*> textures_;
 };

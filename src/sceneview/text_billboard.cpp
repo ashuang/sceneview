@@ -55,6 +55,7 @@ TextBillboard::TextBillboard(const ResourceManager::Ptr& resources,
   bg_material_ = resources->MakeMaterial(billboard_uniform_color);
   bg_material_->SetDepthWrite(false);
   bg_material_->SetParam("color", 0.0, 0.0, 0.0, 0.0);
+  bg_material_->SetBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
   // Create geometry for the background and the cap
   rect_geom_ = resources->MakeGeometry();
@@ -64,6 +65,7 @@ TextBillboard::TextBillboard(const ResourceManager::Ptr& resources,
       stock.Shader(StockResources::kBillboardTextured));
   text_material_->SetTwoSided(true);
   text_material_->SetParam("text_color", 1.0, 1.0, 1.0, 1.0);
+  text_material_->SetBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
   // Create the depth write material
   depth_write_material_ = resources->MakeMaterial(billboard_uniform_color);
@@ -107,6 +109,7 @@ void TextBillboard::SetTextColor(const QColor& color) {
       color.greenF(),
       color.blueF(),
       color.alphaF());
+  text_material_->SetBlend(color.alphaF() < 1);
 }
 
 void TextBillboard::SetBackgroundColor(const QColor& color) {
@@ -115,6 +118,7 @@ void TextBillboard::SetBackgroundColor(const QColor& color) {
       color.greenF(),
       color.blueF(),
       color.alphaF());
+  bg_material_->SetBlend(color.alphaF() < 1);
 }
 
 void TextBillboard::SetAlignment(HAlignment horizontal,
