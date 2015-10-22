@@ -28,8 +28,7 @@ Viewport::Viewport(const ResourceManager::Ptr& resources,
   renderers_(),
   input_handlers_(),
   redraw_scheduled_(false),
-  gl_context_(nullptr),
-  background_color_(0, 0, 0, 1) {
+  gl_context_(nullptr) {
   // Enable multisampling so that things draw a little smoother.
   QSurfaceFormat format = QSurfaceFormat::defaultFormat();
   format.setSamples(2);
@@ -132,16 +131,9 @@ void Viewport::resizeGL(int width, int height) {
 void Viewport::paintGL() {
   redraw_scheduled_ = false;
 
-  // Clear the drawing area
-  glClearColor(background_color_.redF(),
-      background_color_.greenF(),
-      background_color_.blueF(),
-      background_color_.alphaF());
-
-  // Draw the scene
+  // Delegate
   draw_->Draw(camera_, &renderers_);
 
-  // All done drawing.
   gl_context_->swapBuffers(gl_context_->surface());
 }
 

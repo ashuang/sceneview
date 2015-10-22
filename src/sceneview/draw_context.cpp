@@ -41,12 +41,19 @@ DrawContext::DrawContext(const ResourceManager::Ptr& resources,
     const Scene::Ptr& scene) :
   resources_(resources),
   scene_(scene),
+  clear_color_(0, 0, 0, 255),
   cur_camera_(nullptr),
   bounding_box_node_(nullptr),
   draw_bounding_boxes_(false) {}
 
 void DrawContext::Draw(CameraNode* camera, std::vector<Renderer*>* prenderers) {
   cur_camera_ = camera;
+
+  // Clear the drawing area
+  glClearColor(clear_color_.redF(),
+      clear_color_.greenF(),
+      clear_color_.blueF(),
+      clear_color_.alphaF());
 
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 

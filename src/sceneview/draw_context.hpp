@@ -5,6 +5,8 @@
 
 #include <vector>
 
+#include <QColor>
+
 #include <sceneview/drawable.hpp>
 #include <sceneview/resource_manager.hpp>
 #include <sceneview/scene.hpp>
@@ -25,6 +27,8 @@ class DrawContext {
 
     void Draw(CameraNode* camera, std::vector<Renderer*>* prenderers);
 
+    void SetClearColor(const QColor& color);
+
   private:
     void PrepareFixedFunctionPipeline();
 
@@ -39,6 +43,8 @@ class DrawContext {
     ResourceManager::Ptr resources_;
 
     Scene::Ptr scene_;
+
+    QColor clear_color_;
 
     // Rendering variables
     CameraNode* cur_camera_;
