@@ -125,22 +125,6 @@ class SceneNode {
     virtual void SetVisible(bool visible);
 
     /**
-     * Retrieve the bounding box of the individual components, transformed by
-     * this node's transform as well as any transform passed in.
-     *
-     * @param lhs_transform the transform to apply on the left
-     *
-     * If this node's transform is a matrix M,
-     * then this function calculates
-     *
-     * @code
-     * bounding_box(lhs_transform * M * vertices_of(GeometryBoundingBox()));
-     * @endcode
-     */
-    virtual AxisAlignedBox BoundingBox(
-        const QMatrix4x4& lhs_transform = QMatrix4x4());
-
-    /**
      * Retrieve the parent of this node.
      */
     GroupNode* ParentNode() { return parent_node_; }

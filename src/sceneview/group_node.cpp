@@ -28,7 +28,17 @@ AxisAlignedBox GroupNode::BoundingBox(const QMatrix4x4& lhs_transform) {
   AxisAlignedBox result;
   const QMatrix4x4 transform = lhs_transform * GetTransform();
   for (auto& child : children_) {
-    AxisAlignedBox box = child->BoundingBox(transform);
+    AxisAlignedBox box;
+    switch (child->NodeType()) {
+      case SceneNodeType::kGroupNode:
+        box = static_cast<GroupNode*>(child)->BoundingBox(transform);
+        break;
+      case SceneNodeType::kDrawNode:
+        box = static_cast<DrawNode*>(child)->BoundingBox(transform);
+        break;
+      default:
+        break;
+    }
     if (box.Valid()) {
       result.IncludeBox(box);
     }

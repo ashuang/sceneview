@@ -57,15 +57,14 @@ class DrawNode : public SceneNode {
      *
      * @param lhs_transform the transform to apply on the left
      *
-     * If this node's transform is a matrix M, and lhs_transform is a matrix L,
+     * If this node's transform is a matrix M,
      * then this function calculates
      *
      * @code
-     * bounding_box(L * M * vertices_of(GeometryBoundingBox()));
+     * bounding_box(lhs * M * vertices_of(GeometryBoundingBox()));
      * @endcode
      */
-    AxisAlignedBox BoundingBox(
-        const QMatrix4x4& lhs_transform = QMatrix4x4()) override;
+    AxisAlignedBox BoundingBox(const QMatrix4x4& lhs = QMatrix4x4());
 
     /**
      * Retrieve the bounding box of the individual components, untransformed.

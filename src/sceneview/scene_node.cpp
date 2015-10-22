@@ -36,10 +36,6 @@ void SceneNode::SetVisible(bool visible) {
   visible_ = visible;
 }
 
-AxisAlignedBox SceneNode::BoundingBox(const QMatrix4x4& lhs_transform) {
-  return AxisAlignedBox();
-}
-
 void SceneNode::SetParentNode(GroupNode* parent) {
   parent_node_ = parent;
 }

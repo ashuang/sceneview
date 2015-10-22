@@ -80,7 +80,11 @@ void DrawContext::DrawDrawNode(DrawNode* draw_node) {
 
     ActivateMaterial();
 
-    DrawGeometry();
+    if (drawable->PreDraw()) {
+      DrawGeometry();
+    }
+
+    drawable->PostDraw();
 
     GLenum gl_err = glGetError();
     if (gl_err != GL_NO_ERROR) {
