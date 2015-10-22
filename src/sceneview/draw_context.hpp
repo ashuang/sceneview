@@ -3,6 +3,8 @@
 #ifndef SCENEVIEW_DRAW_CONTEXT_HPP__
 #define SCENEVIEW_DRAW_CONTEXT_HPP__
 
+#include <vector>
+
 #include <sceneview/drawable.hpp>
 #include <sceneview/resource_manager.hpp>
 #include <sceneview/scene.hpp>
@@ -14,15 +16,18 @@ namespace sv {
 class AxisAlignedBox;
 class CameraNode;
 class DrawNode;
+class Renderer;
 
 class DrawContext {
   public:
     DrawContext(const ResourceManager::Ptr& resources,
         const Scene::Ptr& scene);
 
-    void Draw(CameraNode* camera);
+    void Draw(CameraNode* camera, std::vector<Renderer*>* prenderers);
 
   private:
+    void PrepareFixedFunctionPipeline();
+
     void DrawDrawNode(DrawNode* node);
 
     void ActivateMaterial();

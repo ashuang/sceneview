@@ -93,8 +93,6 @@ class Viewport : public QOpenGLWidget {
       void Render();
 
   private:
-    void PrepareFixedFunctionPipeline();
-
     ResourceManager::Ptr resources_;
 
     Scene::Ptr scene_;

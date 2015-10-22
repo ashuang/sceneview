@@ -14,6 +14,7 @@
 #include "sceneview/light_node.hpp"
 #include "sceneview/draw_node.hpp"
 #include "sceneview/resource_manager.hpp"
+#include "sceneview/renderer.hpp"
 #include "sceneview/scene_node.hpp"
 #include "sceneview/stock_resources.hpp"
 
@@ -25,6 +26,17 @@
 
 namespace sv {
 
+static void CheckGLErrors(const QString& name) {
+  GLenum err_code = glGetError();
+  const char *err_str;
+  while (err_code != GL_NO_ERROR) {
+    err_str = sv::glErrorString(err_code);
+    fprintf(stderr, "OpenGL Error (%s)\n", name.toStdString().c_str());
+    fprintf(stderr, "%s\n", err_str);
+    err_code = glGetError();
+  }
+}
+
 DrawContext::DrawContext(const ResourceManager::Ptr& resources,
     const Scene::Ptr& scene) :
   resources_(resources),
@@ -33,8 +45,30 @@ DrawContext::DrawContext(const ResourceManager::Ptr& resources,
   bounding_box_node_(nullptr),
   draw_bounding_boxes_(false) {}
 
-void DrawContext::Draw(CameraNode* camera) {
+void DrawContext::Draw(CameraNode* camera, std::vector<Renderer*>* prenderers) {
   cur_camera_ = camera;
+
+  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+  std::vector<Renderer*>& renderers = *prenderers;
+
+  // Setup the fixed-function pipeline.
+  PrepareFixedFunctionPipeline();
+
+  // Inform the renderers that drawing is about to begin
+  for (Renderer* renderer : renderers) {
+    if (renderer->Enabled()) {
+      glPushAttrib(GL_ENABLE_BIT | GL_POINT_BIT | GL_POLYGON_STIPPLE_BIT |
+          GL_POLYGON_BIT | GL_LINE_BIT | GL_FOG_BIT | GL_LIGHTING_BIT);
+      glMatrixMode(GL_MODELVIEW);
+      glPushMatrix();
+      renderer->RenderBegin();
+      CheckGLErrors(renderer->Name());
+      glMatrixMode(GL_MODELVIEW);
+      glPopMatrix();
+      glPopAttrib();
+    }
+  }
 
   // TODO(albert) sort the draw nodes
 
@@ -51,7 +85,87 @@ void DrawContext::Draw(CameraNode* camera) {
     }
   }
 
+  // Setup the fixed-function pipeline again.
+  PrepareFixedFunctionPipeline();
+
+  // Notify renderers that drawing has finished
+  for (Renderer* renderer : renderers) {
+    if (renderer->Enabled()) {
+      glPushAttrib(GL_ENABLE_BIT | GL_POINT_BIT | GL_POLYGON_STIPPLE_BIT |
+          GL_POLYGON_BIT | GL_LINE_BIT | GL_FOG_BIT | GL_LIGHTING_BIT);
+      glMatrixMode(GL_MODELVIEW);
+      glPushMatrix();
+      renderer->RenderEnd();
+      CheckGLErrors(renderer->Name());
+      glMatrixMode(GL_MODELVIEW);
+      glPopMatrix();
+      glPopAttrib();
+    }
+  }
+
   cur_camera_ = nullptr;
+}
+
+void DrawContext::PrepareFixedFunctionPipeline() {
+  // Enable the fixed function pipeline by disabling any active shader program.
+  glUseProgram(0);
+
+  // Setup the projection and view matrices
+  glMatrixMode(GL_PROJECTION);
+  glLoadIdentity();
+  glMultMatrixf(cur_camera_->GetProjectionMatrix().constData());
+  glMatrixMode(GL_MODELVIEW);
+  glLoadIdentity();
+  glMultMatrixf(cur_camera_->GetViewMatrix().constData());
+
+  // Setup lights
+  const GLenum gl_lights[] = {
+    GL_LIGHT0, GL_LIGHT1, GL_LIGHT2, GL_LIGHT3,
+    GL_LIGHT4, GL_LIGHT5, GL_LIGHT6, GL_LIGHT7
+  };
+  std::vector<LightNode*> lights = scene_->Lights();
+  for (int light_ind = 0; light_ind < 8; ++light_ind) {
+    const GLenum gl_light = gl_lights[light_ind];
+    LightNode* light = lights[light_ind];
+    const LightType light_type = light->GetLightType();
+
+    if (light_type == LightType::kDirectional) {
+      const QVector3D dir = light->Direction();
+      const float dir4f[4] = { dir.x(), dir.y(), dir.z(), 0 };
+      glLightfv(gl_light, GL_POSITION, dir4f);
+    } else {
+      const QVector3D posf = light->Translation();
+      const float pos4f[4] = { posf.x(), posf.y(), posf.z(), 1};
+      glLightfv(gl_light, GL_POSITION, pos4f);
+
+      const float attenuation = light->Attenuation();
+      glLightf(gl_light, GL_QUADRATIC_ATTENUATION, attenuation);
+      glLightf(gl_light, GL_CONSTANT_ATTENUATION, 1.0);
+
+      if (light_type == LightType::kSpot) {
+        const float cone_angle_deg = light->ConeAngle();
+        glLightf(gl_light, GL_SPOT_CUTOFF, cone_angle_deg);
+        glLightf(gl_light, GL_SPOT_EXPONENT, 1.2);
+      }
+    }
+
+    const QVector3D& color = light->Color();
+    const QVector3D& ambient = color * light->Ambient();
+    const float color4f[4] = { color.x(),  color.y(),  color.z(), 1 };
+    const float ambient4f[4] = { ambient.x(),  ambient.y(),  ambient.z(), 1 };
+    glLightfv(gl_light, GL_AMBIENT, ambient4f);
+    glLightfv(gl_light, GL_DIFFUSE, color4f);
+    glLightfv(gl_light, GL_SPECULAR, color4f);
+
+    glEnable(gl_light);
+    break;
+  }
+
+  // Set some default rendering parameters
+  glFrontFace(GL_CCW);
+  glCullFace(GL_BACK);
+  glEnable(GL_CULL_FACE);
+  glEnable(GL_DEPTH_TEST);
 }
 
 void DrawContext::DrawDrawNode(DrawNode* draw_node) {
@@ -260,9 +374,9 @@ static void SetupAttributeArray(QOpenGLShaderProgram* program,
   }
 
   if (num_attributes > 0) {
-        program->enableAttributeArray(location);
-        program->setAttributeBuffer(location,
-            attr_type, offset, attribute_size, 0);
+    program->enableAttributeArray(location);
+    program->setAttributeBuffer(location,
+        attr_type, offset, attribute_size, 0);
   } else {
     program->disableAttributeArray(location);
   }
