@@ -47,7 +47,7 @@ GeometryResource::Ptr StockResources::Sphere() {
   return GetOrMakeGeometry("geom:sv_sphere", SphereData, resources_);
 }
 
-GeometryMaterialPair StockResources::UnitAxes() {
+Drawable::Ptr StockResources::UnitAxes() {
   GeometryResource::Ptr geom = GetOrMakeGeometry("geom:sv_unit_axes",
       UnitAxesData, resources_);
 
@@ -56,7 +56,7 @@ GeometryMaterialPair StockResources::UnitAxes() {
   if (!material) {
     material = resources_->MakeMaterial(Shader(kPerVertexColorLighting));
   }
-  return GeometryMaterialPair(geom, material);
+  return Drawable::Create(geom, material);
 }
 
 

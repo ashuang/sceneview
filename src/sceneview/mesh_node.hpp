@@ -7,6 +7,7 @@
 #include <utility>
 #include <vector>
 
+#include <sceneview/drawable.hpp>
 #include <sceneview/scene_node.hpp>
 #include <sceneview/geometry_resource.hpp>
 #include <sceneview/material_resource.hpp>
@@ -37,19 +38,18 @@ class MeshNode : public SceneNode {
         const MaterialResource::Ptr& material);
 
     /**
-     * Attaches a geometry resource and a material resource to the mesh so
-     * that they are drawn as part of the mesh.
+     * Attaches a generic drawable item to the node.
      *
      * A mesh can have multiple geometry/material pairs, and they are always
      * drawn in the order that they are added to the mesh, relative to each
      * other.
      */
-    void Add(GeometryMaterialPair component);
+    void Add(const Drawable::Ptr& drawable);
 
     /**
      * Retrieve a list of the geometry/material pairs attached to the mesh.
      */
-    const std::vector<GeometryMaterialPair>& Components() const;
+    const std::vector<Drawable::Ptr>& Drawables() const;
 
     /**
      * Retrieve the bounding box of the individual components, transformed by
@@ -77,7 +77,7 @@ class MeshNode : public SceneNode {
 
     explicit MeshNode(const QString& name);
 
-    std::vector<GeometryMaterialPair> components_;
+    std::vector<Drawable::Ptr> drawables_;
 };
 
 }  // namespace sv

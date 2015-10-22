@@ -6,6 +6,7 @@
 #include <memory>
 #include <sceneview/geometry_resource.hpp>
 #include <sceneview/resource_manager.hpp>
+#include <sceneview/drawable.hpp>
 
 namespace sv {
 
@@ -217,7 +218,7 @@ class StockResources {
      * - Y axis colored green
      * - Z axis colored blue
      *
-     * This is returned as a GeometryMaterialPair since the geometry (the axes)
+     * This is returned as a Drawable since the geometry (the axes)
      * is paired with a material (the color properties).
      *
      * The returned object can be directly added to a MeshNode. e.g.,:
@@ -227,7 +228,7 @@ class StockResources {
      *   mesh->Add(stock.UnitAxes());
      * @endcode
      */
-    GeometryMaterialPair UnitAxes();
+    Drawable::Ptr UnitAxes();
 
     /**
      * Retrieve the shader resource corresponding to the specified stock

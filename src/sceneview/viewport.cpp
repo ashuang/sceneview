@@ -10,7 +10,7 @@
 #include <QTimer>
 
 #include "sceneview/camera_node.hpp"
-#include "sceneview/draw_scene.hpp"
+#include "sceneview/draw_context.hpp"
 #include "sceneview/input_handler.hpp"
 #include "sceneview/light_node.hpp"
 #include "sceneview/renderer.hpp"
@@ -24,7 +24,7 @@ Viewport::Viewport(const ResourceManager::Ptr& resources,
   scene_(scene),
   camera_(nullptr),
   input_handler_(nullptr),
-  draw_(new DrawScene(resources_, scene)),
+  draw_(new DrawContext(resources_, scene)),
   renderers_(),
   input_handlers_(),
   redraw_scheduled_(false),

@@ -12,7 +12,7 @@
 
 namespace sv {
 
-class DrawScene;
+class DrawContext;
 class CameraNode;
 class InputHandler;
 class Renderer;
@@ -103,7 +103,7 @@ class Viewport : public QOpenGLWidget {
 
     InputHandler* input_handler_;
 
-    std::unique_ptr<DrawScene> draw_;
+    std::unique_ptr<DrawContext> draw_;
 
     std::vector<Renderer*> renderers_;
 

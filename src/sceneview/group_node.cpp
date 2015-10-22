@@ -85,7 +85,7 @@ void GroupNode::CopyAsChildren(Scene* scene, GroupNode* root) {
           MeshNode* mesh_to_copy =
             dynamic_cast<MeshNode*>(to_copy);
           MeshNode* child = scene->MakeMesh(this, Scene::kAutoName);
-          for (const GeometryMaterialPair& item : mesh_to_copy->Components()) {
+          for (const Drawable::Ptr& item : mesh_to_copy->Drawables()) {
             child->Add(item);
           }
           node_copy = child;

@@ -135,9 +135,6 @@ class MaterialResource {
     std::map<QString, QOpenGLTexture*> textures_;
 };
 
-typedef std::pair<GeometryResource::Ptr, MaterialResource::Ptr>
-    GeometryMaterialPair;
-
 }  // namespace sv
 
 #endif  // SCENEVIEW_MATERIAL_RESOURCE_HPP__

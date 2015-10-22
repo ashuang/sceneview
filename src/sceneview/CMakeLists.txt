@@ -12,7 +12,7 @@ add_library(sceneview SHARED
             axis_aligned_box.cpp
             internal_gl.cpp
             camera_node.cpp
-            draw_scene.cpp
+            draw_context.cpp
             expander_widget.cpp
             font_resource.cpp
             geometry_resource.cpp
