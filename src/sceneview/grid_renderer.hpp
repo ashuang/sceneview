@@ -35,7 +35,7 @@ class GridRenderer : public Renderer {
 
     GeometryResource::Ptr grid_geom_;
     GeometryResource::Ptr base_geom_;
-    MeshNode* mesh_;
+    DrawNode* draw_node_;
 
     int grid_size_;
 

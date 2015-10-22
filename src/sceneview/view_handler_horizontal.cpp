@@ -14,7 +14,7 @@
 #include <QTimer>
 
 #include "sceneview/camera_node.hpp"
-#include "sceneview/mesh_node.hpp"
+#include "sceneview/draw_node.hpp"
 #include "sceneview/stock_resources.hpp"
 #include "sceneview/viewport.hpp"
 
@@ -31,8 +31,8 @@ ViewHandlerHorizontal::ViewHandlerHorizontal(Viewport* viewport,
   first_mouse_x_(0),
   first_mouse_y_(0),
   show_look_at_point_(true),
-  look_at_mesh_(nullptr),
-  hide_mesh_timer_(nullptr),
+  look_at_shape_(nullptr),
+  hide_shape_timer_(nullptr),
   widget_(nullptr) {
 }
 
@@ -55,7 +55,7 @@ void ViewHandlerHorizontal::MousePressEvent(QMouseEvent *event) {
   look_start_ = camera_->GetLookDir();
   up_start_ = camera_->GetUpDir();
 
-  UpdateMeshTransform();
+  UpdateShapeTransform();
 }
 
 void ViewHandlerHorizontal::MouseMoveEvent(QMouseEvent *event) {
@@ -79,7 +79,7 @@ void ViewHandlerHorizontal::MouseMoveEvent(QMouseEvent *event) {
     const QVector3D new_look_at = new_eye + look_start_ * PivotDistance();
 
     camera_->LookAt(new_eye, new_look_at, up_start_);
-    UpdateMeshTransform();
+    UpdateShapeTransform();
     viewport_->ScheduleRedraw();
   } else if (buttons & Qt::MidButton) {
     // Raise / lower the camera
@@ -87,7 +87,7 @@ void ViewHandlerHorizontal::MouseMoveEvent(QMouseEvent *event) {
     const QVector3D new_eye = eye_start_ + motion;
     camera_->LookAt(new_eye, new_eye + look_start_ * PivotDistance(),
         up_start_);
-    UpdateMeshTransform();
+    UpdateShapeTransform();
     viewport_->ScheduleRedraw();
   } else if (buttons & Qt::RightButton) {
     // Rotate about the pivot
@@ -120,7 +120,7 @@ void ViewHandlerHorizontal::MouseMoveEvent(QMouseEvent *event) {
     const QVector3D new_up = QVector3D::crossProduct(new_look, new_left);
 
     camera_->LookAt(new_eye, look_at, new_up);
-    UpdateMeshTransform();
+    UpdateShapeTransform();
     viewport_->ScheduleRedraw();
   }
 }
@@ -144,7 +144,7 @@ void ViewHandlerHorizontal::WheelEvent(QWheelEvent* event) {
   const QVector3D new_eye = camera_->Translation() + camera_->GetLookDir() * new_distance;
 
   camera_->LookAt(new_eye, camera_->GetLookAt(), camera_->GetUpDir());
-  UpdateMeshTransform();
+  UpdateShapeTransform();
   UpdateNearFarPlanes();
   viewport_->ScheduleRedraw();
 }
@@ -203,9 +203,9 @@ void ViewHandlerHorizontal::MakeShape() {
     stock.NewMaterial(StockResources::kUniformColorLighting);
   material->SetParam("diffuse", 0, 1.0, 0, 1.0);
 
-  look_at_mesh_ = scene->MakeMesh(root, "vhz:shape");
-  look_at_mesh_->Add(stock.Sphere(), material);
-  look_at_mesh_->SetVisible(false);
+  look_at_shape_ = scene->MakeDrawNode(root, "vhz:shape");
+  look_at_shape_->Add(stock.Sphere(), material);
+  look_at_shape_->SetVisible(false);
 
   const QVector3D unitz(0, 0, 1);
   const QVector3D axis = QVector3D::crossProduct(
@@ -213,35 +213,35 @@ void ViewHandlerHorizontal::MakeShape() {
   const double cosangle = QVector3D::dotProduct(unitz, zenith_dir_);
   const double angle_deg = acos(cosangle) * 180 / M_PI;
   QQuaternion quat = QQuaternion::fromAxisAndAngle(axis, angle_deg);
-  look_at_mesh_->SetRotation(quat);
+  look_at_shape_->SetRotation(quat);
 
-  hide_mesh_timer_ = new QTimer(this);
-  hide_mesh_timer_->setSingleShot(true);
-  connect(hide_mesh_timer_, &QTimer::timeout,
+  hide_shape_timer_ = new QTimer(this);
+  hide_shape_timer_->setSingleShot(true);
+  connect(hide_shape_timer_, &QTimer::timeout,
       [this](){
-        look_at_mesh_->SetVisible(false);
+        look_at_shape_->SetVisible(false);
         viewport_->ScheduleRedraw();
       });
 }
 
-void ViewHandlerHorizontal::UpdateMeshTransform() {
+void ViewHandlerHorizontal::UpdateShapeTransform() {
   if (!show_look_at_point_) {
     return;
   }
-  if (!look_at_mesh_) {
+  if (!look_at_shape_) {
     MakeShape();
   }
-  look_at_mesh_->SetVisible(true);
+  look_at_shape_->SetVisible(true);
 
   const double dscale = PivotDistance() * 0.05;
-  look_at_mesh_->SetScale(dscale, dscale, 0.2 * dscale);
-  look_at_mesh_->SetTranslation(camera_->GetLookAt());
+  look_at_shape_->SetScale(dscale, dscale, 0.2 * dscale);
+  look_at_shape_->SetTranslation(camera_->GetLookAt());
 
-  if (hide_mesh_timer_->isActive()) {
-    hide_mesh_timer_->stop();
+  if (hide_shape_timer_->isActive()) {
+    hide_shape_timer_->stop();
   }
 
-  hide_mesh_timer_->start(500);
+  hide_shape_timer_->start(500);
 }
 
 void ViewHandlerHorizontal::UpdateNearFarPlanes() {

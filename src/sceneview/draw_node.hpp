@@ -1,7 +1,7 @@
 // Copyright [2015] Albert Huang
 
-#ifndef SCENEVIEW_MESH_NODE_HPP__
-#define SCENEVIEW_MESH_NODE_HPP__
+#ifndef SCENEVIEW_DRAW_NODE_HPP__
+#define SCENEVIEW_DRAW_NODE_HPP__
 
 #include <memory>
 #include <utility>
@@ -15,39 +15,39 @@
 namespace sv {
 
 /**
- * Renderable mesh with one or more geometry/material pairs.
+ * Scene node that contains a list of drawable objects.
  *
  * @ingroup sv_scenegraph
- * @headerfile sceneview/mesh_node.hpp
+ * @headerfile sceneview/draw_node.hpp
  */
-class MeshNode : public SceneNode {
+class DrawNode : public SceneNode {
   public:
-    virtual ~MeshNode() {}
+    virtual ~DrawNode() {}
 
-    SceneNodeType NodeType() const override { return SceneNodeType::kMeshNode; }
+    SceneNodeType NodeType() const override { return SceneNodeType::kDrawNode; }
 
     /**
-     * Attaches a geometry resource and a material resource to the mesh so
-     * that they are drawn as part of the mesh.
+     * Attaches a generic drawable item to the node.
      *
-     * A mesh can have multiple geometry/material pairs, and they are always
-     * drawn in the order that they are added to the mesh, relative to each
-     * other.
+     * The node can have multiple drawable objects, and they are always drawn
+     * in the order that they are added, relative to each other.
+     */
+    void Add(const Drawable::Ptr& drawable);
+
+    /**
+     * Convenience method to attach a drawable object from a geometry resource
+     * and a material resource.
+     *
+     * This method is equivalent to:
+     * @code
+     *    draw_node->Add(Drawable::Create(geometry, material));
+     * @endcode
      */
     void Add(const GeometryResource::Ptr& geometry,
         const MaterialResource::Ptr& material);
 
     /**
-     * Attaches a generic drawable item to the node.
-     *
-     * A mesh can have multiple geometry/material pairs, and they are always
-     * drawn in the order that they are added to the mesh, relative to each
-     * other.
-     */
-    void Add(const Drawable::Ptr& drawable);
-
-    /**
-     * Retrieve a list of the geometry/material pairs attached to the mesh.
+     * Retrieve a list of the drawables attached to the node.
      */
     const std::vector<Drawable::Ptr>& Drawables() const;
 
@@ -75,11 +75,11 @@ class MeshNode : public SceneNode {
   private:
     friend class Scene;
 
-    explicit MeshNode(const QString& name);
+    explicit DrawNode(const QString& name);
 
     std::vector<Drawable::Ptr> drawables_;
 };
 
 }  // namespace sv
 
-#endif  // SCENEVIEW_MESH_NODE_HPP__
+#endif  // SCENEVIEW_DRAW_NODE_HPP__

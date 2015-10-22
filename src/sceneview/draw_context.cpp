@@ -12,7 +12,7 @@
 #include "sceneview/camera_node.hpp"
 #include "sceneview/group_node.hpp"
 #include "sceneview/light_node.hpp"
-#include "sceneview/mesh_node.hpp"
+#include "sceneview/draw_node.hpp"
 #include "sceneview/resource_manager.hpp"
 #include "sceneview/scene_node.hpp"
 #include "sceneview/stock_resources.hpp"
@@ -30,22 +30,22 @@ DrawContext::DrawContext(const ResourceManager::Ptr& resources,
   resources_(resources),
   scene_(scene),
   cur_camera_(nullptr),
-  bounding_box_mesh_(nullptr),
+  bounding_box_node_(nullptr),
   draw_bounding_boxes_(false) {}
 
 void DrawContext::Draw(CameraNode* camera) {
   cur_camera_ = camera;
 
-  // TODO(albert) sort the meshes
+  // TODO(albert) sort the draw nodes
 
-  // render each mesh
-  for (MeshNode* mesh : scene_->Meshes()) {
-    if (mesh->Visible()) {
-      DrawMesh(mesh);
+  // render each draw node
+  for (DrawNode* draw_node : scene_->DrawNodes()) {
+    if (draw_node->Visible()) {
+      DrawDrawNode(draw_node);
     }
 
     if (draw_bounding_boxes_) {
-      const AxisAlignedBox box_orig = mesh->GeometryBoundingBox();
+      const AxisAlignedBox box_orig = draw_node->GeometryBoundingBox();
       const AxisAlignedBox box = box_orig.Transformed(model_mat_);
       DrawBoundingBox(box);
     }
@@ -54,17 +54,17 @@ void DrawContext::Draw(CameraNode* camera) {
   cur_camera_ = nullptr;
 }
 
-void DrawContext::DrawMesh(MeshNode* mesh) {
+void DrawContext::DrawDrawNode(DrawNode* draw_node) {
   // Compute the model matrix and check visibility
-  model_mat_ = mesh->GetTransform();
-  for (SceneNode* node = mesh->ParentNode(); node; node = node->ParentNode()) {
+  model_mat_ = draw_node->GetTransform();
+  for (SceneNode* node = draw_node->ParentNode(); node; node = node->ParentNode()) {
     model_mat_ = node->GetTransform() * model_mat_;
     if (!node->Visible()) {
       return;
     }
   }
 
-  for (const Drawable::Ptr& drawable : mesh->Drawables()) {
+  for (const Drawable::Ptr& drawable : draw_node->Drawables()) {
     geometry_ = drawable->Geometry();
     material_ = drawable->Material();
     shader_ = material_->Shader();
@@ -265,29 +265,28 @@ static void SetupAttributeArray(QOpenGLShaderProgram* program,
 }
 
 void DrawContext::DrawGeometry() {
-  // Load the mesh geometry and bind its vertex buffer
+  // Load geometry and bind a vertex buffer
   QOpenGLBuffer* vbo = geometry_->VBO();
   vbo->bind();
 
-  if (program_) {
-    const ShaderStandardVariables& locs = shader_->StandardVariables();
+  // Load per-vertex attribute arrays
+  const ShaderStandardVariables& locs = shader_->StandardVariables();
+  SetupAttributeArray(program_, locs.sv_vert_pos,
+      geometry_->NumVertices(), GL_FLOAT, geometry_->VertexOffset(), 3);
+  SetupAttributeArray(program_, locs.sv_normal,
+      geometry_->NumNormals(), GL_FLOAT, geometry_->NormalOffset(), 3);
+  SetupAttributeArray(program_, locs.sv_diffuse,
+      geometry_->NumDiffuse(), GL_FLOAT, geometry_->DiffuseOffset(), 4);
+  SetupAttributeArray(program_, locs.sv_specular,
+      geometry_->NumSpecular(), GL_FLOAT, geometry_->SpecularOffset(), 4);
+  SetupAttributeArray(program_, locs.sv_shininess,
+      geometry_->NumShininess(), GL_FLOAT, geometry_->ShininessOffset(), 1);
+  SetupAttributeArray(program_, locs.sv_tex_coords_0,
+      geometry_->NumTexCoords0(), GL_FLOAT, geometry_->TexCoords0Offset(), 2);
 
-    // Per-vertex attribute arrays
-    SetupAttributeArray(program_, locs.sv_vert_pos,
-        geometry_->NumVertices(), GL_FLOAT, geometry_->VertexOffset(), 3);
-    SetupAttributeArray(program_, locs.sv_normal,
-        geometry_->NumNormals(), GL_FLOAT, geometry_->NormalOffset(), 3);
-    SetupAttributeArray(program_, locs.sv_diffuse,
-        geometry_->NumDiffuse(), GL_FLOAT, geometry_->DiffuseOffset(), 4);
-    SetupAttributeArray(program_, locs.sv_specular,
-        geometry_->NumSpecular(), GL_FLOAT, geometry_->SpecularOffset(), 4);
-    SetupAttributeArray(program_, locs.sv_shininess,
-        geometry_->NumShininess(), GL_FLOAT, geometry_->ShininessOffset(), 1);
-    SetupAttributeArray(program_, locs.sv_tex_coords_0,
-        geometry_->NumTexCoords0(), GL_FLOAT, geometry_->TexCoords0Offset(), 2);
-  }
+  // TODO load custom attribute arrays
 
-  // Draw the mesh geometry
+  // Draw the geometry
   QOpenGLBuffer* index_buffer = geometry_->IndexBuffer();
   if (index_buffer) {
     index_buffer->bind();
@@ -301,7 +300,7 @@ void DrawContext::DrawGeometry() {
 }
 
 void DrawContext::DrawBoundingBox(const AxisAlignedBox& box) {
-  if (!bounding_box_mesh_) {
+  if (!bounding_box_node_) {
     StockResources stock(resources_);
     ShaderResource::Ptr shader =
       stock.Shader(StockResources::kUniformColorNoLighting);
@@ -328,17 +327,17 @@ void DrawContext::DrawBoundingBox(const AxisAlignedBox& box) {
       0, 4, 1, 5, 2, 6, 3, 7 };
     geometry->Load(gdata);
 
-    bounding_box_mesh_ = scene_->MakeMesh(nullptr);
-    bounding_box_mesh_->Add(geometry, material);
+    bounding_box_node_ = scene_->MakeDrawNode(nullptr);
+    bounding_box_node_->Add(geometry, material);
 
     // hack to prevent the bounding box to appear during normal rendering
-    bounding_box_mesh_->SetVisible(false);
+    bounding_box_node_->SetVisible(false);
   }
 
-  bounding_box_mesh_->SetScale(box.Max() - box.Min());
-  bounding_box_mesh_->SetTranslation(box.Min());
+  bounding_box_node_->SetScale(box.Max() - box.Min());
+  bounding_box_node_->SetTranslation(box.Min());
 
-  DrawMesh(bounding_box_mesh_);
+  DrawDrawNode(bounding_box_node_);
 }
 
 }  // namespace sv

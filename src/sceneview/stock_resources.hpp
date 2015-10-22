@@ -97,7 +97,7 @@ class StockResources {
        *      stock.NewMaterial(StockResources::kUniformColorNoLighting);
        *  material->SetParam(sv::kColor, 0.0, 1.0, 0.0, 1.0);
        *
-       *  scene->MakeMesh(scene->Root(), stock.Cube(), material);
+       *  scene->MakeDrawNode(scene->Root(), stock.Cube(), material);
        * @endcode
        */
       kUniformColorNoLighting,
@@ -120,7 +120,7 @@ class StockResources {
        *      stock.NewMaterial(StockResources::kUniformColorLighting);
        *  material->SetParam(sv::kDiffuse, 0.9, 0.0, 0.0, 1.0);
        *
-       *  scene->MakeMesh(scene->Root(), stock.Cube(), material);
+       *  scene->MakeDrawNode(scene->Root(), stock.Cube(), material);
        *  @endcode
        */
       kUniformColorLighting,
@@ -164,7 +164,7 @@ class StockResources {
        *     stock.NewMaterial(kPerVertexColorLighting);
        *
        * Scene::Ptr scene = GetScene();
-       * scene->MakeMesh(scene->Root(), geometry, material);
+       * scene->MakeDrawNode(scene->Root(), geometry, material);
        * @endcode
        */
       kPerVertexColorLighting,
@@ -221,11 +221,11 @@ class StockResources {
      * This is returned as a Drawable since the geometry (the axes)
      * is paired with a material (the color properties).
      *
-     * The returned object can be directly added to a MeshNode. e.g.,:
+     * The returned object can be directly added to a DrawNode. e.g.,:
      * @code
      *   StockResources stock(resources);
-     *   MeshNode* mesh = scene->MakeMesh(parent);
-     *   mesh->Add(stock.UnitAxes());
+     *   DrawNode* draw_node = scene->MakeDrawNode(parent);
+     *   draw_node->Add(stock.UnitAxes());
      * @endcode
      */
     Drawable::Ptr UnitAxes();

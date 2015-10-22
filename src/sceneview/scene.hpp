@@ -17,7 +17,7 @@ namespace sv {
 class CameraNode;
 class GroupNode;
 class LightNode;
-class MeshNode;
+class DrawNode;
 class SceneNode;
 
 /**
@@ -79,10 +79,10 @@ class Scene {
     LightNode* MakeLight(GroupNode* parent,
         const QString& name = kAutoName);
 
-    MeshNode* MakeMesh(GroupNode* parent,
+    DrawNode* MakeDrawNode(GroupNode* parent,
         const QString& name = kAutoName);
 
-    MeshNode* MakeMesh(GroupNode* parent,
+    DrawNode* MakeDrawNode(GroupNode* parent,
         const GeometryResource::Ptr& geometry,
         const MaterialResource::Ptr& material,
         const QString& name = kAutoName);
@@ -100,11 +100,11 @@ class Scene {
     std::vector<LightNode*>& Lights() { return lights_; }
 
     /**
-     * Retrieve a list of all meshes in the scene
+     * Retrieve a list of all DrawNode objects in the scene.
      *
      * Don't modify the returned vector.
      */
-    std::vector<MeshNode*>& Meshes() { return meshes_; }
+    std::vector<DrawNode*>& DrawNodes() { return draw_nodes_; }
 
     void PrintStats();
 
@@ -124,7 +124,7 @@ class Scene {
     int name_counter_;
 
     std::vector<LightNode*> lights_;
-    std::vector<MeshNode*> meshes_;
+    std::vector<DrawNode*> draw_nodes_;
     std::vector<CameraNode*> cameras_;
     std::map<QString, SceneNode*> nodes_;
 };

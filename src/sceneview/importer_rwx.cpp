@@ -14,7 +14,7 @@
 #include <QVector4D>
 
 #include "sceneview/group_node.hpp"
-#include "sceneview/mesh_node.hpp"
+#include "sceneview/draw_node.hpp"
 #include "sceneview/stock_resources.hpp"
 
 #if 0
@@ -167,15 +167,15 @@ class Parser {
       const std::vector<SceneNode*>& children = scene_->Root()->Children();
       for (size_t i = 0; i < children.size(); ++i) {
         dbg("node %d\n", static_cast<int>(i));
-        MeshNode* mesh = dynamic_cast<MeshNode*>(children[i]);
-        const QVector3D pos = mesh->Translation();
-        const QQuaternion rot = mesh->Rotation();
-        const QVector3D scale = mesh->Scale();
+        DrawNode* shape = dynamic_cast<DrawNode*>(children[i]);
+        const QVector3D pos = shape->Translation();
+        const QQuaternion rot = shape->Rotation();
+        const QVector3D scale = shape->Scale();
         dbg("   pos   %.3f, %.3f, %.3f\n", pos.x(), pos.y(), pos.z());
         dbg("   quat  %.3f, %.3f, %.3f, %.3f\n",
             rot.x(), rot.y(), rot.z(), rot.scalar());
         dbg("   scale %.3f, %.3f, %.3f\n", scale.x(), scale.y(), scale.z());
-        AxisAlignedBox box = mesh->BoundingBox();
+        AxisAlignedBox box = shape->BoundingBox();
         dbg("    bounding box: %s\n", box.ToString().toStdString().c_str());
       }
 
@@ -326,9 +326,9 @@ class Parser {
       material->SetParam("shininess", 16.0f);
       material->SetTwoSided(true);
 
-      MeshNode* mesh = scene_->MakeMesh(scene_->Root(),
+      DrawNode* shape = scene_->MakeDrawNode(scene_->Root(),
           QString::fromStdString(clump_name));
-      mesh->Add(geom, material);
+      shape->Add(geom, material);
     }
 
     int ParseInt() {

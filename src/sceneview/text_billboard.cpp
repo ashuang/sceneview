@@ -6,7 +6,7 @@
 #include <algorithm>
 
 #include "sceneview/group_node.hpp"
-#include "sceneview/mesh_node.hpp"
+#include "sceneview/draw_node.hpp"
 #include "sceneview/stock_resources.hpp"
 
 namespace sv {
@@ -74,11 +74,11 @@ TextBillboard::TextBillboard(const ResourceManager::Ptr& resources,
   text_geom_ = resources->MakeGeometry();
 
   node_ = scene_->MakeGroup(parent_);
-  mesh_ = scene_->MakeMesh(node_);
+  draw_node_ = scene_->MakeDrawNode(node_);
 
-  mesh_->Add(rect_geom_, bg_material_);
-  mesh_->Add(text_geom_, text_material_);
-  mesh_->Add(rect_geom_, depth_write_material_);
+  draw_node_->Add(rect_geom_, bg_material_);
+  draw_node_->Add(text_geom_, text_material_);
+  draw_node_->Add(rect_geom_, depth_write_material_);
 }
 
 TextBillboard::~TextBillboard() {

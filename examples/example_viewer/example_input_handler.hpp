@@ -59,7 +59,7 @@ class ExampleInputHandler : public QObject, public sv::InputHandler {
     void Update();
 
     sv::Viewport* viewport_;
-    sv::MeshNode* shape_;
+    sv::DrawNode* shape_;
 
     QVector3D shape_dir_;
     QVector3D shape_pos_;

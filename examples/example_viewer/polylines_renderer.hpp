@@ -8,7 +8,7 @@
 namespace vis_examples {
 
 /**
- * This renderer demonstrates building a mesh node with custom geometry.
+ * This renderer demonstrates building a draw node with custom geometry.
  */
 class PolylinesRenderer : public sv::Renderer {
   Q_OBJECT
@@ -25,7 +25,7 @@ class PolylinesRenderer : public sv::Renderer {
 
     sv::MaterialResource::Ptr material_;
     sv::GeometryResource::Ptr geom_;
-    sv::MeshNode* mesh_;
+    sv::DrawNode* draw_node_;
 
     QTime start_time_;
     double angle_;

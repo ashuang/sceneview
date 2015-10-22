@@ -33,7 +33,7 @@ class StockShapesRenderer : public sv::Renderer {
 
  private:
     sv::MaterialResource::Ptr material_;
-    std::vector<sv::MeshNode*> shapes_;
+    std::vector<sv::DrawNode*> shapes_;
 
     QTime start_time_;
     double angle_;

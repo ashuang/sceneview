@@ -3,7 +3,7 @@
 #include "sceneview/grid_renderer.hpp"
 
 #include "sceneview/camera_node.hpp"
-#include "sceneview/mesh_node.hpp"
+#include "sceneview/draw_node.hpp"
 #include "sceneview/stock_resources.hpp"
 #include "sceneview/viewport.hpp"
 
@@ -72,10 +72,10 @@ void GridRenderer::InitializeGL() {
 
   UpdateGeometry();
 
-  mesh_ = scene->MakeMesh(GetBaseNode());
-  mesh_->Add(base_geom_, base_material_);
-  mesh_->Add(grid_geom_, grid_material_);
-  mesh_->Add(base_geom_, depth_write_material_);
+  draw_node_ = scene->MakeDrawNode(GetBaseNode());
+  draw_node_->Add(base_geom_, base_material_);
+  draw_node_->Add(grid_geom_, grid_material_);
+  draw_node_->Add(base_geom_, depth_write_material_);
 }
 
 void GridRenderer::RenderBegin() {
@@ -85,7 +85,7 @@ void GridRenderer::RenderBegin() {
     (camera->Translation() - camera->GetLookAt()).length();
 
   const double grid_spacing = RoundTo125(distance / 10);
-  mesh_->SetScale(grid_spacing, grid_spacing, 1);
+  draw_node_->SetScale(grid_spacing, grid_spacing, 1);
 }
 
 void GridRenderer::UpdateGeometry() {

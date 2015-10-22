@@ -89,7 +89,7 @@ struct ShaderStandardVariables {
   std::vector<ShaderLightLocation> sv_lights;
 
   // ============== Per-vertex attributes
-  // Automatically populated based on the mesh geometry
+  // Automatically populated based on the object geometry
 
   /**
    * Vertex position.

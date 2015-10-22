@@ -9,7 +9,7 @@
 #include "sceneview/camera_node.hpp"
 #include "sceneview/group_node.hpp"
 #include "sceneview/light_node.hpp"
-#include "sceneview/mesh_node.hpp"
+#include "sceneview/draw_node.hpp"
 #include "sceneview/scene_node.hpp"
 #include "sceneview/stock_resources.hpp"
 
@@ -22,7 +22,7 @@ Scene::Scene(const QString& name) :
   root_node_(new GroupNode("root")),
   name_counter_(0),
   lights_(),
-  meshes_(),
+  draw_nodes_(),
   cameras_(),
   nodes_({{ root_node_->Name(), root_node_}}) {
 }
@@ -88,22 +88,22 @@ LightNode* Scene::MakeLight(GroupNode* parent,
   return light;
 }
 
-MeshNode* Scene::MakeMesh(GroupNode* parent, const QString& name) {
+DrawNode* Scene::MakeDrawNode(GroupNode* parent, const QString& name) {
   const QString actual_name = PickName(name);
-  MeshNode* node = new MeshNode(actual_name);
+  DrawNode* node = new DrawNode(actual_name);
   if (parent) {
     parent->AddChild(node);
   }
-  meshes_.push_back(node);
+  draw_nodes_.push_back(node);
   nodes_[actual_name] = node;
   return node;
 }
 
-MeshNode* Scene::MakeMesh(GroupNode* parent,
+DrawNode* Scene::MakeDrawNode(GroupNode* parent,
         const GeometryResource::Ptr& geometry,
         const MaterialResource::Ptr& material,
         const QString& name) {
-  MeshNode* node = MakeMesh(parent, name);
+  DrawNode* node = MakeDrawNode(parent, name);
   node->Add(geometry, material);
   return node;
 }
@@ -133,10 +133,11 @@ void Scene::DestroyNode(SceneNode* node) {
         lights_.erase(std::find(lights_.begin(), lights_.end(), light));
       }
       break;
-    case SceneNodeType::kMeshNode:
+    case SceneNodeType::kDrawNode:
       {
-        MeshNode* mesh = dynamic_cast<MeshNode*>(node);
-        meshes_.erase(std::find(meshes_.begin(), meshes_.end(), mesh));
+        DrawNode* draw_node = dynamic_cast<DrawNode*>(node);
+        draw_nodes_.erase(std::find(draw_nodes_.begin(), draw_nodes_.end(),
+              draw_node));
       }
       break;
   }

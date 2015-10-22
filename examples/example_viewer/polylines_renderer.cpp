@@ -23,7 +23,7 @@ void PolylinesRenderer::InitializeGL() {
   // Draw fat thick lines.
   material_->SetLineWidth(5.0f);
 
-  mesh_ = GetScene()->MakeMesh(GetBaseNode(), geom_, material_);
+  draw_node_ = GetScene()->MakeDrawNode(GetBaseNode(), geom_, material_);
 
   UpdateGeometry();
 }

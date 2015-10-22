@@ -5,7 +5,7 @@
 #include <sceneview/stock_resources.hpp>
 
 using sv::GroupNode;
-using sv::MeshNode;
+using sv::DrawNode;
 using sv::ParamWidget;
 using sv::Renderer;
 using sv::ResourceManager;
@@ -33,12 +33,12 @@ void StockShapesRenderer::InitializeGL() {
   material_->SetParam(sv::kShininess, 10.0f);
 
   // Create a bunch of shapes
-  shapes_.push_back(scene->MakeMesh(base_node, stock.Cone(), material_));
-  shapes_.push_back(scene->MakeMesh(base_node, stock.Cube(), material_));
-  shapes_.push_back(scene->MakeMesh(base_node, stock.Cylinder(), material_));
-  shapes_.push_back(scene->MakeMesh(base_node, stock.Sphere(), material_));
+  shapes_.push_back(scene->MakeDrawNode(base_node, stock.Cone(), material_));
+  shapes_.push_back(scene->MakeDrawNode(base_node, stock.Cube(), material_));
+  shapes_.push_back(scene->MakeDrawNode(base_node, stock.Cylinder(), material_));
+  shapes_.push_back(scene->MakeDrawNode(base_node, stock.Sphere(), material_));
 
-  MeshNode* axes = scene->MakeMesh(base_node);
+  DrawNode* axes = scene->MakeDrawNode(base_node);
   axes->Add(stock.UnitAxes());
   shapes_.push_back(axes);
 
@@ -57,7 +57,7 @@ void StockShapesRenderer::RenderBegin() {
   const QQuaternion rot = QQuaternion::fromAxisAndAngle(
       QVector3D(1, 0, 0), angle_ * 180 / M_PI);
 
-  for (MeshNode* shape : shapes_) {
+  for (DrawNode* shape : shapes_) {
     shape->SetRotation(rot);
   }
 

@@ -27,9 +27,6 @@ class ModelRenderer : public sv::Renderer {
 
     void ClearModel();
 
-    sv::MaterialResource::Ptr material_;
-    std::vector<sv::MeshNode*> shapes_;
-
     std::unique_ptr<sv::ParamWidget> params_;
     sv::GroupNode* node_;
 

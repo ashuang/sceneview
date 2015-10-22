@@ -14,7 +14,7 @@ class QTimer;
 namespace sv {
 
 class CameraNode;
-class MeshNode;
+class DrawNode;
 class Viewport;
 
 /**
@@ -79,7 +79,7 @@ class ViewHandlerHorizontal : public QObject, public InputHandler {
 
     void MakeShape();
 
-    void UpdateMeshTransform();
+    void UpdateShapeTransform();
 
     void UpdateNearFarPlanes();
 
@@ -97,8 +97,8 @@ class ViewHandlerHorizontal : public QObject, public InputHandler {
     QVector3D up_start_;
 
     bool show_look_at_point_;
-    MeshNode* look_at_mesh_;
-    QTimer* hide_mesh_timer_;
+    DrawNode* look_at_shape_;
+    QTimer* hide_shape_timer_;
 
     // Input handler widget
     QWidget* widget_;

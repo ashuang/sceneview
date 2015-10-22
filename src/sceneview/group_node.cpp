@@ -8,7 +8,7 @@
 
 #include "sceneview/camera_node.hpp"
 #include "sceneview/light_node.hpp"
-#include "sceneview/mesh_node.hpp"
+#include "sceneview/draw_node.hpp"
 #include "sceneview/scene.hpp"
 
 namespace sv {
@@ -80,12 +80,12 @@ void GroupNode::CopyAsChildren(Scene* scene, GroupNode* root) {
           node_copy = child;
         }
         break;
-      case SceneNodeType::kMeshNode:
+      case SceneNodeType::kDrawNode:
         {
-          MeshNode* mesh_to_copy =
-            dynamic_cast<MeshNode*>(to_copy);
-          MeshNode* child = scene->MakeMesh(this, Scene::kAutoName);
-          for (const Drawable::Ptr& item : mesh_to_copy->Drawables()) {
+          DrawNode* node_to_copy =
+            dynamic_cast<DrawNode*>(to_copy);
+          DrawNode* child = scene->MakeDrawNode(this, Scene::kAutoName);
+          for (const Drawable::Ptr& item : node_to_copy->Drawables()) {
             child->Add(item);
           }
           node_copy = child;

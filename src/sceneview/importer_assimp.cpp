@@ -12,7 +12,7 @@
 #include <assimp/postprocess.h>
 
 #include "sceneview/group_node.hpp"
-#include "sceneview/mesh_node.hpp"
+#include "sceneview/draw_node.hpp"
 #include "sceneview/stock_resources.hpp"
 
 #if 0
@@ -146,7 +146,7 @@ class Importer {
     std::vector<MaterialResource::Ptr> materials_;
     std::vector<GeometryResource::Ptr> geometries_;
     std::map<GeometryResource::Ptr, MaterialResource::Ptr>
-      mesh_materials_;
+      geometry_materials_;
 };
 
 Importer::Importer(ResourceManager::Ptr resources) : resources_(resources) {
@@ -245,7 +245,7 @@ Scene::Ptr Importer::ImportFile(const QString& fname,
     GeometryResource::Ptr geom = resources_->MakeGeometry();
     geom->Load(gdata);
     geometries_.push_back(geom);
-    mesh_materials_[geometries_.back()] = materials_[mesh->mMaterialIndex];
+    geometry_materials_[geometries_.back()] = materials_[mesh->mMaterialIndex];
   }
 
   // Create the graph structure
@@ -275,15 +275,15 @@ Scene::Ptr Importer::ImportFile(const QString& fname,
     }
     groups.push_back(group);
 
-    // attach meshes to this group
+    // attach draw nodes to this group
     for (size_t mesh_ind = 0; mesh_ind < ai_node->mNumMeshes; ++mesh_ind) {
       const size_t mesh_id = ai_node->mMeshes[mesh_ind];
       assert(mesh_id < geometries_.size());
       GeometryResource::Ptr& geom = geometries_[mesh_id];
-      assert(mesh_materials_.find(geom) != mesh_materials_.end());
-      MaterialResource::Ptr& material = mesh_materials_[geom];
-      MeshNode* mesh = model->MakeMesh(group);
-      mesh->Add(geom, material);
+      assert(geometry_materials_.find(geom) != geometry_materials_.end());
+      MaterialResource::Ptr& material = geometry_materials_[geom];
+      DrawNode* draw_node = model->MakeDrawNode(group);
+      draw_node->Add(geom, material);
     }
 
     // The node transform

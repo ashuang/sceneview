@@ -20,7 +20,7 @@ enum class SceneNodeType {
   kGroupNode,
   kCameraNode,
   kLightNode,
-  kMeshNode
+  kDrawNode
 };
 
 class GroupNode;

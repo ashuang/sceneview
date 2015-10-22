@@ -17,7 +17,7 @@ class QOpenGLTexture;
 namespace sv {
 
 /**
- * Controls the appearance of a mesh or other renderable object.
+ * Controls the appearance of a Drawable.
  *
  * A material resource consists of:
  * - a reference to a shader.

@@ -13,7 +13,7 @@ namespace sv {
 
 class AxisAlignedBox;
 class CameraNode;
-class MeshNode;
+class DrawNode;
 
 class DrawContext {
   public:
@@ -23,7 +23,7 @@ class DrawContext {
     void Draw(CameraNode* camera);
 
   private:
-    void DrawMesh(MeshNode* mesh);
+    void DrawDrawNode(DrawNode* node);
 
     void ActivateMaterial();
 
@@ -45,7 +45,7 @@ class DrawContext {
     QMatrix4x4 model_mat_;
 
     // For debugging
-    MeshNode* bounding_box_mesh_;
+    DrawNode* bounding_box_node_;
     bool draw_bounding_boxes_;
 };
 

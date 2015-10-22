@@ -73,7 +73,7 @@ attributes such as color and texture data.
 
 A geometry resource is not drawable by itself. To make something show up on the
 screen, you need to instantiate a geometry resource together with a material
-resource into a mesh.
+resource into a Drawable object.
 
 See: sv::GeometryResource.
 
@@ -127,7 +127,7 @@ and the following concrete node types:
 - Camera node
 - Group node
 - Light node
-- Mesh node
+- Draw node
 
 See: sv::Scene.
 
@@ -154,15 +154,14 @@ shaders determine the appearance of objects in the scene using the lights.
 
 See: sv::LightNode.
 
-### Mesh {#design_sg_mesh}
+### Draw node {#design_sg_draw_node}
 
-A mesh is the fundamental drawable unit in Sceneview, and consists of one or
-more geometry / material resource pairs.
+A draw node contains a list of Drawable objects that the Sceneview render
+engine draws during each render cycle. A Drawable consists of a geometry and
+material paired together. You can implement custom drawables by subclassing
+Drawable.
 
-To draw something in the scene (e.g., a 3D model, a triangle, a point cloud),
-it must be instantiated into a mesh.
-
-See: sv::MeshNode.
+See: sv::DrawNode.
 
 # Qt widgets {#design_qt_widgets}
 

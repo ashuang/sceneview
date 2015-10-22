@@ -16,7 +16,7 @@
 
 namespace sv {
 
-class MeshNode;
+class DrawNode;
 class GroupNode;
 
 /**
@@ -127,7 +127,7 @@ class TextBillboard {
     MaterialResource::Ptr text_material_;
     GeometryResource::Ptr text_geom_;
     MaterialResource::Ptr depth_write_material_;
-    MeshNode* mesh_;
+    DrawNode* draw_node_;
 
     VAlignment v_align_;
     HAlignment h_align_;

@@ -23,7 +23,7 @@
 #include <sceneview/input_handler_widget_stack.hpp>
 #include <sceneview/light_node.hpp>
 #include <sceneview/material_resource.hpp>
-#include <sceneview/mesh_node.hpp>
+#include <sceneview/draw_node.hpp>
 #include <sceneview/param_widget.hpp>
 #include <sceneview/renderer.hpp>
 #include <sceneview/renderer_widget_stack.hpp>

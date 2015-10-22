@@ -24,7 +24,7 @@ add_library(sceneview SHARED
             input_handler_widget_stack.cpp
             light_node.cpp
             material_resource.cpp
-            mesh_node.cpp
+            draw_node.cpp
             param_widget.cpp
             renderer.cpp
             renderer_widget_stack.cpp
@@ -57,7 +57,7 @@ install(FILES asset_importer.hpp
               input_handler_widget_stack.hpp
               light_node.hpp
               material_resource.hpp
-              mesh_node.hpp
+              draw_node.hpp
               param_widget.hpp
               renderer.hpp
               renderer_widget_stack.hpp
