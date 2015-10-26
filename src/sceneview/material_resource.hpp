@@ -89,8 +89,17 @@ class MaterialResource {
 
     float LineWidth() const { return line_width_; }
 
+    /**
+     * Controls GL_BLEND
+     *
+     * @param value if true, then the GL_BLEND is enabled for this material. If
+     * false, then GL_BLEND is disabled.
+     */
     void SetBlend(bool value) { blend_ = value; }
 
+    /**
+     * Retrieve whether GL_BLEND should be enabled or disabled.
+     */
     bool Blend() const { return blend_; }
 
     void SetBlendFunc(GLenum sfactor, GLenum dfactor) {

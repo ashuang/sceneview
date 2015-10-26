@@ -24,7 +24,16 @@
 #define dbg(...)
 #endif
 
+using std::max;
+
 namespace sv {
+
+struct DrawNodeData {
+  DrawNode* node;
+  float squared_distance;
+  QMatrix4x4 model_mat;
+  AxisAlignedBox aabb;
+};
 
 static void CheckGLErrors(const QString& name) {
   GLenum err_code = glGetError();
@@ -37,6 +46,16 @@ static void CheckGLErrors(const QString& name) {
   }
 }
 
+static double squaredDistanceToAABB(const QVector3D& point,
+    const AxisAlignedBox& box) {
+  const QVector3D center = (box.Max() + box.Min()) / 2;
+  const QVector3D half_sz = (box.Max() - box.Min()) / 2;
+  const QVector3D vec(max(0.0, fabs(center.x() - point.x()) - half_sz.x()),
+                      max(0.0, fabs(center.y() - point.y()) - half_sz.y()),
+                      max(0.0, fabs(center.z() - point.z()) - half_sz.z()));
+  return vec.lengthSquared();
+}
+
 DrawContext::DrawContext(const ResourceManager::Ptr& resources,
     const Scene::Ptr& scene) :
   resources_(resources),
@@ -44,7 +63,7 @@ DrawContext::DrawContext(const ResourceManager::Ptr& resources,
   clear_color_(0, 0, 0, 255),
   cur_camera_(nullptr),
   bounding_box_node_(nullptr),
-  draw_bounding_boxes_(false) {}
+  draw_bounding_boxes_(true) {}
 
 void DrawContext::Draw(CameraNode* camera, std::vector<Renderer*>* prenderers) {
   cur_camera_ = camera;
@@ -76,19 +95,59 @@ void DrawContext::Draw(CameraNode* camera, std::vector<Renderer*>* prenderers) {
       glPopAttrib();
     }
   }
+  const QVector3D& eye = camera->Translation();
 
-  // TODO(albert) sort the draw nodes
+  // For each draw node, compute:
+  //   - model matrix
+  //   - world frame axis aligned bounding box
+  //   - squared distance to camera
+  auto& draw_nodes = scene_->DrawNodes();
+  const int num_draw_nodes = draw_nodes.size();
+  std::vector<DrawNodeData> to_draw;
+  to_draw.reserve(num_draw_nodes);
+  for (int i = 0; i < num_draw_nodes; ++i) {
+    DrawNode* draw_node = draw_nodes[i];
+    DrawNodeData dndata;
+    dndata.node = draw_node;
 
-  // render each draw node
-  for (DrawNode* draw_node : scene_->DrawNodes()) {
-    if (draw_node->Visible()) {
-      DrawDrawNode(draw_node);
+    // Compute the model matrix and check visibility
+    dndata.model_mat = draw_node->GetTransform();
+    bool invisible = !draw_node->Visible();
+    for (SceneNode* node = draw_node->ParentNode(); node; node = node->ParentNode()) {
+      if (!node->Visible()) {
+        invisible = true;
+        break;
+      }
+      dndata.model_mat = node->GetTransform() * dndata.model_mat;
+    }
+    if (invisible) {
+      continue;
     }
 
+    // Compute the world frame axis-aligned bounding box
+    const AxisAlignedBox box_orig = draw_node->GeometryBoundingBox();
+    dndata.aabb = box_orig.Transformed(dndata.model_mat);
+
+    // Compute squared distance to camera
+    dndata.squared_distance = squaredDistanceToAABB(eye, dndata.aabb);
+
+    to_draw.push_back(dndata);
+  }
+
+  // Sort the nodes by distance from camera. Farthest nodes first, so distant
+  // objects are drawn first.
+  std::sort(to_draw.begin(), to_draw.end(),
+      [](const DrawNodeData& dndata_a, const DrawNodeData& dndata_b) {
+        return dndata_a.squared_distance > dndata_b.squared_distance;
+      });
+
+  // Draw each draw node
+  for (DrawNodeData& dndata : to_draw) {
+    model_mat_ = dndata.model_mat;
+    DrawDrawNode(dndata.node);
+
     if (draw_bounding_boxes_) {
-      const AxisAlignedBox box_orig = draw_node->GeometryBoundingBox();
-      const AxisAlignedBox box = box_orig.Transformed(model_mat_);
-      DrawBoundingBox(box);
+      DrawBoundingBox(dndata.aabb);
     }
   }
 
@@ -176,15 +235,6 @@ void DrawContext::PrepareFixedFunctionPipeline() {
 }
 
 void DrawContext::DrawDrawNode(DrawNode* draw_node) {
-  // Compute the model matrix and check visibility
-  model_mat_ = draw_node->GetTransform();
-  for (SceneNode* node = draw_node->ParentNode(); node; node = node->ParentNode()) {
-    model_mat_ = node->GetTransform() * model_mat_;
-    if (!node->Visible()) {
-      return;
-    }
-  }
-
   for (const Drawable::Ptr& drawable : draw_node->Drawables()) {
     geometry_ = drawable->Geometry();
     material_ = drawable->Material();
@@ -461,6 +511,7 @@ void DrawContext::DrawBoundingBox(const AxisAlignedBox& box) {
 
   bounding_box_node_->SetScale(box.Max() - box.Min());
   bounding_box_node_->SetTranslation(box.Min());
+  model_mat_ = bounding_box_node_->GetTransform();
 
   DrawDrawNode(bounding_box_node_);
 }
