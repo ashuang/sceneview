@@ -14,7 +14,7 @@ TextRenderer::TextRenderer(const QString& name, QObject* parent) :
 
 void TextRenderer::InitializeGL() {
   text_billboard_ =
-    TextBillboard::Create(GetResources(), GetScene(), GetBaseNode());
+    TextBillboard::Create(GetViewport(), GetBaseNode());
 
 //  text_billboard_->SetFont(QFont("URW Chancery L"));
   text_billboard_->SetLineHeight(0.4);

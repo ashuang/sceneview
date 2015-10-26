@@ -10,6 +10,8 @@
 
 namespace sv {
 
+class DrawContext;
+
 /**
  * Fundamental drawable unit.
  */
@@ -55,11 +57,20 @@ class Drawable {
      */
     virtual void PostDraw() {}
 
-  private:
+    /**
+     * Called by the render engine to determine the axis-aligned bounding box
+     * of the Drawable, in the Drawable's own coordinate frame.
+     */
+    virtual const AxisAlignedBox& BoundingBox() {
+      return geometry_->BoundingBox();
+    }
+
+  protected:
     Drawable(const GeometryResource::Ptr& geometry,
         const MaterialResource::Ptr& material) :
       geometry_(geometry), material_(material) {}
 
+  private:
     GeometryResource::Ptr geometry_;
     MaterialResource::Ptr material_;
 };

@@ -141,7 +141,7 @@ class GeometryResource {
      */
     GLenum GLMode() const { return gl_mode_; }
 
-    const AxisAlignedBox BoundingBox() const { return bounding_box_; }
+    const AxisAlignedBox& BoundingBox() const { return bounding_box_; }
 
   private:
     friend class ResourceManager;

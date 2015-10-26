@@ -5,23 +5,48 @@
 #include <QColor>
 #include <algorithm>
 
+#include "sceneview/camera_node.hpp"
 #include "sceneview/group_node.hpp"
+#include "sceneview/draw_context.hpp"
 #include "sceneview/draw_node.hpp"
 #include "sceneview/stock_resources.hpp"
+#include "sceneview/viewport.hpp"
 
 namespace sv {
 
-TextBillboard::Ptr TextBillboard::Create(const ResourceManager::Ptr& resources,
-    const Scene::Ptr& scene,
-    GroupNode* parent) {
-  return Ptr(new TextBillboard(resources, scene, parent));
+/**
+ * Use a custom drawable for the text billboard so that we can report a
+ * different bounding box than would be expected by the geometry.
+ */
+class TextBillboardDrawable : public Drawable {
+  public:
+    TextBillboardDrawable(const GeometryResource::Ptr& geometry,
+        const MaterialResource::Ptr& material) :
+      Drawable(geometry, material) {}
+
+    // The bounding box depends on the camera, so recompute it every time
+    // it's requested.
+    const AxisAlignedBox& BoundingBox() override {
+      return aabb_;
+    }
+
+    void SetBoundingBox(const AxisAlignedBox& box) {
+      aabb_ = box;
+    }
+
+  private:
+    AxisAlignedBox aabb_;
+};
+
+TextBillboard::Ptr TextBillboard::Create(Viewport* viewport, GroupNode* parent) {
+  return Ptr(new TextBillboard(viewport, parent));
 }
 
-TextBillboard::TextBillboard(const ResourceManager::Ptr& resources,
-    const Scene::Ptr& scene,
+TextBillboard::TextBillboard(Viewport* viewport,
     GroupNode* parent) :
-  resources_(resources),
-  scene_(scene),
+  viewport_(viewport),
+  resources_(viewport->GetResources()),
+  scene_(viewport->GetScene()),
   parent_(parent),
   v_align_(kVCenter),
   h_align_(kHCenter),
@@ -47,38 +72,43 @@ TextBillboard::TextBillboard(const ResourceManager::Ptr& resources,
   // the background material without having to fudge the depth test or mess with
   // things like glPolygonOffset().
 
-  StockResources stock(resources);
+  StockResources stock(resources_);
 
   // Create the background geometry and material
   ShaderResource::Ptr billboard_uniform_color =
     stock.Shader(StockResources::kBillboardUniformColor);
-  bg_material_ = resources->MakeMaterial(billboard_uniform_color);
+  bg_material_ = resources_->MakeMaterial(billboard_uniform_color);
   bg_material_->SetDepthWrite(false);
   bg_material_->SetParam("color", 0.0, 0.0, 0.0, 0.0);
   bg_material_->SetBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
   // Create geometry for the background and the cap
-  rect_geom_ = resources->MakeGeometry();
+  rect_geom_ = resources_->MakeGeometry();
 
   // Create the text geometry and material
-  text_material_ = resources->MakeMaterial(
+  text_material_ = resources_->MakeMaterial(
       stock.Shader(StockResources::kBillboardTextured));
   text_material_->SetTwoSided(true);
   text_material_->SetParam("text_color", 1.0, 1.0, 1.0, 1.0);
   text_material_->SetBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
   // Create the depth write material
-  depth_write_material_ = resources->MakeMaterial(billboard_uniform_color);
+  depth_write_material_ = resources_->MakeMaterial(billboard_uniform_color);
   depth_write_material_->SetColorWrite(false);
 
-  text_geom_ = resources->MakeGeometry();
+  text_geom_ = resources_->MakeGeometry();
 
   node_ = scene_->MakeGroup(parent_);
   draw_node_ = scene_->MakeDrawNode(node_);
 
-  draw_node_->Add(rect_geom_, bg_material_);
-  draw_node_->Add(text_geom_, text_material_);
-  draw_node_->Add(rect_geom_, depth_write_material_);
+  // Use a custom Drawable to correctly compute the node bounding box.
+  bg_drawable_ = new TextBillboardDrawable(rect_geom_, bg_material_);
+  text_drawable_ = new TextBillboardDrawable(text_geom_, text_material_);
+  depth_write_drawable_ = new TextBillboardDrawable(rect_geom_,
+      depth_write_material_);
+  draw_node_->Add(Drawable::Ptr(bg_drawable_));
+  draw_node_->Add(Drawable::Ptr(text_drawable_));
+  draw_node_->Add(Drawable::Ptr(depth_write_drawable_));
 }
 
 TextBillboard::~TextBillboard() {
@@ -261,6 +291,21 @@ void TextBillboard::Recompute() {
     QVector3D(x1, y1, 0),
   };
   rect_geom_->Load(rdata);
+
+  // Compute a bounding box that will be valid for all camera poses. This box
+  // will generally be much bigger than actually needed, but should always
+  // bound the billboard.
+  //
+  // We could compute the true bounding box at render time, but that would be
+  // more computationally expensive and requires a few matrix multiplications
+  // and lookups every render cycle.
+  const float max_coord = std::max(x1, y1);
+  AxisAlignedBox box(QVector3D(-max_coord, -max_coord, -max_coord),
+      QVector3D(max_coord, max_coord, max_coord));
+
+  bg_drawable_->SetBoundingBox(box);
+  text_drawable_->SetBoundingBox(box);
+  depth_write_drawable_->SetBoundingBox(box);
 }
 
 }  // namespace sv

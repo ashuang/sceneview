@@ -128,7 +128,11 @@ void DrawContext::Draw(CameraNode* camera, std::vector<Renderer*>* prenderers) {
     const AxisAlignedBox box_orig = draw_node->GeometryBoundingBox();
     dndata.aabb = box_orig.Transformed(dndata.model_mat);
 
-    // Compute squared distance to camera
+    // Compute squared distance to camera using the bounding box. If the
+    // bounding box is invalid, then silently skip the object.
+    if (!dndata.aabb.Valid()) {
+      continue;
+    }
     dndata.squared_distance = squaredDistanceToAABB(eye, dndata.aabb);
 
     to_draw.push_back(dndata);

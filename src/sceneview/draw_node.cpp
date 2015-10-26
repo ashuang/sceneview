@@ -32,8 +32,7 @@ AxisAlignedBox DrawNode::BoundingBox(const QMatrix4x4& lhs_transform) {
 AxisAlignedBox DrawNode::GeometryBoundingBox() {
   AxisAlignedBox result;
   for (auto& item : drawables_) {
-    const GeometryResource::Ptr& geometry = item->Geometry();
-    result.IncludeBox(geometry->BoundingBox());
+    result.IncludeBox(item->BoundingBox());
   }
   return result;
 }

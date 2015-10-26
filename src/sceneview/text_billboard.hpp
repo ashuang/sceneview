@@ -16,8 +16,10 @@
 
 namespace sv {
 
+class TextBillboardDrawable;
 class DrawNode;
 class GroupNode;
+class Viewport;
 
 /**
  * A text display that always faces the camera.
@@ -53,9 +55,7 @@ class TextBillboard {
 
     typedef std::shared_ptr<TextBillboard> Ptr;
 
-    static Ptr Create(const ResourceManager::Ptr& resources,
-        const Scene::Ptr& scene,
-        GroupNode* parent);
+    static Ptr Create(Viewport* viewport, GroupNode* parent);
 
     ~TextBillboard();
 
@@ -108,14 +108,13 @@ class TextBillboard {
     GroupNode* Node() { return node_; }
 
   private:
-    TextBillboard(const ResourceManager::Ptr& resources,
-        const Scene::Ptr& scene,
+    TextBillboard(Viewport* viewport,
         GroupNode* parent);
 
     void Recompute();
 
+    Viewport* viewport_;
     ResourceManager::Ptr resources_;
-
     Scene::Ptr scene_;
 
     GroupNode* parent_;
@@ -140,6 +139,10 @@ class TextBillboard {
 
     QFont qfont_;
     std::string text_;
+
+    TextBillboardDrawable* bg_drawable_;
+    TextBillboardDrawable* text_drawable_;
+    TextBillboardDrawable* depth_write_drawable_;
 };
 
 }  // namespace sv
