@@ -5,11 +5,11 @@ Build instructions {#build_instructions}
 
 Install prerequisites
 
-    sudo apt-get install qtbase5-dev libassimp-dev cmake
+    sudo apt-get install qtbase5-dev libassimp-dev cmake build-essential git
 
 Download and build Sceneview
 
-    git clone git@github.com:ashuang/sceneview
+    git clone https://github.com/ashuang/sceneview
     cd sceneview
     mkdir build
     cd build
@@ -28,7 +28,7 @@ Does anyone know how to automatically point CMake to the qt5 install location?
 
 Otherwise:
 
-    git clone git@github.com:ashuang/sceneview
+    git clone https://github.com/ashuang/sceneview
     cd sceneview
     mkdir build
     cd build

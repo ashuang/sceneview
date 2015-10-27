@@ -4,12 +4,12 @@ Sceneview is a visualization toolkit for real time rendering in scientific,
 engineering, and robotics applications.
 
 ## Supported platforms
-- Ubuntu (14.04+)
+- Ubuntu (15.04+)
 - OS/X (via Homebrew)
 
 ## Requirements
 - CMake
-- Qt 5
+- Qt 5.4+
 - Assimp
 
 ## License
