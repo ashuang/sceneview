@@ -57,7 +57,7 @@ void FontResource::Build(const QFont& base_font) {
 
   // Initialize the texture to completely transparent and prepare to draw.
   QPixmap pixmap(width, height);
-  pixmap.fill(QColor(0, 0, 0, 0));
+  pixmap.fill(Qt::transparent);
   QPainter painter(&pixmap);
   painter.setFont(font);
   painter.setPen(Qt::white);

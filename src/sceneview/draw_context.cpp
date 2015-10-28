@@ -63,7 +63,7 @@ DrawContext::DrawContext(const ResourceManager::Ptr& resources,
   clear_color_(0, 0, 0, 255),
   cur_camera_(nullptr),
   bounding_box_node_(nullptr),
-  draw_bounding_boxes_(true) {}
+  draw_bounding_boxes_(false) {}
 
 void DrawContext::Draw(CameraNode* camera, std::vector<Renderer*>* prenderers) {
   cur_camera_ = camera;

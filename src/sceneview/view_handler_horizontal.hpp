@@ -37,6 +37,9 @@ class Viewport;
  * Scrolling the wheel moves the camera closer to or farther from the look at
  * point.
  *
+ * Keyboard up and down arrows move the camera perpendicular to the fundamental
+ * plane (i.e., similar to click-dragging with the middle mouse button).
+ *
  * @ingroup sv_gui
  * @headerfile sceneview/view_handler_horizontal.hpp
  */
@@ -64,6 +67,8 @@ class ViewHandlerHorizontal : public QObject, public InputHandler {
     void MouseMoveEvent(QMouseEvent *event) override;
 
     void WheelEvent(QWheelEvent* event) override;
+
+    void KeyPressEvent(QKeyEvent* event) override;
 
     QWidget* GetWidget() override;
 

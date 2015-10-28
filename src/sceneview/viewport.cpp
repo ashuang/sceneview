@@ -33,6 +33,8 @@ Viewport::Viewport(const ResourceManager::Ptr& resources,
   QSurfaceFormat format = QSurfaceFormat::defaultFormat();
   format.setSamples(2);
   setFormat(format);
+
+  setFocusPolicy(Qt::ClickFocus);
 }
 
 Viewport::~Viewport() {
@@ -169,6 +171,8 @@ void Viewport::keyPressEvent(QKeyEvent* event) {
   if (input_handler_) {
     makeCurrent();
     input_handler_->KeyPressEvent(event);
+  } else {
+    event->ignore();
   }
 }
 

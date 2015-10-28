@@ -45,8 +45,8 @@ TextBillboard::Ptr TextBillboard::Create(Viewport* viewport, GroupNode* parent) 
 TextBillboard::TextBillboard(Viewport* viewport,
     GroupNode* parent) :
   viewport_(viewport),
-  resources_(viewport->GetResources()),
-  scene_(viewport->GetScene()),
+  resources_(viewport_->GetResources()),
+  scene_(viewport_->GetScene()),
   parent_(parent),
   v_align_(kVCenter),
   h_align_(kHCenter),
@@ -90,6 +90,7 @@ TextBillboard::TextBillboard(Viewport* viewport,
       stock.Shader(StockResources::kBillboardTextured));
   text_material_->SetTwoSided(true);
   text_material_->SetParam("text_color", 1.0, 1.0, 1.0, 1.0);
+  text_material_->SetBlend(true);
   text_material_->SetBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
   // Create the depth write material
@@ -139,7 +140,6 @@ void TextBillboard::SetTextColor(const QColor& color) {
       color.greenF(),
       color.blueF(),
       color.alphaF());
-  text_material_->SetBlend(color.alphaF() < 1);
 }
 
 void TextBillboard::SetBackgroundColor(const QColor& color) {

@@ -149,6 +149,28 @@ void ViewHandlerHorizontal::WheelEvent(QWheelEvent* event) {
   viewport_->ScheduleRedraw();
 }
 
+void ViewHandlerHorizontal::KeyPressEvent(QKeyEvent* event) {
+  int direction = 0;
+  if (event->key() == Qt::Key_Up) {
+    direction = 1;
+  } else if (event->key() == Qt::Key_Down) {
+    direction = -1;
+  } else {
+    event->ignore();
+  }
+
+  const int cy = viewport_->height() / 2;
+  const double vfov = camera_->GetVFovDeg() * M_PI / 180;
+  const double vsize_at_pivot = PivotDistance() * tan(vfov / 2);
+  const double vsize_per_pixel = vsize_at_pivot / cy;
+  const QVector3D motion = vsize_per_pixel * zenith_dir_ * direction * 10;
+  const QVector3D new_eye = camera_->Translation() + motion;
+  const QVector3D new_look_at = camera_->GetLookAt() + motion;
+  camera_->LookAt(new_eye, new_look_at, camera_->GetUpDir());
+  UpdateShapeTransform();
+  viewport_->ScheduleRedraw();
+}
+
 QWidget* ViewHandlerHorizontal::GetWidget() {
   if (widget_) {
     return widget_;
