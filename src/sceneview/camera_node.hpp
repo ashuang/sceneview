@@ -3,6 +3,9 @@
 #ifndef BOT3_CAMERA_NODE_HPP__
 #define BOT3_CAMERA_NODE_HPP__
 
+#include <QSize>
+#include <QVector3D>
+
 #include <sceneview/scene_node.hpp>
 
 namespace sv {
@@ -46,6 +49,11 @@ class CameraNode : public SceneNode {
      * to the viewport, the Viewport class automatically calls this method.
      */
     void SetViewportSize(int width, int height);
+
+    /**
+     * Retrieve the viewport size.
+     */
+    QSize GetViewportSize() const;
 
     /**
      * Sets the projection parameters.
@@ -102,6 +110,8 @@ class CameraNode : public SceneNode {
     /**
      * Computes a world-space direction corresponding to the specified
      * screen-space pixel.
+     *
+     * The resulting vector is guaranteed to be unit length.
      */
     QVector3D Unproject(double x, double y);
 

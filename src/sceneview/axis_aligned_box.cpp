@@ -70,6 +70,51 @@ AxisAlignedBox AxisAlignedBox::Transformed(const QMatrix4x4& transform) const {
   return result;
 }
 
+bool Isect1d(double a0, double a1, double b0, double b1,
+    double* r0, double* r1) {
+  if (a1 < b0 || b1 < a0) {
+    return false;
+  }
+  *r1 = (a1 < b1) ? a1 : b1;
+  *r0 = (a0 < b0) ? b0 : a0;
+  return true;
+}
+
+bool AxisAlignedBox::Intersects(const AxisAlignedBox& other) const {
+  if (!Valid() || !other.Valid()) {
+    throw std::invalid_argument("Can't check intersection with an invalid bounding box");
+  }
+  return !(max_.x() < other.min_.x() || min_.x() > other.max_.x() ||
+           max_.y() < other.min_.x() || min_.x() > other.max_.x() ||
+           max_.z() < other.min_.z() || min_.z() > other.max_.z());
+}
+
+AxisAlignedBox AxisAlignedBox::Intersection(const AxisAlignedBox& other) const {
+  if (!Valid() || !other.Valid()) {
+    return AxisAlignedBox();
+  }
+  double x0;
+  double x1;
+  double y0;
+  double y1;
+  double z0;
+  double z1;
+  if (!Isect1d(min_.x(), max_.x(), other.min_.x(), other.max_.x(), &x0, &x1)) {
+    return AxisAlignedBox();
+  }
+  if (!Isect1d(min_.y(), max_.y(), other.min_.y(), other.max_.y(), &y0, &y1)) {
+    return AxisAlignedBox();
+  }
+  if (!Isect1d(min_.z(), max_.z(), other.min_.z(), other.max_.z(), &z0, &z1)) {
+    return AxisAlignedBox();
+  }
+  return AxisAlignedBox(QVector3D(x0, y0, z0), QVector3D(x1, y1, z1));
+}
+
+bool AxisAlignedBox::operator==(const AxisAlignedBox& other) const {
+  return min_ == other.min_ && max_ == other.max_;
+}
+
 QString AxisAlignedBox::ToString() const {
   if (!Valid()) {
     return "invalid";

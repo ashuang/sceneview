@@ -13,6 +13,7 @@ add_library(sceneview SHARED
             internal_gl.cpp
             camera_node.cpp
             draw_context.cpp
+            draw_node.cpp
             expander_widget.cpp
             font_resource.cpp
             geometry_resource.cpp
@@ -24,8 +25,8 @@ add_library(sceneview SHARED
             input_handler_widget_stack.cpp
             light_node.cpp
             material_resource.cpp
-            draw_node.cpp
             param_widget.cpp
+            plane.cpp
             renderer.cpp
             renderer_widget_stack.cpp
             resource_manager.cpp
@@ -95,3 +96,14 @@ add_executable(sv_expander_widget_example
                expander_widget_example.cpp)
 target_link_libraries(sv_expander_widget_example
                       sceneview Qt5::Widgets Qt5::Gui)
+
+if(HAVE_GTEST)
+macro(sv_test name)
+  add_executable(${name}_test ${name}_test.cpp)
+  target_link_libraries(${name}_test sceneview gtest gtest_main)
+  add_test(${name}_test ${EXECUTABLE_OUTPUT_PATH}/${name}_test)
+endmacro()
+
+sv_test(axis_aligned_box)
+sv_test(plane)
+endif()

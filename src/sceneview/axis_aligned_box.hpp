@@ -8,7 +8,8 @@
 namespace sv {
 
 /**
- * An axis-aligned box typically used for bounding box calculations.
+ * An axis-aligned box typically used for bounding box and intersection
+ * calculations.
  *
  * @ingroup sv_scenegraph
  * @headerfile sceneview/axis_aligned_box.hpp
@@ -63,6 +64,26 @@ class AxisAlignedBox {
      * Transforms and axis-aligns the corners of this box.
      */
     AxisAlignedBox Transformed(const QMatrix4x4& transform) const;
+
+    /**
+     * Computes the intersection of this box with another.
+     *
+     * If the intersection is empty, then an invalid box is returned.
+     */
+    AxisAlignedBox Intersection(const AxisAlignedBox& other) const;
+
+    /**
+     * Check if this box intersects with another.
+     */
+    bool Intersects(const AxisAlignedBox& other) const;
+
+    /**
+     * Check if this box is identical to another.
+     */
+    bool operator==(const AxisAlignedBox& other) const;
+
+    bool operator!=(const AxisAlignedBox& other) const {
+      return !(*this == other); }
 
     /**
      * For debugging

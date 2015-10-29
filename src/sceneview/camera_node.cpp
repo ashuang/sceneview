@@ -46,6 +46,10 @@ void CameraNode::SetViewportSize(int width, int height) {
   ComputeProjectionMatrix();
 }
 
+QSize CameraNode::GetViewportSize() const {
+  return QSize(viewport_width_, viewport_height_);
+}
+
 void CameraNode::SetProjectionParams(ProjectionType type,
     double vfov_deg, double z_near, double z_far) {
   if (vfov_deg < 1e-6) {

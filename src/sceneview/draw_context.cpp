@@ -17,6 +17,7 @@
 #include "sceneview/renderer.hpp"
 #include "sceneview/scene_node.hpp"
 #include "sceneview/stock_resources.hpp"
+#include "sceneview/plane.hpp"
 
 #if 0
 #define dbg(fmt, ...) printf(fmt, __VA_ARGS__)
@@ -32,8 +33,69 @@ struct DrawNodeData {
   DrawNode* node;
   float squared_distance;
   QMatrix4x4 model_mat;
-  AxisAlignedBox aabb;
+  AxisAlignedBox world_bbox;
 };
+
+/**
+ * Frustum data structure used for view frustum culling.
+ */
+class Frustum {
+  public:
+    Frustum(CameraNode* camera);
+
+    bool Intersects(const AxisAlignedBox& box);
+
+  private:
+    std::vector<Plane> planes_;
+};
+
+Frustum::Frustum(CameraNode* camera) {
+  // Compute the frustum planes
+  QSize viewport_size = camera->GetViewportSize();
+  const int x1 = viewport_size.width();
+  const int y1 = viewport_size.height();
+
+  const QVector3D top_left = camera->Unproject(0, 0);
+  const QVector3D bot_left = camera->Unproject(0, y1);
+  const QVector3D top_right = camera->Unproject(x1, 0);
+  const QVector3D bot_right = camera->Unproject(x1, y1);
+
+  const QVector3D eye = camera->Translation();
+  const double near = camera->GetZNear();
+  const double far = camera->GetZFar();
+
+  const QVector3D ntl = eye + near * top_left;
+  const QVector3D ntr = eye + near * top_right;
+  const QVector3D nbl = eye + near * bot_left;
+  const QVector3D nbr = eye + near * bot_right;
+  const QVector3D ftl = eye + far * top_left;
+  const QVector3D ftr = eye + far * top_right;
+  const QVector3D fbl = eye + far * bot_left;
+  const QVector3D fbr = eye + far * bot_right;
+
+  planes_.push_back(Plane::FromThreePoints(ntr, ftl, ftr));  // top
+  planes_.push_back(Plane::FromThreePoints(nbr, fbr, fbl));  // bottom
+  planes_.push_back(Plane::FromThreePoints(ntl, nbl, fbl));  // left
+  planes_.push_back(Plane::FromThreePoints(ntr, fbr, nbr));  // right
+  planes_.push_back(Plane::FromThreePoints(ntl, ntr, nbr));  // near
+  planes_.push_back(Plane::FromThreePoints(ftl, fbr, ftr));  // far
+}
+
+bool Frustum::Intersects(const AxisAlignedBox& box) {
+  const QVector3D& bmin = box.Min();
+  const QVector3D& bmax = box.Max();
+  for (const Plane& plane : planes_) {
+    const QVector3D& normal = plane.Normal();
+    const QVector3D test_point(
+        normal.x() > 0 ? bmax.x() : bmin.x(),
+        normal.y() > 0 ? bmax.y() : bmin.y(),
+        normal.z() > 0 ? bmax.z() : bmin.z());
+    if (plane.SignedDistance(test_point) < 0) {
+      return false;
+    }
+  }
+  return true;
+}
 
 static void CheckGLErrors(const QString& name) {
   GLenum err_code = glGetError();
@@ -97,10 +159,13 @@ void DrawContext::Draw(CameraNode* camera, std::vector<Renderer*>* prenderers) {
   }
   const QVector3D& eye = camera->Translation();
 
+  Frustum frustum(cur_camera_);
+
   // For each draw node, compute:
   //   - model matrix
   //   - world frame axis aligned bounding box
   //   - squared distance to camera
+  //   - view frustum intersection
   auto& draw_nodes = scene_->DrawNodes();
   const int num_draw_nodes = draw_nodes.size();
   std::vector<DrawNodeData> to_draw;
@@ -113,7 +178,8 @@ void DrawContext::Draw(CameraNode* camera, std::vector<Renderer*>* prenderers) {
     // Compute the model matrix and check visibility
     dndata.model_mat = draw_node->GetTransform();
     bool invisible = !draw_node->Visible();
-    for (SceneNode* node = draw_node->ParentNode(); node; node = node->ParentNode()) {
+    for (SceneNode* node = draw_node->ParentNode(); node;
+        node = node->ParentNode()) {
       if (!node->Visible()) {
         invisible = true;
         break;
@@ -126,14 +192,20 @@ void DrawContext::Draw(CameraNode* camera, std::vector<Renderer*>* prenderers) {
 
     // Compute the world frame axis-aligned bounding box
     const AxisAlignedBox box_orig = draw_node->GeometryBoundingBox();
-    dndata.aabb = box_orig.Transformed(dndata.model_mat);
+    dndata.world_bbox = box_orig.Transformed(dndata.model_mat);
 
     // Compute squared distance to camera using the bounding box. If the
     // bounding box is invalid, then silently skip the object.
-    if (!dndata.aabb.Valid()) {
+    if (!dndata.world_bbox.Valid()) {
       continue;
     }
-    dndata.squared_distance = squaredDistanceToAABB(eye, dndata.aabb);
+
+    // View frustum culling
+    if (!frustum.Intersects(dndata.world_bbox)) {
+      continue;
+    }
+
+    dndata.squared_distance = squaredDistanceToAABB(eye, dndata.world_bbox);
 
     to_draw.push_back(dndata);
   }
@@ -151,7 +223,7 @@ void DrawContext::Draw(CameraNode* camera, std::vector<Renderer*>* prenderers) {
     DrawDrawNode(dndata.node);
 
     if (draw_bounding_boxes_) {
-      DrawBoundingBox(dndata.aabb);
+      DrawBoundingBox(dndata.world_bbox);
     }
   }
 
