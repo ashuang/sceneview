@@ -6,6 +6,7 @@
 #include <vector>
 
 #include <sceneview/scene_node.hpp>
+#include <sceneview/axis_aligned_box.hpp>
 
 namespace sv {
 
@@ -33,25 +34,14 @@ class GroupNode : public SceneNode {
       return SceneNodeType::kGroupNode; }
 
     /**
-     * Retrieve the bounding box of the individual components, transformed by
-     * this node's transform as well as any transform passed in.
-     *
-     * @param lhs_transform the transform to apply on the left
-     *
-     * If this node's transform is a matrix M,
-     * then this function calculates
-     *
-     * @code
-     * bounding_box(lhs_transform * M * vertices_of(GeometryBoundingBox()));
-     * @endcode
-     */
-    AxisAlignedBox BoundingBox(
-        const QMatrix4x4& lhs_transform = QMatrix4x4());
-
-    /**
      * Retrieve the node's children.
      */
     const std::vector<SceneNode*>& Children() { return children_; }
+
+    const AxisAlignedBox& WorldBoundingBox() override;
+
+  protected:
+    void TransformChanged() override;
 
   private:
     friend class Scene;
@@ -65,6 +55,9 @@ class GroupNode : public SceneNode {
     void RemoveChild(SceneNode* child);
 
     std::vector<SceneNode*> children_;
+
+    AxisAlignedBox bounding_box_;
+    bool bounding_box_dirty_;
 };
 
 }  // namespace sv

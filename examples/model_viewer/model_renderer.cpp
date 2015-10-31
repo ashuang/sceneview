@@ -78,7 +78,7 @@ void ModelRenderer::LoadModelGL() {
 
   // Scale and translate the model so that it fits inside a unit cube
   // centered at the origin.
-  const AxisAlignedBox box = node_->BoundingBox();
+  const AxisAlignedBox& box = model->Root()->WorldBoundingBox();
   const QVector3D span = box.Max() - box.Min();
   const float max_span = std::max(std::max(span.x(), span.y()), span.z());
   const double scale_factor = 1.0 / max_span;

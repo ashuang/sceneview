@@ -4,9 +4,10 @@
 #include <sceneview/sceneview.hpp>
 
 #include "example_input_handler.hpp"
-#include "stock_shapes_renderer.hpp"
 #include "fixed_function_renderer.hpp"
 #include "polylines_renderer.hpp"
+#include "stock_shape_renderer.hpp"
+#include "stock_shape_selector.hpp"
 #include "text_renderer.hpp"
 
 using sv::Viewport;
@@ -15,7 +16,8 @@ using sv::GridRenderer;
 using sv::ViewHandlerHorizontal;
 
 using vis_examples::ExampleInputHandler;
-using vis_examples::StockShapesRenderer;
+using vis_examples::StockShapeRenderer;
+using vis_examples::StockShapeSelector;
 using vis_examples::FixedFunctionRenderer;
 using vis_examples::PolylinesRenderer;
 using vis_examples::TextRenderer;
@@ -35,7 +37,9 @@ int main(int argc, char *argv[]) {
 
   // Add renderers
   viewport->AddRenderer(new GridRenderer("grid", viewport));
-  viewport->AddRenderer(new StockShapesRenderer("example", viewport));
+  StockShapeRenderer* stock_shape_renderer =
+    new StockShapeRenderer("example", viewport);
+  viewport->AddRenderer(stock_shape_renderer);
   viewport->AddRenderer(new FixedFunctionRenderer("fixed_function", viewport));
   viewport->AddRenderer(new TextRenderer("text", viewport));
   viewport->AddRenderer(new PolylinesRenderer("polylines", viewport));
@@ -44,6 +48,8 @@ int main(int argc, char *argv[]) {
   viewport->AddInputHandler(new ViewHandlerHorizontal(viewport,
       QVector3D(0, 0, -1), viewport));
   viewport->AddInputHandler(new ExampleInputHandler(viewport, viewport));
+  viewport->AddInputHandler(new StockShapeSelector(stock_shape_renderer,
+        viewport));
 
   // Renderers and input handlers are all created.
   // Load any previously saved settings.

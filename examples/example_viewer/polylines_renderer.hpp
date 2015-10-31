@@ -8,7 +8,8 @@
 namespace vis_examples {
 
 /**
- * This renderer demonstrates building a draw node with custom geometry.
+ * Demonstrates building a draw node with custom geometry that gets dynamically
+ * updated over time.
  */
 class PolylinesRenderer : public sv::Renderer {
   Q_OBJECT

@@ -8,6 +8,10 @@ using sv::StockResources;
 
 namespace vis_examples {
 
+/**
+ * Demonstrates building a draw node with custom geometry that gets dynamically
+ * updated over time.
+ */
 PolylinesRenderer::PolylinesRenderer(const QString& name, QObject* parent) :
   Renderer(name, parent),
   start_time_(QTime::currentTime()),

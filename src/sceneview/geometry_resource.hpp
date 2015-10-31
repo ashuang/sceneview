@@ -17,6 +17,8 @@
 
 namespace sv {
 
+class Drawable;
+
 /**
  * Geometry description to be used with GeometryResource.
  *
@@ -146,7 +148,13 @@ class GeometryResource {
   private:
     friend class ResourceManager;
 
+    friend class Drawable;
+
     explicit GeometryResource(const QString& name);
+
+    void AddListener(Drawable* drawable);
+
+    void RemoveListener(Drawable* drawable);
 
     const QString name_;
 
@@ -175,6 +183,8 @@ class GeometryResource {
     GLenum index_type_;
 
     AxisAlignedBox bounding_box_;
+
+    std::vector<Drawable*> listeners_;
 };
 
 }  // namespace sv

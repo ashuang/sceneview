@@ -175,8 +175,7 @@ void DrawContext::Draw(CameraNode* camera, std::vector<Renderer*>* prenderers) {
     DrawNodeData dndata;
     dndata.node = draw_node;
 
-    // Compute the model matrix and check visibility
-    dndata.model_mat = draw_node->GetTransform();
+    // Check visibility
     bool invisible = !draw_node->Visible();
     for (SceneNode* node = draw_node->ParentNode(); node;
         node = node->ParentNode()) {
@@ -184,15 +183,16 @@ void DrawContext::Draw(CameraNode* camera, std::vector<Renderer*>* prenderers) {
         invisible = true;
         break;
       }
-      dndata.model_mat = node->GetTransform() * dndata.model_mat;
     }
     if (invisible) {
       continue;
     }
 
+    // Cache the model mat matrix and world frame bounding box
+    dndata.model_mat = draw_node->WorldTransform();
+
     // Compute the world frame axis-aligned bounding box
-    const AxisAlignedBox box_orig = draw_node->GeometryBoundingBox();
-    dndata.world_bbox = box_orig.Transformed(dndata.model_mat);
+    dndata.world_bbox = draw_node->WorldBoundingBox();
 
     // Compute squared distance to camera using the bounding box. If the
     // bounding box is invalid, then silently skip the object.
@@ -587,7 +587,7 @@ void DrawContext::DrawBoundingBox(const AxisAlignedBox& box) {
 
   bounding_box_node_->SetScale(box.Max() - box.Min());
   bounding_box_node_->SetTranslation(box.Min());
-  model_mat_ = bounding_box_node_->GetTransform();
+  model_mat_ = bounding_box_node_->WorldTransform();
 
   DrawDrawNode(bounding_box_node_);
 }

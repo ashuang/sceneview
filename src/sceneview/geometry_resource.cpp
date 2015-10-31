@@ -4,6 +4,8 @@
 
 #include <vector>
 
+#include "drawable.hpp"
+
 #if 0
 #define dbg(fmt, ...) printf(fmt, __VA_ARGS__)
 #else
@@ -172,10 +174,25 @@ void GeometryResource::Load(const GeometryData& data) {
   for (const auto& vertex : data.vertices) {
     bounding_box_.IncludePoint(QVector3D(vertex.x(), vertex.y(), vertex.z()));
   }
+
+  for (Drawable* listener : listeners_) {
+    listener->BoundingBoxChanged();
+  }
 }
 
 QOpenGLBuffer* GeometryResource::IndexBuffer() {
   return num_indices_ ? &index_buffer_ : nullptr;
+}
+
+void GeometryResource::AddListener(Drawable* listener) {
+  listeners_.push_back(listener);
+}
+
+void GeometryResource::RemoveListener(Drawable* listener) {
+  auto iter = std::find(listeners_.begin(), listeners_.end(), listener);
+  if (iter != listeners_.end()) {
+    listeners_.erase(iter);
+  }
 }
 
 }  // namespace sv

@@ -31,6 +31,7 @@
 #include <sceneview/scene.hpp>
 #include <sceneview/scene_node.hpp>
 #include <sceneview/sceneview.hpp>
+#include <sceneview/selection_query.hpp>
 #include <sceneview/shader_resource.hpp>
 #include <sceneview/shader_uniform.hpp>
 #include <sceneview/stock_resources.hpp>

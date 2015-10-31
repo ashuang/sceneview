@@ -12,6 +12,7 @@ add_library(sceneview SHARED
             axis_aligned_box.cpp
             internal_gl.cpp
             camera_node.cpp
+            drawable.cpp
             draw_context.cpp
             draw_node.cpp
             expander_widget.cpp
@@ -32,6 +33,7 @@ add_library(sceneview SHARED
             resource_manager.cpp
             scene.cpp
             scene_node.cpp
+            selection_query.cpp
             shader_resource.cpp
             shader_uniform.cpp
             stock_resources.cpp
@@ -66,6 +68,7 @@ install(FILES asset_importer.hpp
               scene.hpp
               scene_node.hpp
               sceneview.hpp
+              selection_query.hpp
               shader_resource.hpp
               shader_uniform.hpp
               stock_resources.hpp

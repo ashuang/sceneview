@@ -14,7 +14,8 @@
 namespace sv {
 
 GroupNode::GroupNode(const QString& name) :
-  SceneNode(name) {
+  SceneNode(name),
+  bounding_box_dirty_(true) {
 }
 
 SceneNode* GroupNode::AddChild(SceneNode* child) {
@@ -24,26 +25,25 @@ SceneNode* GroupNode::AddChild(SceneNode* child) {
   return child;
 }
 
-AxisAlignedBox GroupNode::BoundingBox(const QMatrix4x4& lhs_transform) {
-  AxisAlignedBox result;
-  const QMatrix4x4 transform = lhs_transform * GetTransform();
-  for (auto& child : children_) {
-    AxisAlignedBox box;
-    switch (child->NodeType()) {
-      case SceneNodeType::kGroupNode:
-        box = static_cast<GroupNode*>(child)->BoundingBox(transform);
-        break;
-      case SceneNodeType::kDrawNode:
-        box = static_cast<DrawNode*>(child)->BoundingBox(transform);
-        break;
-      default:
-        break;
+const AxisAlignedBox& GroupNode::WorldBoundingBox() {
+  if (bounding_box_dirty_) {
+    bounding_box_ = AxisAlignedBox();
+    for (SceneNode* child : children_) {
+      const AxisAlignedBox& child_box = child->WorldBoundingBox();
+      if (child_box.Valid()) {
+        bounding_box_.IncludeBox(child_box);
+      }
     }
-    if (box.Valid()) {
-      result.IncludeBox(box);
-    }
+    bounding_box_dirty_ = false;
   }
-  return result;
+  return bounding_box_;
+}
+
+void GroupNode::TransformChanged() {
+  SceneNode::TransformChanged();
+  for (SceneNode* child : children_) {
+    child->TransformChanged();
+  }
 }
 
 void GroupNode::CopyAsChildren(Scene* scene, GroupNode* root) {

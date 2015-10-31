@@ -138,6 +138,8 @@ class CameraNode : public SceneNode {
      */
     QMatrix4x4 GetViewProjectionMatrix();
 
+    const AxisAlignedBox& WorldBoundingBox() override;
+
   private:
     friend class Scene;
 
@@ -148,6 +150,8 @@ class CameraNode : public SceneNode {
     void SetTranslation(const QVector3D& vec) override;
 
     void SetRotation(const QQuaternion& quat) override;
+
+    static const AxisAlignedBox kBoundingBox;
 
     QVector3D look_;
     QVector3D up_;

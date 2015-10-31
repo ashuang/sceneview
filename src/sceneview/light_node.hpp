@@ -91,10 +91,14 @@ class LightNode : public SceneNode {
      */
     void SetScale(const QVector3D& vec) override;
 
+    const AxisAlignedBox& WorldBoundingBox() override;
+
   private:
     friend class Scene;
 
     explicit LightNode(const QString& name);
+
+    static const AxisAlignedBox kBoundingBox;
 
     LightType light_type_;
     QVector3D direction_;

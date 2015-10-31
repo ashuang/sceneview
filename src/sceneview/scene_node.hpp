@@ -57,30 +57,27 @@ class SceneNode {
     const QString Name() const { return node_name_; }
 
     /**
-     * Retrieve the translation component of the node transform.
+     * Retrieve the translation component of the node to parent transform.
      */
     const QVector3D& Translation() const { return translation_; }
 
     /**
-     * Retrieve the rotation component of the node transform.
+     * Retrieve the rotation component of the node to parent transform.
      */
     const QQuaternion& Rotation() const { return rotation_; }
 
     /**
-     * Retrieve the scale component of the node transform.
+     * Retrieve the scale component of the node to parent transform.
      */
     const QVector3D& Scale() const { return scale_; }
 
     /**
-     * Retrieve the node transform.
+     * Retrieve the transform from node coordinates to world coordinates.
      *
-     * Internally, the node transform is represented as the matrix:
-     * M = T * R * S
-     *
-     * where T is a translation matrix, R is a rotation matrix, and S is a
-     * scale matrix.
+     * The world transform is obtained by chaining the node to parent
+     * transforms of all nodes from this node until the root.
      */
-    const QMatrix4x4& GetTransform();
+    const QMatrix4x4& WorldTransform();
 
     /**
      * Check if the node is visible or not.
@@ -100,17 +97,17 @@ class SceneNode {
     }
 
     /**
-     * Sets the rotation component of the node transform.
+     * Sets the rotation component of the node to parent transform.
      */
     virtual void SetRotation(const QQuaternion& quat);
 
     /**
-     * Sets the scale component of the node transform.
+     * Sets the scale component of the node to parent transform.
      */
     virtual void SetScale(const QVector3D& vec);
 
     /**
-     * Sets the scale component of the node transform.
+     * Sets the scale component of the node to parent transform.
      */
     void SetScale(double x, double y, double z) {
       SetScale(QVector3D(x, y, z));
@@ -135,24 +132,65 @@ class SceneNode {
      */
     void SetParentNode(GroupNode* parent);
 
+    /**
+     * Sets the selection mask for this node.
+     *
+     * The default selection mask for all nodes is 0.
+     *
+     * For information on how to use this, see SelectionQuery.
+     */
+    void SetSelectionMask(int64_t mask) { selection_mask_ = mask; }
+
+    /**
+     * Retrieve the selection mask for this node.
+     */
+    int64_t GetSelectionMask() const { return selection_mask_; }
+
+    /**
+     * Retrieve the world-space bounding box of the node and all of its
+     * children (if applicable).
+     *
+     * Used internally in view frustum culling and selection queries.
+     */
+    virtual const AxisAlignedBox& WorldBoundingBox() = 0;
+
   protected:
     /**
      * Constructs a scene node with an identity transform.
      */
     explicit SceneNode(const QString& name);
 
+    /**
+     * Internal method, used to enable lazy matrix computations.
+     * Called when the node's transform changes (e.g., via SetTranslation,
+     * SetRotation, or SetScale) or when a parent's transform changes. Also
+     * triggers a call to BoundingBoxChanged()
+     */
+    virtual void TransformChanged();
+
+    /**
+     * Internal method, used to enable lazy bounding box computations.
+     * Called when the node's bounding box changes, or when a child's bounding
+     * box changes.
+     */
+    virtual void BoundingBoxChanged();
+
   private:
+    friend class GroupNode;
+
     const QString node_name_;
 
     QVector3D translation_;
     QQuaternion rotation_;
     QVector3D scale_;
 
-    QMatrix4x4 transform_;
+    QMatrix4x4 to_world_;
+    bool to_world_dirty_;
 
     GroupNode* parent_node_;
 
     bool visible_;
+    int64_t selection_mask_;
 };
 
 }  // namespace sv

@@ -12,6 +12,8 @@ namespace sv {
 
 class DrawContext;
 
+class DrawNode;
+
 /**
  * Fundamental drawable unit.
  */
@@ -20,6 +22,8 @@ class Drawable {
     typedef std::shared_ptr<Drawable> Ptr;
 
   public:
+    virtual ~Drawable();
+
     static Ptr Create(const GeometryResource::Ptr& geometry,
         const MaterialResource::Ptr& material) {
       return Ptr(new Drawable(geometry, material));
@@ -28,6 +32,8 @@ class Drawable {
     const GeometryResource::Ptr& Geometry() { return geometry_; }
 
     const MaterialResource::Ptr& Material() { return material_; }
+
+    virtual void SetMaterial(const MaterialResource::Ptr& material);
 
     /**
      * Called by the render engine just before rendering the geometry
@@ -67,10 +73,24 @@ class Drawable {
 
   protected:
     Drawable(const GeometryResource::Ptr& geometry,
-        const MaterialResource::Ptr& material) :
-      geometry_(geometry), material_(material) {}
+        const MaterialResource::Ptr& material);
+
+    /**
+     * Call this when the bounding box changes.
+     */
+    void BoundingBoxChanged();
 
   private:
+    friend class DrawNode;
+
+    friend class GeometryResource;
+
+    void AddListener(DrawNode* listener);
+
+    void RemoveListener(DrawNode* listener);
+
+    std::vector<DrawNode*> listeners_;
+
     GeometryResource::Ptr geometry_;
     MaterialResource::Ptr material_;
 };

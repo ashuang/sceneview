@@ -9,6 +9,8 @@
 
 namespace sv {
 
+const AxisAlignedBox CameraNode::kBoundingBox;
+
 CameraNode::CameraNode(const QString& name) :
   SceneNode(name),
   look_(),
@@ -197,6 +199,10 @@ QMatrix4x4 CameraNode::GetViewMatrix() {
 
 QMatrix4x4 CameraNode::GetViewProjectionMatrix() {
   return projection_matrix_ * GetViewMatrix();
+}
+
+const AxisAlignedBox& CameraNode::WorldBoundingBox() {
+  return kBoundingBox;
 }
 
 void CameraNode::ComputeProjectionMatrix() {

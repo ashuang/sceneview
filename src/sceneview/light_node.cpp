@@ -4,6 +4,8 @@
 
 namespace sv {
 
+const AxisAlignedBox LightNode::kBoundingBox;
+
 LightNode::LightNode(const QString& name) :
   SceneNode(name),
   light_type_(LightType::kPoint),
@@ -18,6 +20,10 @@ void LightNode::SetScale(const QVector3D& vec) {
     throw std::invalid_argument("not allowed");
   }
   SceneNode::SetScale(vec);
+}
+
+const AxisAlignedBox& LightNode::WorldBoundingBox() {
+  return kBoundingBox;
 }
 
 }  // namespace sv

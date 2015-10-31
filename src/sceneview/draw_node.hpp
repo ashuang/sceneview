@@ -14,6 +14,8 @@
 
 namespace sv {
 
+class Drawable;
+
 /**
  * Scene node that contains a list of drawable objects.
  *
@@ -22,7 +24,7 @@ namespace sv {
  */
 class DrawNode : public SceneNode {
   public:
-    virtual ~DrawNode() {}
+    virtual ~DrawNode();
 
     SceneNodeType NodeType() const override { return SceneNodeType::kDrawNode; }
 
@@ -51,31 +53,22 @@ class DrawNode : public SceneNode {
      */
     const std::vector<Drawable::Ptr>& Drawables() const;
 
-    /**
-     * Retrieve the bounding box of the individual components, transformed by
-     * this node's transform as well as any transform passed in.
-     *
-     * @param lhs_transform the transform to apply on the left
-     *
-     * If this node's transform is a matrix M, then this function calculates:
-     *
-     * @code
-     * GeometryBoundingBox().Transformed(lhs * M);
-     * @endcode
-     */
-    AxisAlignedBox BoundingBox(const QMatrix4x4& lhs = QMatrix4x4());
+    const AxisAlignedBox& WorldBoundingBox() override;
 
-    /**
-     * Retrieve the bounding box of the individual components, untransformed.
-     */
-    AxisAlignedBox GeometryBoundingBox();
+  protected:
+    void BoundingBoxChanged() override;
 
   private:
     friend class Scene;
 
+    friend class Drawable;
+
     explicit DrawNode(const QString& name);
 
     std::vector<Drawable::Ptr> drawables_;
+
+    AxisAlignedBox bounding_box_;
+    bool bounding_box_dirty_;
 };
 
 }  // namespace sv

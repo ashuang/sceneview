@@ -18,7 +18,8 @@ add_executable(sv_example_viewer
                polylines_renderer.cpp
                example_input_handler.cpp
                fixed_function_renderer.cpp
-               stock_shapes_renderer.cpp
+               stock_shape_selector.cpp
+               stock_shape_renderer.cpp
                text_renderer.cpp)
 
 target_link_libraries(sv_example_viewer
