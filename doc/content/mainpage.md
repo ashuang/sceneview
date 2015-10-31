@@ -13,5 +13,5 @@ scientific, engineering, and robotics applications.
 
 The three requirements for Sceneview are:
 - CMake (build system)
-- Qt 5
+- Qt 5.4+
 - Assimp

@@ -4,7 +4,7 @@ Sceneview is a visualization toolkit for real time rendering in scientific,
 engineering, and robotics applications.
 
 ## Supported platforms
-- Ubuntu (15.04+)
+- Ubuntu (14.04+)
 - OS/X (via Homebrew)
 
 ## Requirements
