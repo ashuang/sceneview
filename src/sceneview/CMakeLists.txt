@@ -62,6 +62,7 @@ install(FILES asset_importer.hpp
               material_resource.hpp
               draw_node.hpp
               param_widget.hpp
+              plane.hpp
               renderer.hpp
               renderer_widget_stack.hpp
               resource_manager.hpp

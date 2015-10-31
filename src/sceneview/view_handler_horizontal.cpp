@@ -33,6 +33,7 @@ ViewHandlerHorizontal::ViewHandlerHorizontal(Viewport* viewport,
   show_look_at_point_(true),
   look_at_shape_(nullptr),
   hide_shape_timer_(nullptr),
+  allow_azimuth_elevation_control_(true),
   widget_(nullptr) {
 }
 
@@ -89,7 +90,7 @@ void ViewHandlerHorizontal::MouseMoveEvent(QMouseEvent *event) {
         up_start_);
     UpdateShapeTransform();
     viewport_->ScheduleRedraw();
-  } else if (buttons & Qt::RightButton) {
+  } else if (buttons & Qt::RightButton && allow_azimuth_elevation_control_) {
     // Rotate about the pivot
     const QVector3D look_at = camera_->GetLookAt();
     const QVector3D left = QVector3D::crossProduct(
@@ -209,6 +210,14 @@ QWidget* ViewHandlerHorizontal::GetWidget() {
     });
 
   return widget_;
+}
+
+void ViewHandlerHorizontal::SetShowLookAtPoint(bool val) {
+  show_look_at_point_ = val;
+}
+
+void ViewHandlerHorizontal::SetAllowAzimuthElevationControl(bool val) {
+  allow_azimuth_elevation_control_ = val;
 }
 
 double ViewHandlerHorizontal::PivotDistance() const {

@@ -4,10 +4,10 @@ namespace sv {
 
 Plane::Plane() : normal_(0, 0, 0), d_(0) {}
 
-Plane::Plane(double a, double b, double c, double d) {
+Plane::Plane(float a, float b, float c, float d) {
   const QVector3D normal(a, b, c);
-  const double mag = normal.length();
-  if (mag < 1e-9) {
+  const float mag = normal.length();
+  if (mag < 1e-8) {
     normal_ = normal;
     d_ = d;
   } else {
@@ -16,7 +16,7 @@ Plane::Plane(double a, double b, double c, double d) {
   }
 }
 
-Plane::Plane(const QVector3D& normal, double d) :
+Plane::Plane(const QVector3D& normal, float d) :
   Plane(normal.x(), normal.y(), normal.z(), d) {}
 
 Plane Plane::FromThreePoints(const QVector3D& p1, const QVector3D& p2,
@@ -27,7 +27,7 @@ Plane Plane::FromThreePoints(const QVector3D& p1, const QVector3D& p2,
   return Plane(normal, -QVector3D::dotProduct(normal, p1));
 }
 
-double Plane::SignedDistance(const QVector3D& point) const {
+float Plane::SignedDistance(const QVector3D& point) const {
   return QVector3D::dotProduct(normal_, point) + d_;
 }
 
