@@ -50,7 +50,7 @@ install location for Qt5 in /opt.
 
 ## Ubuntu 12.04 LTS {#build_instructions_ubuntu_precise}
 
-Instructions here are similar to Ubuntu 12.04. Instead of using
+Instructions here are similar to Ubuntu 14.04. Instead of using
 `ppa:beineri/opt-qt55-trusty`, use `ppa:beineri/opt-qt551`
 
 # OS/X (via Homebrew) {#build_instructions_osx_homebrew}
