@@ -32,6 +32,13 @@ varying vec4 diffuse;
 varying vec4 specular;
 #endif
 
+#ifdef TEX_DIFFUSE_0
+// Texture coordinates
+attribute mediump vec2 sv_tex_coords_0;
+
+varying mediump vec2 diffuse_texc;
+#endif
+
 void main(void)
 {
   normal = normalize(sv_model_normal_mat * sv_normal);
@@ -41,6 +48,10 @@ void main(void)
   shininess = sv_shininess;
   diffuse = sv_diffuse;
   specular = sv_specular;
+#endif
+
+#ifdef TEX_DIFFUSE_0
+  diffuse_texc = sv_tex_coords_0;
 #endif
 
   gl_Position = sv_mvp_mat * sv_vert_pos;

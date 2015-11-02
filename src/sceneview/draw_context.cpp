@@ -491,9 +491,9 @@ void DrawContext::ActivateMaterial() {
 
   // Load textures
   unsigned int texunit = 0;
-  for (auto& item : *(material_->GetTextures())) {
+  for (auto& item : material_->GetTextures()) {
     const QString& texname = item.first;
-    QOpenGLTexture* texture = item.second;
+    const std::shared_ptr<QOpenGLTexture>& texture = item.second;
     texture->bind(texunit);
     program_->setUniformValue(texname.toStdString().c_str(), texunit);
   }

@@ -87,7 +87,7 @@ class FontResource {
     /**
      * Retrieve the texture.
      */
-    QOpenGLTexture* Texture() { return texture_.get(); }
+    const std::shared_ptr<QOpenGLTexture>& Texture() { return texture_; }
 
     /**
      * Retrieve parameters on how to draw the specified character.
@@ -111,7 +111,7 @@ class FontResource {
 
     CharData char_data_[256];
 
-    std::unique_ptr<QOpenGLTexture> texture_;
+    std::shared_ptr<QOpenGLTexture> texture_;
 };
 
 }  // namespace sv

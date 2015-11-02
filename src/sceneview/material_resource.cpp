@@ -67,8 +67,8 @@ void MaterialResource::SetParam(const QString& name,
   SUMapSet(&shader_parameters_, name, val);
 }
 
-void MaterialResource::SetTexture(const QString& name,
-    QOpenGLTexture* texture) {
+void MaterialResource::AddTexture(const QString& name,
+    const MaterialResource::TexturePtr& texture) {
   if (texture == nullptr) {
     auto iter = textures_.find(name);
     if (iter != textures_.end()) {

@@ -11,12 +11,19 @@
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
 
+#include <QFileInfo>
+#include <QDir>
+#include <QImage>
+#include <QOpenGLTexture>
+#include <QRegularExpression>
+
 #include "sceneview/group_node.hpp"
 #include "sceneview/draw_node.hpp"
 #include "sceneview/stock_resources.hpp"
 
-#if 0
-#define dbg(...) printf(__VA_ARGS__)
+//#define DBG
+#ifdef DBG
+#define dbg(...) do { printf(__VA_ARGS__); printf("\n"); } while(0)
 #else
 #define dbg(...)
 #endif
@@ -25,9 +32,9 @@ namespace sv {
 
 namespace {
 
-struct AssimpMaterial {
-  explicit AssimpMaterial(const aiMaterial& mat);
+// ### AssimpMaterial
 
+struct AssimpMaterial {
   void Print() const;
 
   std::vector<float> diffuse;
@@ -61,6 +68,7 @@ struct AssimpMaterial {
 
   float index_of_refraction;
 
+  std::vector<std::shared_ptr<QOpenGLTexture>> tex_diffuse;
   // TODO(albert) add texture fields
 };
 
@@ -73,44 +81,6 @@ static bool LoadColor(const aiMaterial& mat,
   (*result)[1] = ai_color.g;
   (*result)[2] = ai_color.b;
   return success;
-}
-
-AssimpMaterial::AssimpMaterial(const aiMaterial& mat) :
-  diffuse({0, 0, 0}),
-  specular({0, 0, 0}),
-  ambient({0, 0, 0}),
-  emissive({0, 0, 0}),
-  transparent({0, 0, 0}),
-  wireframe(false),
-  two_sided(false) {
-  have_diffuse = LoadColor(mat, AI_MATKEY_COLOR_DIFFUSE, &diffuse);
-  have_specular = LoadColor(mat, AI_MATKEY_COLOR_SPECULAR, &specular);
-  have_ambient = LoadColor(mat, AI_MATKEY_COLOR_AMBIENT, &ambient);
-  have_emissive = LoadColor(mat, AI_MATKEY_COLOR_EMISSIVE, &emissive);
-  have_transparent = LoadColor(mat, AI_MATKEY_COLOR_TRANSPARENT, &transparent);
-
-  int wireframe_int;
-  const bool have_wireframe =
-    mat.Get(AI_MATKEY_ENABLE_WIREFRAME, wireframe_int);
-  if (have_wireframe) {
-    wireframe = wireframe_int != 0;
-  }
-
-  int two_sided_int;
-  mat.Get(AI_MATKEY_TWOSIDED, two_sided_int);
-  two_sided = two_sided_int != 0;
-
-  mat.Get(AI_MATKEY_SHADING_MODEL, shading_model);
-
-  mat.Get(AI_MATKEY_BLEND_FUNC, blend_func);
-
-  mat.Get(AI_MATKEY_OPACITY, opacity);
-
-  mat.Get(AI_MATKEY_SHININESS, shininess);
-
-  mat.Get(AI_MATKEY_SHININESS_STRENGTH, shininess_strength);
-
-  mat.Get(AI_MATKEY_REFRACTI, index_of_refraction);
 }
 
 void AssimpMaterial::Print() const {
@@ -134,6 +104,28 @@ void AssimpMaterial::Print() const {
   printf("  index of refraction: %f\n", index_of_refraction);
 }
 
+// ### Texture shader
+ShaderResource::Ptr TextureShader(const ResourceManager::Ptr& resources) {
+  const QString shader_name = "sv_stock_shader:assimp_textured";
+
+  ShaderResource::Ptr shader = resources->GetShader(shader_name);
+  if (shader) {
+    return shader;
+  }
+
+  shader = resources->MakeShader(shader_name);
+  shader->LoadFromFiles(":sceneview/stock_shaders/lighting",
+      "#define COLOR_UNIFORM\n"
+      "#define TEX_DIFFUSE_0\n");
+
+  if (!shader) {
+    shader.reset();
+  }
+  return shader;
+}
+
+// ### Importer
+
 class Importer {
   public:
     explicit Importer(ResourceManager::Ptr resources);
@@ -141,7 +133,16 @@ class Importer {
     Scene::Ptr ImportFile(const QString& fname, const QString& scene_name);
 
   private:
+    AssimpMaterial LoadMaterial(const aiMaterial& mat);
+
+    void LoadTexture(const aiMaterial& ai_mat,
+        const aiTextureType tex_type,
+        const int tex_ind,
+        AssimpMaterial* mat);
+
     ResourceManager::Ptr resources_;
+    QString fname_;
+
     const struct aiScene* ai_scene_;
     std::vector<MaterialResource::Ptr> materials_;
     std::vector<GeometryResource::Ptr> geometries_;
@@ -171,6 +172,8 @@ Scene::Ptr Importer::ImportFile(const QString& fname,
     return nullptr;
   }
 
+  fname_ = fname;
+
   Scene::Ptr model = resources_->MakeScene(scene_name);
 
   StockResources stock(resources_);
@@ -178,47 +181,58 @@ Scene::Ptr Importer::ImportFile(const QString& fname,
   // Add materials
   for (size_t mat_index = 0; mat_index < ai_scene_->mNumMaterials;
       ++mat_index) {
-    const AssimpMaterial ai_mat(*ai_scene_->mMaterials[mat_index]);
+    const aiMaterial* mat = ai_scene_->mMaterials[mat_index];
+    const AssimpMaterial am_mat = LoadMaterial(*mat);
 
-#if dbg
-    dbg("material: %d\n", static_cast<int>(mat_index));
-    ai_mat.Print();
+#if DBG
+    dbg("material: %d", static_cast<int>(mat_index));
+    am_mat.Print();
 #endif
 
-    MaterialResource::Ptr material =
-      stock.NewMaterial(StockResources::kUniformColorLighting);
+    MaterialResource::Ptr material;
+
+    // The appropriate shader to load depends on whether the material has a
+    // texture or not.
+    if (!am_mat.tex_diffuse.empty()) {
+      ShaderResource::Ptr shader = TextureShader(resources_);
+      material = resources_->MakeMaterial(shader);
+
+      material->AddTexture("diffuse_tex_0", am_mat.tex_diffuse.front());
+      // TODO(albert) allow more than one texture
+      // TODO(albert) allow more than diffuse textures.
+    } else {
+      material = stock.NewMaterial(StockResources::kUniformColorLighting);
+    }
 
     material->SetParam("diffuse",
-        ai_mat.diffuse[0],
-        ai_mat.diffuse[1],
-        ai_mat.diffuse[2],
-        ai_mat.opacity);
+        am_mat.diffuse[0],
+        am_mat.diffuse[1],
+        am_mat.diffuse[2],
+        am_mat.opacity);
     material->SetParam("specular",
-        ai_mat.specular[0],
-        ai_mat.specular[1],
-        ai_mat.specular[2],
-        ai_mat.opacity);
-//    material->SetParam("ambient", ai_mat.ambient);
+        am_mat.specular[0],
+        am_mat.specular[1],
+        am_mat.specular[2],
+        am_mat.opacity);
+//    material->SetParam("ambient", am_mat.ambient);
     material->SetParam("shininess",
-        ai_mat.shininess * ai_mat.shininess_strength);
+        am_mat.shininess * am_mat.shininess_strength);
 
-    material->SetTwoSided(ai_mat.two_sided);
+    material->SetTwoSided(am_mat.two_sided);
 
     materials_.push_back(material);
   }
-
-  // TODO(albert) add textures
 
   // Add meshes
   for (size_t mesh_index = 0; mesh_index < ai_scene_->mNumMeshes;
       ++mesh_index) {
     const aiMesh* mesh = ai_scene_->mMeshes[mesh_index];
 
-    dbg("Loading mesh %d / %d\n", static_cast<int>(mesh_index),
+    dbg("Loading mesh %d / %d", static_cast<int>(mesh_index),
         static_cast<int>(ai_scene_->mNumMeshes));
 
     if (mesh->mPrimitiveTypes != aiPrimitiveType_TRIANGLE) {
-      dbg("Skipping mesh %d - not of type TRIANGLE\n",
+      dbg("Skipping mesh %d - not of type TRIANGLE",
           static_cast<int>(mesh_index));
       continue;
     }
@@ -233,6 +247,19 @@ Scene::Ptr Importer::ImportFile(const QString& fname,
       gdata.normals.emplace_back(ai_normal.x, ai_normal.y, ai_normal.z);
     }
 
+    const MaterialResource::Ptr& material = materials_[mesh->mMaterialIndex];
+
+    // Load texture coordinates
+    const int tex_set = 0;
+    std::vector<QVector2D>& tex_coords = gdata.tex_coords_0;
+    if (mesh->HasTextureCoords(tex_set)) {
+      const aiVector3D* ai_tex_coords = mesh->mTextureCoords[tex_set];
+      for (size_t vert_ind = 0; vert_ind < mesh->mNumVertices; ++vert_ind) {
+        const aiVector3D& tex_uvw = ai_tex_coords[vert_ind];
+        tex_coords.emplace_back(tex_uvw.x, tex_uvw.y);
+      }
+    }
+
     // Add faces
     for (size_t face_ind = 0; face_ind < mesh->mNumFaces; ++face_ind) {
       const aiFace& ai_face = mesh->mFaces[face_ind];
@@ -245,7 +272,7 @@ Scene::Ptr Importer::ImportFile(const QString& fname,
     GeometryResource::Ptr geom = resources_->MakeGeometry();
     geom->Load(gdata);
     geometries_.push_back(geom);
-    geometry_materials_[geometries_.back()] = materials_[mesh->mMaterialIndex];
+    geometry_materials_[geometries_.back()] = material;
   }
 
   // Create the graph structure
@@ -299,31 +326,142 @@ Scene::Ptr Importer::ImportFile(const QString& fname,
     node_mapping[ai_node] = group;
   }
 
-  dbg("loaded %d nodes\n", static_cast<int>(groups.size()));
+  dbg("loaded %d nodes", static_cast<int>(groups.size()));
 
-#if dbg
+#if DBG
   for (size_t i = 0; i < groups.size(); ++i) {
-    dbg("node %d\n", static_cast<int>(i));
+    dbg("node %d", static_cast<int>(i));
     GroupNode* group = groups[i];
     const QVector3D pos = group->Translation();
     const QQuaternion rot = group->Rotation();
     const QVector3D scale = group->Scale();
-    dbg("   children: %d\n", static_cast<int>(group->Children().size()));
-    dbg("   pos   %.3f, %.3f, %.3f\n", pos.x(), pos.y(), pos.z());
-    dbg("   quat  %.3f, %.3f, %.3f, %.3f\n",
-        rot.x(), rot.y(), rot.z(), rot.w());
-    dbg("   scale %.3f, %.3f, %.3f\n", scale.x(), scale.y(), scale.z());
-    AxisAlignedBox box = group->BoundingBox();
-    dbg("    bounding box: %s\n", box.ToString().c_str());
+    dbg("   children: %d", static_cast<int>(group->Children().size()));
+    dbg("   pos   %.3f, %.3f, %.3f", pos.x(), pos.y(), pos.z());
+    dbg("   quat  %.3f, %.3f, %.3f, %.3f",
+        rot.x(), rot.y(), rot.z(), rot.scalar());
+    dbg("   scale %.3f, %.3f, %.3f", scale.x(), scale.y(), scale.z());
+    AxisAlignedBox box = group->WorldBoundingBox();
+    dbg("    bounding box: %s", box.ToString().toStdString().c_str());
   }
 
   GroupNode* group = model->Root();
-  AxisAlignedBox box = group->BoundingBox();
-  dbg("model: %d children\n", static_cast<int>(group->Children().size()));
-  dbg("    bounding box: %s\n", box.ToString().c_str());
+  AxisAlignedBox box = group->WorldBoundingBox();
+  dbg("model: %d children", static_cast<int>(group->Children().size()));
+  dbg("    bounding box: %s", box.ToString().toStdString().c_str());
 #endif
 
   return model;
+}
+
+void Importer::LoadTexture(const aiMaterial& ai_mat,
+    const aiTextureType tex_type,
+    const int tex_ind,
+    AssimpMaterial* mat) {
+
+  aiString ai_path;
+  aiTextureMapping ai_mapping;
+  unsigned int ai_uvindex;
+  float blend = -1;
+  aiTextureOp ai_texture_op;
+  aiTextureMapMode ai_mapmode[3];
+
+  // Set invalid values to enable detecting if a value wasn't read.
+  memset(&ai_mapping, 0xFF, sizeof(ai_mapping));
+  memset(&ai_texture_op, 0xFF, sizeof(ai_texture_op));
+  memset(&ai_mapmode, 0xFF, sizeof(ai_mapmode));
+
+  const aiReturn status = ai_mat.GetTexture(tex_type,
+      tex_ind, &ai_path, &ai_mapping, &ai_uvindex,
+      &blend, &ai_texture_op, ai_mapmode);
+  if (status != aiReturn_SUCCESS) {
+    dbg("Failed to load texture information");
+    return;
+  }
+  if (ai_mapping != aiTextureMapping_UV) {
+    dbg("texture map mode %d not supported", ai_mapping);
+    return;
+  }
+  if (blend < 0 || blend > 1) {
+    blend = 1.0f;
+  }
+  // TODO(albert) use ai_mapmoed
+
+  // Try to Load the texture file.
+  QDir dir = QFileInfo(fname_).dir();
+  QString tex_fname = dir.absolutePath() + "/" +
+      QString(ai_path.C_Str()).remove(QRegularExpression("^/+"));
+  QFile tex_file(tex_fname);
+  if (!tex_file.exists()) {
+    dbg("dir: %s", dir.absolutePath().toStdString().c_str());
+    dbg("  Couldn't find texture file %s", tex_fname.toStdString().c_str());
+    return;
+  }
+
+  QImage tex_img(tex_fname);
+  if (tex_img.isNull()) {
+    dbg("  Failed to recognize texture file %s",
+        tex_fname.toStdString().c_str());
+  }
+
+  std::shared_ptr<QOpenGLTexture> texture(new QOpenGLTexture(tex_img));
+  texture->setMinificationFilter(QOpenGLTexture::LinearMipMapLinear);
+  texture->setMagnificationFilter(QOpenGLTexture::Linear);
+
+  mat->tex_diffuse.push_back(texture);
+}
+
+AssimpMaterial Importer::LoadMaterial(const aiMaterial& mat) {
+  AssimpMaterial result;
+  result.diffuse = { 0, 0, 0 };
+  result.specular = {0, 0, 0 };
+  result.ambient = {0, 0, 0 };
+  result.emissive = {0, 0, 0 };
+  result.transparent = {0, 0, 0 };
+  result.wireframe = false;
+  result.two_sided = false;
+  result.have_diffuse = LoadColor(mat, AI_MATKEY_COLOR_DIFFUSE,
+      &result.diffuse);
+  result.have_specular = LoadColor(mat, AI_MATKEY_COLOR_SPECULAR,
+      &result.specular);
+  result.have_ambient = LoadColor(mat, AI_MATKEY_COLOR_AMBIENT,
+      &result.ambient);
+  result.have_emissive = LoadColor(mat, AI_MATKEY_COLOR_EMISSIVE,
+      &result.emissive);
+  result.have_transparent = LoadColor(mat, AI_MATKEY_COLOR_TRANSPARENT,
+      &result.transparent);
+
+  int wireframe_int;
+  const bool have_wireframe =
+    mat.Get(AI_MATKEY_ENABLE_WIREFRAME, wireframe_int);
+  if (have_wireframe) {
+    result.wireframe = wireframe_int != 0;
+  }
+
+  int two_sided_int;
+  mat.Get(AI_MATKEY_TWOSIDED, two_sided_int);
+  result.two_sided = two_sided_int != 0;
+
+  mat.Get(AI_MATKEY_SHADING_MODEL, result.shading_model);
+
+  mat.Get(AI_MATKEY_BLEND_FUNC, result.blend_func);
+
+  mat.Get(AI_MATKEY_OPACITY, result.opacity);
+
+  mat.Get(AI_MATKEY_SHININESS, result.shininess);
+
+  mat.Get(AI_MATKEY_SHININESS_STRENGTH, result.shininess_strength);
+
+  mat.Get(AI_MATKEY_REFRACTI, result.index_of_refraction);
+
+  // Load textures
+  {
+    const aiTextureType tex_type = aiTextureType_DIFFUSE;
+    const int tex_ind = 0;
+
+    LoadTexture(mat, tex_type, tex_ind, &result);
+  }
+
+  return result;
 }
 
 }  // namespace

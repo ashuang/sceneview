@@ -1,6 +1,7 @@
 #include "model_renderer.hpp"
 
 #include <QFileDialog>
+#include <QOpenGLContext>
 
 using sv::AssetImporter;
 using sv::Renderer;
@@ -92,9 +93,12 @@ void ModelRenderer::ClearModel() {
   if (!node_) {
     return;
   }
+  GetViewport()->makeCurrent();
 
   GetScene()->DestroyNode(node_);
   node_ = nullptr;
+
+  GetViewport()->ScheduleRedraw();
 }
 
 }  // namespace vis_examples

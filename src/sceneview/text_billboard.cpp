@@ -275,7 +275,7 @@ void TextBillboard::Recompute() {
   text_geom_->Load(gdata);
 
   // Make sure the material is configured to use the active font.
-  text_material_->SetTexture("texture", font_resource_->Texture());
+  text_material_->AddTexture("texture", font_resource_->Texture());
 
   // Calculate the geometry for the background and depth write layers.
   const float x0 = min_x + x_offset;

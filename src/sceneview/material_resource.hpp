@@ -35,7 +35,11 @@ class MaterialResource {
   public:
     typedef std::shared_ptr<MaterialResource> Ptr;
 
-    typedef std::map<QString, QOpenGLTexture*> Textures;
+    typedef std::shared_ptr<QOpenGLTexture> TexturePtr;
+
+    typedef std::map<QString, TexturePtr> TextureDictionary;
+
+    typedef std::map<QString, TexturePtr> Textures;
 
     const ShaderResource::Ptr& Shader() { return shader_; }
 
@@ -58,9 +62,9 @@ class MaterialResource {
 
     void SetParam(const QString& name, const std::vector<float>& val);
 
-    void SetTexture(const QString& name, QOpenGLTexture* texture);
+    void AddTexture(const QString& name, const TexturePtr& texture);
 
-    Textures* GetTextures() { return &textures_; }
+    const TextureDictionary& GetTextures() { return textures_; }
 
     /**
      * Sets whether or not to draw back-facing polygons.
@@ -141,7 +145,7 @@ class MaterialResource {
 
     GLenum blend_dfactor_;
 
-    std::map<QString, QOpenGLTexture*> textures_;
+    TextureDictionary textures_;
 };
 
 }  // namespace sv

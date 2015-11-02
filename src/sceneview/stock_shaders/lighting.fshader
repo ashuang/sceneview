@@ -29,6 +29,11 @@ varying float shininess;
 varying vec4 diffuse;
 varying vec4 specular;
 #endif
+#ifdef TEX_DIFFUSE_0
+varying mediump vec2 diffuse_texc;
+uniform sampler2D diffuse_tex_0;
+vec4 diffuse_tex_color;
+#endif
 
 varying vec3 normal;
 varying vec3 surface_pos;
@@ -62,7 +67,12 @@ vec4 LightContribution(Light light, vec3 surface_pos, vec3 eye_pos,
   // factor.
   float diffuse_front = dot(normal, surface_to_light) * 0.5 + 0.5;
   float diffuse_coeff = (1.0 - light.ambient) * diffuse_front + light.ambient;
-  vec3 diffuse_term = diffuse_coeff * light.color * diffuse.rgb * attenuation;
+  vec3 diffuse_k = diffuse_coeff * light.color * attenuation;
+#ifdef TEX_DIFFUSE_0
+  vec3 diffuse_term = diffuse_k * diffuse_tex_color.rgb;
+#else
+  vec3 diffuse_term = diffuse_k * diffuse.rgb;
+#endif
   diffuse_term = clamp(diffuse_term, 0.0, 1.0);
 
   // Blinn-Phong model for specularities
@@ -83,6 +93,10 @@ vec4 LightContribution(Light light, vec3 surface_pos, vec3 eye_pos,
 void main(void) {
   vec3 eye_pos = sv_view_mat_inv[2].xyz;
   vec3 surface_to_eye = normalize(eye_pos - surface_pos);
+
+#ifdef TEX_DIFFUSE_0
+  diffuse_tex_color = texture2D(diffuse_tex_0, diffuse_texc);
+#endif
 
   vec4 color = vec4(0);
   for (int light_ind = 0; light_ind < B3_MAX_LIGHTS; ++light_ind) {
