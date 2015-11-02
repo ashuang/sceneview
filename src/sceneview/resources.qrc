@@ -2,17 +2,11 @@
 <qresource prefix="/sceneview">
 <file>icons/arrow_right.png</file>
 <file>icons/arrow_down.png</file>
-<file>stock_shaders/per_vertex_color_lighting.vshader</file>
-<file>stock_shaders/per_vertex_color_lighting.fshader</file>
-<file>stock_shaders/per_vertex_color_no_lighting.vshader</file>
-<file>stock_shaders/per_vertex_color_no_lighting.fshader</file>
-<file>stock_shaders/uniform_color_no_lighting.vshader</file>
-<file>stock_shaders/uniform_color_no_lighting.fshader</file>
-<file>stock_shaders/uniform_color_lighting.vshader</file>
-<file>stock_shaders/uniform_color_lighting.fshader</file>
-<file>stock_shaders/billboard_textured.vshader</file>
-<file>stock_shaders/billboard_textured.fshader</file>
-<file>stock_shaders/billboard_uniform_color.vshader</file>
-<file>stock_shaders/billboard_uniform_color.fshader</file>
+<file>stock_shaders/lighting.vshader</file>
+<file>stock_shaders/lighting.fshader</file>
+<file>stock_shaders/no_lighting.vshader</file>
+<file>stock_shaders/no_lighting.fshader</file>
+<file>stock_shaders/billboard.vshader</file>
+<file>stock_shaders/billboard.fshader</file>
 </qresource>
 </RCC>

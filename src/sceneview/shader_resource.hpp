@@ -144,8 +144,24 @@ class ShaderResource {
 
     /**
      * Loads a vertex shader and fragment shader into this resource.
+     *
+     * @prefix filename prefix. ".vshader" will automatically be added to the
+     *         vertex shader filename, and ".fshader" will automatically be
+     *         added to the fragment shader filename.
      */
     void LoadFromFiles(const QString& prefix);
+
+    /**
+     * Loads a vertex shader and fragment shader into this resource.
+     *
+     * @param prefix filename prefix. ".vshader" will automatically be added to
+     *        the vertex shader filename, and ".fshader" will automatically be
+     *        added to the fragment shader filename.
+     * @param preamble text to prepend to both the vertex and fragment shaders
+     *        before compiling. You can use this to define preprocessor
+     *        constants, etc.
+     */
+    void LoadFromFiles(const QString& prefix, const QString& preamble);
 
     QOpenGLShaderProgram* Program() { return program_.get(); }
 

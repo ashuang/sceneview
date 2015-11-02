@@ -61,20 +61,24 @@ Drawable::Ptr StockResources::UnitAxes() {
 
 
 struct StockShaderData {
-  StockShaderData(StockResources::StockShaderId id, const QString& fname_stem) :
-    id(id), fname_stem(fname_stem) {}
-
   StockResources::StockShaderId id;
   QString fname_stem;
+  QString preamble;
 };
 
 static std::vector<StockShaderData> g_stock_shader_data = {
-  { StockResources::kUniformColorNoLighting, "uniform_color_no_lighting" },
-  { StockResources::kUniformColorLighting, "uniform_color_lighting" },
-  { StockResources::kPerVertexColorLighting, "per_vertex_color_lighting" },
-  { StockResources::kPerVertexColorNoLighting, "per_vertex_color_no_lighting" },
-  { StockResources::kBillboardTextured, "billboard_textured" },
-  { StockResources::kBillboardUniformColor, "billboard_uniform_color" }
+  { StockResources::kUniformColorNoLighting, "no_lighting",
+    "#define COLOR_UNIFORM\n" },
+  { StockResources::kUniformColorLighting, "lighting",
+    "#define COLOR_UNIFORM\n" },
+  { StockResources::kPerVertexColorLighting, "lighting",
+    "#define COLOR_PER_VERTEX\n" },
+  { StockResources::kPerVertexColorNoLighting, "no_lighting",
+    "#define COLOR_PER_VERTEX\n" },
+  { StockResources::kBillboardTextured, "billboard",
+    "#define COLOR_TEXTURE\n" },
+  { StockResources::kBillboardUniformColor, "billboard",
+    "#define COLOR_UNIFORM\n" }
 };
 
 static const StockShaderData& GetStockShaderData(
@@ -94,7 +98,8 @@ ShaderResource::Ptr StockResources::Shader(StockShaderId id) {
   ShaderResource::Ptr shader = resources_->GetShader(shader_name);
   if (!shader) {
     shader = resources_->MakeShader(shader_name);
-    shader->LoadFromFiles(":sceneview/stock_shaders/" + sdata.fname_stem);
+    shader->LoadFromFiles(":sceneview/stock_shaders/" + sdata.fname_stem,
+        sdata.preamble);
     if (!shader) {
       shader.reset();
     }

@@ -6,6 +6,7 @@
 #include <vector>
 
 #include <QFile>
+#include <QTextStream>
 
 namespace sv {
 
@@ -17,23 +18,33 @@ ShaderResource::ShaderResource(const QString& name) :
 }
 
 void ShaderResource::LoadFromFiles(const QString& prefix) {
+  LoadFromFiles(prefix, "");
+}
+
+void ShaderResource::LoadFromFiles(const QString& prefix,
+    const QString& preamble) {
   program_.reset(new QOpenGLShaderProgram());
 
-  QString vshader_fname = prefix + ".vshader";
-  QString fshader_fname = prefix + ".fshader";
+  QFile vshader_file(prefix + ".vshader");
+  QFile fshader_file(prefix + ".fshader");
   const std::string cprefix = prefix.toStdString();
 
-  if (QFile(vshader_fname).exists()) {
-    if (!program_->addShaderFromSourceFile(
-          QOpenGLShader::Vertex, vshader_fname)) {
+  if (vshader_file.open(QIODevice::ReadOnly | QIODevice::Text)) {
+    const QString vshader_src = preamble +
+      QTextStream(&vshader_file).readAll();
+
+    if (!program_->addShaderFromSourceCode(
+          QOpenGLShader::Vertex, vshader_src)) {
       throw std::runtime_error("Failed to load vertex shader " + cprefix +
           "\n" + program_->log().toStdString());
     }
   }
 
-  if (QFile(fshader_fname).exists()) {
-    if (!program_->addShaderFromSourceFile(
-          QOpenGLShader::Fragment, fshader_fname)) {
+  if (fshader_file.open(QIODevice::ReadOnly | QIODevice::Text)) {
+    const QString fshader_src = preamble +
+      QTextStream(&fshader_file).readAll();
+    if (!program_->addShaderFromSourceCode(
+          QOpenGLShader::Fragment, fshader_src)) {
       throw std::runtime_error("Failed to load vertex shader " + cprefix +
           "\n" + program_->log().toStdString());
     }
