@@ -10,7 +10,6 @@ qt5_add_resources(sceneview_resources
 add_library(sceneview SHARED
             asset_importer.cpp
             axis_aligned_box.cpp
-            internal_gl.cpp
             camera_node.cpp
             drawable.cpp
             draw_context.cpp
@@ -24,6 +23,7 @@ add_library(sceneview SHARED
             importer_rwx.cpp
             input_handler.cpp
             input_handler_widget_stack.cpp
+            internal_gl.cpp
             light_node.cpp
             material_resource.cpp
             param_widget.cpp
@@ -51,6 +51,8 @@ install(TARGETS sceneview LIBRARY DESTINATION lib)
 install(FILES asset_importer.hpp
               axis_aligned_box.hpp
               camera_node.hpp
+              drawable.hpp
+              draw_node.hpp
               expander_widget.hpp
               font_resource.hpp
               geometry_resource.hpp
@@ -60,7 +62,6 @@ install(FILES asset_importer.hpp
               input_handler_widget_stack.hpp
               light_node.hpp
               material_resource.hpp
-              draw_node.hpp
               param_widget.hpp
               plane.hpp
               renderer.hpp
