@@ -6,15 +6,7 @@
 namespace sv {
 
 SceneNode::SceneNode(const QString& node_name) :
-  node_name_(node_name),
-  translation_(),
-  rotation_(),
-  scale_(1, 1, 1),
-  to_world_(),
-  to_world_dirty_(true),
-  parent_node_(nullptr),
-  visible_(true),
-  selection_mask_(0) {}
+  node_name_(node_name) {}
 
 const QMatrix4x4& SceneNode::WorldTransform() {
   if (to_world_dirty_) {

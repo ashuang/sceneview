@@ -182,15 +182,15 @@ class SceneNode {
 
     QVector3D translation_;
     QQuaternion rotation_;
-    QVector3D scale_;
+    QVector3D scale_{1, 1, 1};
 
     QMatrix4x4 to_world_;
-    bool to_world_dirty_;
+    bool to_world_dirty_ = true;
 
-    GroupNode* parent_node_;
+    GroupNode* parent_node_ = nullptr;
 
-    bool visible_;
-    int64_t selection_mask_;
+    bool visible_ = true;
+    int64_t selection_mask_ = 0;
 };
 
 }  // namespace sv

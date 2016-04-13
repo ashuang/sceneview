@@ -248,6 +248,10 @@ void DrawContext::Draw(CameraNode* camera, std::vector<Renderer*>* prenderers) {
   cur_camera_ = nullptr;
 }
 
+void DrawContext::SetClearColor(const QColor& color) {
+  clear_color_ = color;
+}
+
 void DrawContext::PrepareFixedFunctionPipeline() {
   // Enable the fixed function pipeline by disabling any active shader program.
   glUseProgram(0);

@@ -58,6 +58,8 @@ class Viewport : public QOpenGLWidget {
 
     std::vector<InputHandler*> GetInputHandlers() { return input_handlers_; }
 
+    void SetBackgroundColor(const QColor& color);
+
   public slots:
     void ScheduleRedraw();
 

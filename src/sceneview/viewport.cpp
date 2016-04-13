@@ -112,6 +112,10 @@ void Viewport::ActivateInputHandler(InputHandler* handler) {
   emit InputHandlerActivated(handler);
 }
 
+void Viewport::SetBackgroundColor(const QColor& color) {
+  draw_->SetClearColor(color);
+}
+
 void Viewport::initializeGL() {
   gl_context_ = QOpenGLContext::currentContext();
 
