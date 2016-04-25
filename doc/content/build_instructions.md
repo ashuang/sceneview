@@ -43,7 +43,7 @@ install location for Qt5 in /opt.
     cd sceneview
     mkdir build
     cd build
-    cmake -DCMAKE_BUILD_PREFIX=/opt/qt55 ..
+    cmake -DCMAKE_PREFIX_PATH=/opt/qt55 ..
     make
     sudo make install
     sudo ldconfig
