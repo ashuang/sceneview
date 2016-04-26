@@ -12,6 +12,7 @@ LightNode::LightNode(const QString& name) :
   direction_(0.0, 0.0, 1.0),
   color_(1.0, 1.0, 1.0),
   ambient_(0.1),
+  specular_(0.3),
   attenuation_(0.0f),
   cone_angle_deg_(180.0f) {}
 

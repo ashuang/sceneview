@@ -15,6 +15,7 @@ uniform struct Light {
   vec3 direction;
   vec3 color;
   float ambient;
+  float specular;
   float attenuation;
   float cone_angle;
 } sv_lights[B3_MAX_LIGHTS];
@@ -83,7 +84,7 @@ vec4 LightContribution(Light light, vec3 surface_pos, vec3 eye_pos,
 //  vec3 reflection = normalize(-reflect(-surface_to_light, normal));
 //  float specular_coeff = pow(max(0.0, dot(reflection, surface_to_eye)), 0.3 * shininess);
 
-  vec3 specular_term = specular_coeff * light.color * specular.rgb * attenuation;
+  vec3 specular_term = specular_coeff * light.color * light.specular * specular.rgb * attenuation;
   specular_term = clamp(specular_term, 0.0, 1.0);
 
   return vec4(diffuse_term, diffuse.a) +

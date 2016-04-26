@@ -86,6 +86,7 @@ void ShaderResource::LoadLocations() {
     light.direction = program_->uniformLocation(prefix + "direction");
     light.color = program_->uniformLocation(prefix + "color");
     light.ambient = program_->uniformLocation(prefix + "ambient");
+    light.specular = program_->uniformLocation(prefix + "specular");
     light.attenuation = program_->uniformLocation(prefix + "attenuation");
     light.cone_angle = program_->uniformLocation(prefix + "cone_angle");
   }

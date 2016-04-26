@@ -54,14 +54,21 @@ class LightNode : public SceneNode {
 
     float Ambient() const { return ambient_; }
 
-    const QVector3D& Color() const { return color_; }
-
-    void SetColor(const QVector3D& color) { color_ = color; }
-
     /**
      * Sets the ambient coefficient for this light.
      */
     void SetAmbient(const float ambient) { ambient_ = ambient; }
+
+    float Specular() const { return specular_; }
+
+    /**
+     * Sets the specular coefficient for this light.
+     */
+    void SetSpecular(const float specular) { specular_ = specular;}
+
+    const QVector3D& Color() const { return color_; }
+
+    void SetColor(const QVector3D& color) { color_ = color; }
 
     /**
      * Sets the attenuation factor.
@@ -104,6 +111,7 @@ class LightNode : public SceneNode {
     QVector3D direction_;
     QVector3D color_;
     float ambient_;
+    float specular_;
     float attenuation_;
     float cone_angle_deg_;
 };

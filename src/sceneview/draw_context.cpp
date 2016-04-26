@@ -297,11 +297,13 @@ void DrawContext::PrepareFixedFunctionPipeline() {
 
     const QVector3D& color = light->Color();
     const QVector3D& ambient = color * light->Ambient();
+    const QVector3D& specular = color * light->Specular();
     const float color4f[4] = { color.x(),  color.y(),  color.z(), 1 };
     const float ambient4f[4] = { ambient.x(),  ambient.y(),  ambient.z(), 1 };
+    const float specular4f[4] = { specular.x(),  specular.y(),  specular.z(), 1 };
     glLightfv(gl_light, GL_AMBIENT, ambient4f);
     glLightfv(gl_light, GL_DIFFUSE, color4f);
-    glLightfv(gl_light, GL_SPECULAR, color4f);
+    glLightfv(gl_light, GL_SPECULAR, specular4f);
 
     glEnable(gl_light);
     break;
@@ -469,6 +471,11 @@ void DrawContext::ActivateMaterial() {
     if (light_loc.ambient >= 0) {
       const float ambient = light_node->Ambient();
       program_->setUniformValue(light_loc.ambient, ambient);
+    }
+
+    if (light_loc.specular >= 0) {
+      const float specular = light_node->Specular();
+      program_->setUniformValue(light_loc.specular, specular);
     }
 
     if (light_loc.color >= 0) {

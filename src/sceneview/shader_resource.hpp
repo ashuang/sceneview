@@ -24,6 +24,7 @@ struct ShaderLightLocation {
   int direction;
   int color;
   int ambient;
+  int specular;
   int attenuation;
   int cone_angle;
 };
