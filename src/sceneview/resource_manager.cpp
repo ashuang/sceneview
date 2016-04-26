@@ -61,7 +61,10 @@ FontResource::Ptr ResourceManager::Font(const QFont& qfont) {
   QString name = qfont.family();
   auto iter = fonts_.find(name);
   if (iter != fonts_.end()) {
-    return iter->second.lock();
+    FontResource::Ptr result = iter->second.lock();
+    if (result) {
+      return result;
+    }
   }
   FontResource::Ptr result = FontResource::Create(qfont);
   fonts_[name] = result;
