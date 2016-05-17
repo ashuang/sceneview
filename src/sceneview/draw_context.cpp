@@ -60,7 +60,7 @@ Frustum::Frustum(CameraNode* camera) {
   const QVector3D top_right = camera->Unproject(x1, 0);
   const QVector3D bot_right = camera->Unproject(x1, y1);
 
-  const QVector3D eye = camera->Translation();
+  const QVector3D eye = camera->WorldTransform().map(QVector3D(0, 0, 0));
   const double near = camera->GetZNear();
   const double far = camera->GetZFar();
 

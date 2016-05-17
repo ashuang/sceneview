@@ -191,10 +191,7 @@ QMatrix4x4 CameraNode::GetProjectionMatrix() {
 }
 
 QMatrix4x4 CameraNode::GetViewMatrix() {
-  QMatrix4x4 result;
-  result.translate(Translation());
-  result.rotate(Rotation());
-  return result.inverted();
+  return WorldTransform().inverted();
 }
 
 QMatrix4x4 CameraNode::GetViewProjectionMatrix() {
