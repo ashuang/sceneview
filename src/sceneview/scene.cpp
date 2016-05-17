@@ -34,7 +34,7 @@ Scene::~Scene() {
 }
 
 bool Scene::ContainsNode(SceneNode* node) const {
-  for (SceneNode* iter = node; iter; iter = node->ParentNode()) {
+  for (SceneNode* iter = node; iter; iter = iter->ParentNode()) {
     if (iter == root_node_) {
       return true;
     }
