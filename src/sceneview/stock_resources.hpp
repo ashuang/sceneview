@@ -36,6 +36,11 @@ extern const QString kSpecular;
 extern const QString kShininess;
 
 /**
+ * String constant parameter name used by the texture stock shaders.
+ */
+extern const QString kTexture0;
+
+/**
  * Functions to generate stock resources.
  *
  *
@@ -161,13 +166,65 @@ class StockResources {
        *
        * StockResources stock(resources);
        * MaterialResource::Ptr material =
-       *     stock.NewMaterial(kPerVertexColorLighting);
+       *     stock.NewMaterial(StockResources::kPerVertexColorLighting);
        *
        * Scene::Ptr scene = GetScene();
        * scene->MakeDrawNode(scene->Root(), geometry, material);
        * @endcode
        */
       kPerVertexColorLighting,
+      /**
+       * Like kUniformColorNoLighting with the addition of a texture map.
+       *
+       * Color is calculated by multiplying the uniform color by the texture
+       * color.
+       *
+       * To use this shader with a material:
+       * - set the uniform color via MaterialResource::SetParam(sv::kColor, r, g, b, a);
+       * - bind the texture via MaterialResource::AddTexture(sv::kTexture0, texture_);
+       *
+       * For example:
+       *
+       * @code
+       * GeometryData gdata;
+       * gdata.gl_mode = GL_TRIANGLES;
+       * gdata.vertices = {
+       *   { 0, 0, 0 },
+       *   { 0, 1, 0 },
+       *   { 1, 1, 0 },
+       *   { 1, 0, 0 }
+       * };
+       * gdata.tex_coords_0 = {
+       *   { 0, 0 },
+       *   { 1, 0 },
+       *   { 1, 1 },
+       *   { 0, 1 }
+       * };
+       * gdata.indices = { 0, 1, 2, 0, 2, 3 };
+       *
+       * ResourceManager::Ptr resources = GetResourceManager();
+       * GeometryResource::Ptr geometry = resources->MakeGeometry();
+       * geometry->Load(gdata);
+       *
+       * StockResources stock(resources);
+       * MaterialResource::Ptr material =
+       *     stock.NewMaterial(StockResources::kTextureUniformColorNoLighting);
+       * material->SetParam(sv::kColor, 1.0, 1.0, 1.0, 1.0);
+       *
+       * QImage image(400, 400, QImage::Format_RGB888);
+       * image.fill(QColor(255, 0, 0));
+       * QOpenGLTexture* texture = new QOpenGLTexture(image);
+       * material->AddTexture(sv::kTexture, texture);
+       *
+       * Scene::Ptr scene = GetScene();
+       * scene->MakeDrawNode(scene->Root(), geometry, material);
+       * @endcode
+       */
+      kTextureUniformColorNoLighting,
+      /**
+       * Like kUniformColorLighting with the addition of a texture map.
+       */
+      kTextureUniformColorLighting,
       kBillboardTextured,
       kBillboardUniformColor
     };

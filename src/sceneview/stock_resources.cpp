@@ -16,6 +16,7 @@ const QString kColor = "color";
 const QString kDiffuse = "diffuse";
 const QString kSpecular = "specular";
 const QString kShininess = "shininess";
+const QString kTexture0 = "texture0";
 
 StockResources::StockResources(const ResourceManager::Ptr& resources) :
   resources_(resources) {}
@@ -69,14 +70,18 @@ struct StockShaderData {
 static std::vector<StockShaderData> g_stock_shader_data = {
   { StockResources::kUniformColorNoLighting, "no_lighting",
     "#define COLOR_UNIFORM\n" },
+  { StockResources::kPerVertexColorNoLighting, "no_lighting",
+    "#define COLOR_PER_VERTEX\n" },
+  { StockResources::kTextureUniformColorNoLighting, "no_lighting",
+    "#define COLOR_UNIFORM\n#define USE_TEXTURE0\n" },
   { StockResources::kUniformColorLighting, "lighting",
     "#define COLOR_UNIFORM\n" },
   { StockResources::kPerVertexColorLighting, "lighting",
     "#define COLOR_PER_VERTEX\n" },
-  { StockResources::kPerVertexColorNoLighting, "no_lighting",
-    "#define COLOR_PER_VERTEX\n" },
+  { StockResources::kTextureUniformColorLighting, "lighting",
+    "#define COLOR_UNIFORM\n#define USE_TEXTURE0\n" },
   { StockResources::kBillboardTextured, "billboard",
-    "#define COLOR_TEXTURE\n" },
+    "#define USE_TEXTURE0\n" },
   { StockResources::kBillboardUniformColor, "billboard",
     "#define COLOR_UNIFORM\n" }
 };

@@ -9,6 +9,7 @@
 #include "stock_shape_renderer.hpp"
 #include "stock_shape_selector.hpp"
 #include "text_renderer.hpp"
+#include "texture_renderer.hpp"
 
 using sv::Viewport;
 using sv::Viewer;
@@ -21,6 +22,7 @@ using vis_examples::StockShapeSelector;
 using vis_examples::FixedFunctionRenderer;
 using vis_examples::PolylinesRenderer;
 using vis_examples::TextRenderer;
+using vis_examples::TextureRenderer;
 
 int main(int argc, char *argv[]) {
   QApplication app(argc, argv);
@@ -43,6 +45,7 @@ int main(int argc, char *argv[]) {
   viewport->AddRenderer(new FixedFunctionRenderer("fixed_function", viewport));
   viewport->AddRenderer(new TextRenderer("text", viewport));
   viewport->AddRenderer(new PolylinesRenderer("polylines", viewport));
+  viewport->AddRenderer(new TextureRenderer("texture", viewport));
 
   // Add input handlers
   viewport->AddInputHandler(new ViewHandlerHorizontal(viewport,

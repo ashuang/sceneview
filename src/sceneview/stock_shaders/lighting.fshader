@@ -3,6 +3,8 @@
 // this program:
 //    COLOR_PER_VERTEX
 //    COLOR_UNIFORM
+//
+// USE_TEXTURE0 can also be defined to use a texture.
 
 // View matrix inverse
 uniform mat4 sv_view_mat_inv;
@@ -30,9 +32,9 @@ varying float shininess;
 varying vec4 diffuse;
 varying vec4 specular;
 #endif
-#ifdef TEX_DIFFUSE_0
-varying mediump vec2 diffuse_texc;
-uniform sampler2D diffuse_tex_0;
+#ifdef USE_TEXTURE0
+varying mediump vec2 texc_0;
+uniform sampler2D texture0;
 vec4 diffuse_tex_color;
 #endif
 
@@ -69,7 +71,7 @@ vec4 LightContribution(Light light, vec3 surface_pos, vec3 eye_pos,
   float diffuse_front = dot(normal, surface_to_light) * 0.5 + 0.5;
   float diffuse_coeff = (1.0 - light.ambient) * diffuse_front + light.ambient;
   vec3 diffuse_k = diffuse_coeff * light.color * attenuation;
-#ifdef TEX_DIFFUSE_0
+#ifdef USE_TEXTURE0
   vec3 diffuse_term = diffuse_k * diffuse_tex_color.rgb;
 #else
   vec3 diffuse_term = diffuse_k * diffuse.rgb;
@@ -95,8 +97,8 @@ void main(void) {
   vec3 eye_pos = sv_view_mat_inv[2].xyz;
   vec3 surface_to_eye = normalize(eye_pos - surface_pos);
 
-#ifdef TEX_DIFFUSE_0
-  diffuse_tex_color = texture2D(diffuse_tex_0, diffuse_texc);
+#ifdef USE_TEXTURE0
+  diffuse_tex_color = texture2D(texture0, texc_0);
 #endif
 
   vec4 color = vec4(0);

@@ -1,7 +1,7 @@
 // Billboard shader.
 // Before compiling, one of the following must be #defined and prepended to
 // this program:
-//    COLOR_TEXTURE
+//    USE_TEXTURE0
 //    COLOR_UNIFORM
 
 // Input vertex position
@@ -13,11 +13,11 @@ uniform mediump mat4 sv_mv_mat;
 // Projection matrix
 uniform mediump mat4 sv_proj_mat;
 
-#ifdef COLOR_TEXTURE
+#ifdef USE_TEXTURE0
 // Texture coordinates
 attribute mediump vec2 sv_tex_coords_0;
 
-varying mediump vec2 texc;
+varying mediump vec2 texc_0;
 #endif
 
 void main(void)
@@ -28,7 +28,7 @@ void main(void)
       0);
   gl_Position = sv_proj_mat * (translation + sv_vert_pos);
 
-#ifdef COLOR_TEXTURE
-  texc = sv_tex_coords_0;
+#ifdef USE_TEXTURE0
+  texc_0 = sv_tex_coords_0;
 #endif
 }

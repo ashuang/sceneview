@@ -116,7 +116,7 @@ ShaderResource::Ptr TextureShader(const ResourceManager::Ptr& resources) {
   shader = resources->MakeShader(shader_name);
   shader->LoadFromFiles(":sceneview/stock_shaders/lighting",
       "#define COLOR_UNIFORM\n"
-      "#define TEX_DIFFUSE_0\n");
+      "#define USE_TEXTURE0\n");
 
   if (!shader) {
     shader.reset();

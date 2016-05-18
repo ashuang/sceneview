@@ -3,6 +3,8 @@
 // this program:
 //    COLOR_PER_VERTEX
 //    COLOR_UNIFORM
+//
+// USE_TEXTURE0 can also be defined to use a texture.
 
 // Input vertex position (model space)
 attribute vec4 sv_vert_pos;
@@ -32,11 +34,11 @@ varying vec4 diffuse;
 varying vec4 specular;
 #endif
 
-#ifdef TEX_DIFFUSE_0
+#ifdef USE_TEXTURE0
 // Texture coordinates
-attribute mediump vec2 sv_tex_coords_0;
+attribute vec2 sv_tex_coords_0;
 
-varying mediump vec2 diffuse_texc;
+varying vec2 texc_0;
 #endif
 
 void main(void)
@@ -50,8 +52,8 @@ void main(void)
   specular = sv_specular;
 #endif
 
-#ifdef TEX_DIFFUSE_0
-  diffuse_texc = sv_tex_coords_0;
+#ifdef USE_TEXTURE0
+  texc_0 = sv_tex_coords_0;
 #endif
 
   gl_Position = sv_mvp_mat * sv_vert_pos;

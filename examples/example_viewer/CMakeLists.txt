@@ -20,7 +20,8 @@ add_executable(sv_example_viewer
                fixed_function_renderer.cpp
                stock_shape_selector.cpp
                stock_shape_renderer.cpp
-               text_renderer.cpp)
+               text_renderer.cpp
+               texture_renderer.cpp)
 
 target_link_libraries(sv_example_viewer
                       sceneview Qt5::Widgets Qt5::Gui ${OPENGL_LIBS})
