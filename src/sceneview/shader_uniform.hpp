@@ -21,7 +21,8 @@ class ShaderUniform {
     enum class Type {
       kInvalid,
       kFloat,
-      kInt
+      kInt,
+      kMat4f
     };
 
     ShaderUniform();
@@ -46,6 +47,8 @@ class ShaderUniform {
 
     void Set(const std::vector<float>& val);
 
+    void Set(const QMatrix4x4& val);
+
     void LoadToProgram(QOpenGLShaderProgram* program);
 
     ShaderUniform& operator=(const ShaderUniform& other);
@@ -57,6 +60,7 @@ class ShaderUniform {
     union Value {
       IntVec int_data;
       FloatVec float_data;
+      QMatrix4x4 mat4f;
 
       Value() {}
       ~Value() {}

@@ -14,6 +14,7 @@
 #include <sceneview/asset_importer.hpp>
 #include <sceneview/axis_aligned_box.hpp>
 #include <sceneview/camera_node.hpp>
+#include <sceneview/draw_group.hpp>
 #include <sceneview/expander_widget.hpp>
 #include <sceneview/font_resource.hpp>
 #include <sceneview/geometry_resource.hpp>

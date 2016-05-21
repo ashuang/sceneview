@@ -13,6 +13,7 @@
 namespace sv {
 
 class DrawContext;
+class DrawGroup;
 class CameraNode;
 class InputHandler;
 class Renderer;
@@ -43,6 +44,9 @@ class Viewport : public QOpenGLWidget {
 
     /**
      * Attach the specified camera to this viewport.
+     *
+     * More specifically, sets the camera for the attached scene's default draw
+     * group.
      */
     void SetCamera(CameraNode* camera_node);
 
@@ -59,6 +63,8 @@ class Viewport : public QOpenGLWidget {
     std::vector<InputHandler*> GetInputHandlers() { return input_handlers_; }
 
     void SetBackgroundColor(const QColor& color);
+
+    void SetDrawGroups(const std::vector<DrawGroup*>& groups);
 
   public slots:
     void ScheduleRedraw();

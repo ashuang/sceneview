@@ -13,6 +13,7 @@ add_library(sceneview SHARED
             camera_node.cpp
             drawable.cpp
             draw_context.cpp
+            draw_group.cpp
             draw_node.cpp
             expander_widget.cpp
             font_resource.cpp

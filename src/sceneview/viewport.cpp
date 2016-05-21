@@ -11,6 +11,7 @@
 
 #include "sceneview/camera_node.hpp"
 #include "sceneview/draw_context.hpp"
+#include "sceneview/draw_group.hpp"
 #include "sceneview/input_handler.hpp"
 #include "sceneview/light_node.hpp"
 #include "sceneview/renderer.hpp"
@@ -35,6 +36,8 @@ Viewport::Viewport(const ResourceManager::Ptr& resources,
   setFormat(format);
 
   setFocusPolicy(Qt::ClickFocus);
+
+  draw_->SetDrawGroups({scene_->GetDefaultDrawGroup()});
 }
 
 Viewport::~Viewport() {
@@ -89,6 +92,7 @@ void Viewport::SetCamera(CameraNode* camera_node) {
   }
   camera_ = camera_node;
   camera_->SetViewportSize(width(), height());
+  scene_->GetDefaultDrawGroup()->SetCamera(camera_);
 
   emit CameraChanged(camera_);
 }
@@ -116,6 +120,10 @@ void Viewport::SetBackgroundColor(const QColor& color) {
   draw_->SetClearColor(color);
 }
 
+void Viewport::SetDrawGroups(const std::vector<DrawGroup*>& groups) {
+  draw_->SetDrawGroups(groups);
+}
+
 void Viewport::initializeGL() {
   gl_context_ = QOpenGLContext::currentContext();
 
@@ -138,7 +146,7 @@ void Viewport::paintGL() {
   redraw_scheduled_ = false;
 
   // Delegate
-  draw_->Draw(camera_, &renderers_);
+  draw_->Draw(width(), height(), &renderers_);
 
   gl_context_->swapBuffers(gl_context_->surface());
 }

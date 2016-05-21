@@ -281,8 +281,16 @@ void ViewHandlerHorizontal::UpdateNearFarPlanes() {
   const double z_near = distance / 100;
   const double z_far = distance * 1000;
   const double vfov_deg = camera->GetVFovDeg();
-  const CameraNode::ProjectionType proj_type = camera->GetProjectionType();
-  camera->SetProjectionParams(proj_type, vfov_deg, z_near, z_far);
+  switch (camera->GetProjectionType()) {
+    case CameraNode::kPerspective:
+      camera->SetPerspective(vfov_deg, z_near, z_far);
+      break;
+    case CameraNode::kOrthographic:
+      camera->SetOrthographic(vfov_deg, z_near, z_far);
+      break;
+    default:
+      break;
+  }
 }
 
 void ViewHandlerHorizontal::OnProjectionSelectionChanged() {
@@ -294,7 +302,16 @@ void ViewHandlerHorizontal::OnProjectionSelectionChanged() {
   CameraNode::ProjectionType proj_type =
     static_cast<CameraNode::ProjectionType>(
         projection_combo_->currentData().toInt());
-  camera->SetProjectionParams(proj_type, vfov_deg, z_near, z_far);
+  switch (proj_type) {
+    case CameraNode::kPerspective:
+      camera->SetPerspective(vfov_deg, z_near, z_far);
+      break;
+    case CameraNode::kOrthographic:
+      camera->SetOrthographic(vfov_deg, z_near, z_far);
+      break;
+    default:
+      break;
+  }
   viewport_->ScheduleRedraw();
 }
 

@@ -46,6 +46,12 @@ void ShaderUniform::Set(const std::vector<float>& val) {
   new(&(value_.float_data)) FloatVec(val);
 }
 
+void ShaderUniform::Set(const QMatrix4x4& val) {
+  Clear();
+  type_ = Type::kMat4f;
+  new(&(value_.mat4f)) QMatrix4x4(val);
+}
+
 void ShaderUniform::Clear() {
   switch (type_) {
     case Type::kFloat:
@@ -53,6 +59,9 @@ void ShaderUniform::Clear() {
       break;
     case Type::kInt:
       value_.int_data.~IntVec();
+      break;
+    case Type::kMat4f:
+      value_.mat4f.~QMatrix4x4();
       break;
     case Type::kInvalid:
     default:
@@ -113,6 +122,10 @@ void ShaderUniform::LoadToProgram(QOpenGLShaderProgram* program) {
         }
       }
       break;
+    case Type::kMat4f:
+      glUniformMatrix4fv(location_, 1, GL_FALSE,
+          value_.mat4f.constData());
+      break;
     case Type::kInvalid:
     default:
       break;
@@ -137,6 +150,9 @@ ShaderUniform& ShaderUniform::operator=(const ShaderUniform& other) {
       break;
     case Type::kFloat:
       new(&(value_.float_data)) FloatVec(other.value_.float_data);
+      break;
+    case Type::kMat4f:
+      new(&(value_.mat4f)) QMatrix4x4(other.value_.mat4f);
       break;
     case Type::kInvalid:
     default:

@@ -16,15 +16,13 @@ CameraNode::CameraNode(const QString& name) :
   look_(),
   up_(),
   look_at_(),
-  viewport_width_(0),
-  viewport_height_(0),
   proj_type_(ProjectionType::kPerspective),
   vfov_deg_(50),
   z_near_(0.1),
   z_far_(10000) {
     LookAt(QVector3D(0, 0, 0),
-        QVector3D(1, 0, 0),
-        QVector3D(0, 0, 1));
+        QVector3D(0, 0, 1),
+        QVector3D(0, 1, 0));
 }
 
 void CameraNode::CopyFrom(const CameraNode& other) {
@@ -42,6 +40,9 @@ void CameraNode::CopyFrom(const CameraNode& other) {
 }
 
 void CameraNode::SetViewportSize(int width, int height) {
+  if (viewport_width_ == width && viewport_height_ == height) {
+    return;
+  }
   viewport_width_ = width;
   viewport_height_ = height;
 
@@ -52,16 +53,31 @@ QSize CameraNode::GetViewportSize() const {
   return QSize(viewport_width_, viewport_height_);
 }
 
-void CameraNode::SetProjectionParams(ProjectionType type,
-    double vfov_deg, double z_near, double z_far) {
+void CameraNode::SetPerspective(double vfov_deg, double z_near, double z_far) {
   if (vfov_deg < 1e-6) {
     throw std::invalid_argument("invalid vfov");
   }
   vfov_deg_ = vfov_deg;
   z_near_ = z_near;
   z_far_ = z_far;
-  proj_type_ = type;
+  proj_type_ = kPerspective;
   ComputeProjectionMatrix();
+}
+
+void CameraNode::SetOrthographic(double vfov_deg, double z_near, double z_far) {
+  if (vfov_deg < 1e-6) {
+    throw std::invalid_argument("invalid vfov");
+  }
+  vfov_deg_ = vfov_deg;
+  z_near_ = z_near;
+  z_far_ = z_far;
+  proj_type_ = kOrthographic;
+  ComputeProjectionMatrix();
+}
+
+void CameraNode::SetManual(const QMatrix4x4& proj_mat) {
+  projection_matrix_ = proj_mat;
+  proj_type_ = kManual;
 }
 
 static QQuaternion QuatFromRot(const QMatrix3x3& rot) {
@@ -203,6 +219,10 @@ const AxisAlignedBox& CameraNode::WorldBoundingBox() {
 }
 
 void CameraNode::ComputeProjectionMatrix() {
+  if (proj_type_ == ProjectionType::kManual) {
+    return;
+  }
+
   projection_matrix_.fill(0.0f);
   if (viewport_height_ <= 0 || viewport_width_ <= 0 || vfov_deg_ <= 0) {
     return;

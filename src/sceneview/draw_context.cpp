@@ -10,6 +10,7 @@
 #include <QOpenGLTexture>
 
 #include "sceneview/camera_node.hpp"
+#include "sceneview/draw_group.hpp"
 #include "sceneview/group_node.hpp"
 #include "sceneview/light_node.hpp"
 #include "sceneview/draw_node.hpp"
@@ -30,8 +31,8 @@ using std::max;
 namespace sv {
 
 struct DrawNodeData {
-  DrawNode* node;
-  float squared_distance;
+  DrawNode* node = nullptr;
+  float squared_distance = 0;
   QMatrix4x4 model_mat;
   AxisAlignedBox world_bbox;
 };
@@ -123,12 +124,14 @@ DrawContext::DrawContext(const ResourceManager::Ptr& resources,
   resources_(resources),
   scene_(scene),
   clear_color_(0, 0, 0, 255),
-  cur_camera_(nullptr),
   bounding_box_node_(nullptr),
   draw_bounding_boxes_(false) {}
 
-void DrawContext::Draw(CameraNode* camera, std::vector<Renderer*>* prenderers) {
-  cur_camera_ = camera;
+void DrawContext::Draw(int viewport_width,
+    int viewport_height, std::vector<Renderer*>* prenderers) {
+  viewport_width_ = viewport_width;
+  viewport_height_ = viewport_height;
+  cur_camera_ = scene_->GetDefaultDrawGroup()->GetCamera();
 
   // Clear the drawing area
   glClearColor(clear_color_.redF(),
@@ -157,74 +160,10 @@ void DrawContext::Draw(CameraNode* camera, std::vector<Renderer*>* prenderers) {
       glPopAttrib();
     }
   }
-  const QVector3D& eye = camera->Translation();
 
-  Frustum frustum(cur_camera_);
-
-  // For each draw node, compute:
-  //   - model matrix
-  //   - world frame axis aligned bounding box
-  //   - squared distance to camera
-  //   - view frustum intersection
-  auto& draw_nodes = scene_->DrawNodes();
-  const int num_draw_nodes = draw_nodes.size();
-  std::vector<DrawNodeData> to_draw;
-  to_draw.reserve(num_draw_nodes);
-  for (int i = 0; i < num_draw_nodes; ++i) {
-    DrawNode* draw_node = draw_nodes[i];
-    DrawNodeData dndata;
-    dndata.node = draw_node;
-
-    // Check visibility
-    bool invisible = !draw_node->Visible();
-    for (SceneNode* node = draw_node->ParentNode(); node;
-        node = node->ParentNode()) {
-      if (!node->Visible()) {
-        invisible = true;
-        break;
-      }
-    }
-    if (invisible) {
-      continue;
-    }
-
-    // Cache the model mat matrix and world frame bounding box
-    dndata.model_mat = draw_node->WorldTransform();
-
-    // Compute the world frame axis-aligned bounding box
-    dndata.world_bbox = draw_node->WorldBoundingBox();
-
-    // Compute squared distance to camera using the bounding box. If the
-    // bounding box is invalid, then silently skip the object.
-    if (!dndata.world_bbox.Valid()) {
-      continue;
-    }
-
-    // View frustum culling
-    if (!frustum.Intersects(dndata.world_bbox)) {
-      continue;
-    }
-
-    dndata.squared_distance = squaredDistanceToAABB(eye, dndata.world_bbox);
-
-    to_draw.push_back(dndata);
-  }
-
-  // Sort the nodes by distance from camera. Farthest nodes first, so distant
-  // objects are drawn first.
-  std::sort(to_draw.begin(), to_draw.end(),
-      [](const DrawNodeData& dndata_a, const DrawNodeData& dndata_b) {
-        return dndata_a.squared_distance > dndata_b.squared_distance;
-      });
-
-  // Draw each draw node
-  for (DrawNodeData& dndata : to_draw) {
-    model_mat_ = dndata.model_mat;
-    DrawDrawNode(dndata.node);
-
-    if (draw_bounding_boxes_) {
-      DrawBoundingBox(dndata.world_bbox);
-    }
+  // Draw nodes, ordered first by draw group.
+  for (DrawGroup* dgroup : draw_groups_) {
+    DrawDrawGroup(dgroup);
   }
 
   // Setup the fixed-function pipeline again.
@@ -250,6 +189,13 @@ void DrawContext::Draw(CameraNode* camera, std::vector<Renderer*>* prenderers) {
 
 void DrawContext::SetClearColor(const QColor& color) {
   clear_color_ = color;
+}
+
+void DrawContext::SetDrawGroups(const std::vector<DrawGroup*>& groups) {
+  draw_groups_ = groups;
+  std::sort(draw_groups_.begin(), draw_groups_.end(),
+      [](const DrawGroup* draw_group_a, const DrawGroup* draw_group_b) {
+      return draw_group_a->Order() < draw_group_b->Order(); });
 }
 
 void DrawContext::PrepareFixedFunctionPipeline() {
@@ -314,6 +260,92 @@ void DrawContext::PrepareFixedFunctionPipeline() {
   glCullFace(GL_BACK);
   glEnable(GL_CULL_FACE);
   glEnable(GL_DEPTH_TEST);
+}
+
+void DrawContext::DrawDrawGroup(DrawGroup* dgroup) {
+  cur_camera_ = dgroup->GetCamera();
+  cur_camera_->SetViewportSize(viewport_width_, viewport_height_);
+
+  Frustum frustum = cur_camera_;
+  const QVector3D eye = cur_camera_->WorldTransform().map(QVector3D(0, 0, 0));
+
+  // Figure out which nodes to draw and some data about them.
+  std::vector<DrawNodeData> to_draw;
+  const int num_draw_nodes = dgroup->DrawNodes().size();
+  to_draw.reserve(num_draw_nodes);
+  const bool do_frustum_culling = dgroup->GetFrustumCulling();
+
+  for (DrawNode* draw_node : dgroup->DrawNodes()) {
+    // If the node is not visible, then skip it.
+    bool visible = true;
+    for (SceneNode* node = draw_node; node; node = node->ParentNode()) {
+      if (!node->Visible()) {
+        visible = false;
+        break;
+      }
+    }
+    if (!visible) {
+      continue;
+    }
+
+    // For each draw node, compute:
+    //   - model matrix
+    //   - world frame axis aligned bounding box
+    //   - squared distance to camera
+    //   - view frustum intersection
+    DrawNodeData dndata;
+    dndata.node = draw_node;
+
+    // Cache the model mat matrix and world frame bounding box
+    dndata.model_mat = draw_node->WorldTransform();
+
+    // Compute the world frame axis-aligned bounding box
+    dndata.world_bbox = draw_node->WorldBoundingBox();
+
+    // View frustum culling
+    if (do_frustum_culling &&
+        dndata.world_bbox.Valid() &&
+        !frustum.Intersects(dndata.world_bbox)) {
+      continue;
+    }
+
+    dndata.squared_distance = squaredDistanceToAABB(eye,
+        dndata.world_bbox);
+
+    to_draw.push_back(dndata);
+  }
+
+  switch (dgroup->GetNodeOrdering()) {
+    case NodeOrdering::kBackToFront:
+      // Sort nodes to draw back to front
+      std::sort(to_draw.begin(), to_draw.end(),
+          [](const DrawNodeData& dndata_a, const DrawNodeData& dndata_b) {
+          return dndata_a.squared_distance > dndata_b.squared_distance;
+          });
+      break;
+    case NodeOrdering::kFrontToBack:
+      // Sort nodes to draw front to back
+      std::sort(to_draw.begin(), to_draw.end(),
+          [](const DrawNodeData& dndata_a, const DrawNodeData& dndata_b) {
+          return dndata_a.squared_distance < dndata_b.squared_distance;
+          });
+      break;
+    case NodeOrdering::kNone:
+    default:
+      // Don't sort nodes
+      break;
+  }
+
+  // Draw each draw node
+  for (DrawNodeData& dndata : to_draw) {
+    const QString name = dndata.node->Name();
+    model_mat_ = dndata.model_mat;
+    DrawDrawNode(dndata.node);
+
+    if (draw_bounding_boxes_) {
+      DrawBoundingBox(dndata.world_bbox);
+    }
+  }
 }
 
 void DrawContext::DrawDrawNode(DrawNode* draw_node) {

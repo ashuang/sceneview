@@ -15,6 +15,7 @@
 namespace sv {
 
 class Drawable;
+class DrawGroup;
 
 /**
  * Scene node that contains a list of drawable objects.
@@ -59,6 +60,11 @@ class DrawNode : public SceneNode {
     void BoundingBoxChanged() override;
 
   private:
+    DrawGroup* GetDrawGroup() { return draw_group_; }
+
+    void SetDrawGroup(DrawGroup* draw_group) {
+      draw_group_ = draw_group; }
+
     friend class Scene;
 
     friend class Drawable;
@@ -69,6 +75,8 @@ class DrawNode : public SceneNode {
 
     AxisAlignedBox bounding_box_;
     bool bounding_box_dirty_;
+
+    DrawGroup* draw_group_ = nullptr;
 };
 
 }  // namespace sv

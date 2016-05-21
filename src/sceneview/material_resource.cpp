@@ -67,6 +67,10 @@ void MaterialResource::SetParam(const QString& name,
   SUMapSet(&shader_parameters_, name, val);
 }
 
+void MaterialResource::SetParam(const QString& name, const QMatrix4x4& value) {
+  SUMapSet(&shader_parameters_, name, value);
+}
+
 void MaterialResource::AddTexture(const QString& name,
     const MaterialResource::TexturePtr& texture) {
   if (texture == nullptr) {

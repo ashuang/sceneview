@@ -37,7 +37,7 @@ Viewer::Viewer(QWidget* parent) :
   const QVector3D look_at(0, 0, 0);
   const QVector3D up(0, 0, -1);
   camera->LookAt(eye, look_at, up);
-  camera->SetProjectionParams(CameraNode::kPerspective, 50, 0.1, 5000);
+  camera->SetPerspective(50, 0.1, 5000);
 
   // Assign the camera to the viewport
   viewport_->SetCamera(camera);

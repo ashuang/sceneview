@@ -18,6 +18,7 @@ add_executable(sv_example_viewer
                polylines_renderer.cpp
                example_input_handler.cpp
                fixed_function_renderer.cpp
+               hud_renderer.cpp
                stock_shape_selector.cpp
                stock_shape_renderer.cpp
                text_renderer.cpp

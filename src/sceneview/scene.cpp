@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "sceneview/camera_node.hpp"
+#include "sceneview/draw_group.hpp"
 #include "sceneview/group_node.hpp"
 #include "sceneview/light_node.hpp"
 #include "sceneview/draw_node.hpp"
@@ -17,17 +18,24 @@ namespace sv {
 
 const QString Scene::kAutoName = "";
 
+const QString Scene::kDefaultDrawGroupName = "default";
+
 Scene::Scene(const QString& name) :
   scene_name_(name),
   root_node_(new GroupNode("root")),
   name_counter_(0),
+  default_draw_group_(new DrawGroup(kDefaultDrawGroupName,
+        kDefaultDrawGroupOrder)),
   lights_(),
-  draw_nodes_(),
   cameras_(),
+  draw_groups_({ default_draw_group_ }),
   nodes_({{ root_node_->Name(), root_node_}}) {
 }
 
 Scene::~Scene() {
+  for (DrawGroup* dgroup : draw_groups_) {
+    delete dgroup;
+  }
   for (auto& item : nodes_) {
     delete item.second;
   }
@@ -94,8 +102,8 @@ DrawNode* Scene::MakeDrawNode(GroupNode* parent, const QString& name) {
   if (parent) {
     parent->AddChild(node);
   }
-  draw_nodes_.push_back(node);
   nodes_[actual_name] = node;
+  SetDrawGroup(node, default_draw_group_);
   return node;
 }
 
@@ -106,6 +114,45 @@ DrawNode* Scene::MakeDrawNode(GroupNode* parent,
   DrawNode* node = MakeDrawNode(parent, name);
   node->Add(geometry, material);
   return node;
+}
+
+DrawGroup* Scene::MakeDrawGroup(int ordering, const QString& name) {
+  for (DrawGroup* dgroup : draw_groups_) {
+    if (dgroup->Name() == name) {
+      throw std::invalid_argument("Duplicate group name " + name.toStdString());
+    }
+  }
+  DrawGroup* group = new DrawGroup(name, ordering);
+  draw_groups_.push_back(group);
+  group->SetCamera(default_draw_group_->GetCamera());
+  return group;
+}
+
+void Scene::SetDrawGroup(DrawNode* draw_node, DrawGroup* draw_group) {
+  DrawGroup* prev_group = draw_node->GetDrawGroup();
+  if (prev_group == draw_group) {
+    return;
+  }
+  if (prev_group) {
+    prev_group->RemoveNode(draw_node);
+  }
+  draw_group->AddNode(draw_node);
+  draw_node->SetDrawGroup(draw_group);
+}
+
+void Scene::SetDrawGroup(GroupNode* node, DrawGroup* draw_group) {
+  for (SceneNode* child : node->Children()) {
+    switch (child->NodeType()) {
+      case SceneNodeType::kGroupNode:
+        SetDrawGroup(static_cast<GroupNode*>(child), draw_group);
+        break;
+      case SceneNodeType::kDrawNode:
+        SetDrawGroup(static_cast<DrawNode*>(child), draw_group);
+        break;
+      default:
+        break;
+    }
+  }
 }
 
 void Scene::DestroyNode(SceneNode* node) {
@@ -136,13 +183,22 @@ void Scene::DestroyNode(SceneNode* node) {
     case SceneNodeType::kDrawNode:
       {
         DrawNode* draw_node = dynamic_cast<DrawNode*>(node);
-        draw_nodes_.erase(std::find(draw_nodes_.begin(), draw_nodes_.end(),
-              draw_node));
+        draw_node->GetDrawGroup()->RemoveNode(draw_node);
+        draw_node->SetDrawGroup(nullptr);
       }
       break;
   }
   node->ParentNode()->RemoveChild(node);
   delete node;
+}
+
+DrawGroup* Scene::GetDrawGroup(const QString& name) {
+  for (DrawGroup* group : draw_groups_) {
+    if (group->Name() == name) {
+      return group;
+    }
+  }
+  throw std::invalid_argument("Unknown draw group: " + name.toStdString());
 }
 
 void Scene::PrintStats() {

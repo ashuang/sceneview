@@ -26,7 +26,9 @@ class CameraNode : public SceneNode {
   public:
     enum ProjectionType {
       kOrthographic,
-      kPerspective
+      kPerspective,
+      // Manually defined projection matrix
+      kManual
     };
 
     SceneNodeType NodeType() const override {
@@ -56,15 +58,26 @@ class CameraNode : public SceneNode {
     QSize GetViewportSize() const;
 
     /**
-     * Sets the projection parameters.
-     * @param type either kOrthographic or kPerspective
+     * Sets perspective projection mode.
+     * @param vfov_deg vertical field of view, in degrees.
+     * @param z_near near clipping plane
+     * @param z_var far clipping plane
+     */
+    void SetPerspective(double vfov_deg, double z_near, double z_far);
+
+    /**
+     * Sets orthographic projection mode.
      * @param vfov_deg vertical field of view, in degrees. For orthographic
      *                 projection, this is calculated at the look_at point.
      * @param z_near near clipping plane
      * @param z_var far clipping plane
      */
-    void SetProjectionParams(ProjectionType type,
-        double vfov_deg, double z_near, double z_far);
+    void SetOrthographic(double vfov_deg, double z_near, double z_far);
+
+    /**
+     * Sets a manual projection matrix.
+     */
+    void SetManual(const QMatrix4x4& proj_mat);
 
     /**
      * Retrieve the current projection type.
@@ -140,6 +153,10 @@ class CameraNode : public SceneNode {
 
     const AxisAlignedBox& WorldBoundingBox() override;
 
+    void SetTranslation(const QVector3D& vec) override;
+
+    void SetRotation(const QQuaternion& quat) override;
+
   private:
     friend class Scene;
 
@@ -147,18 +164,14 @@ class CameraNode : public SceneNode {
 
     void ComputeProjectionMatrix();
 
-    void SetTranslation(const QVector3D& vec) override;
-
-    void SetRotation(const QQuaternion& quat) override;
-
     static const AxisAlignedBox kBoundingBox;
 
     QVector3D look_;
     QVector3D up_;
     QVector3D look_at_;
 
-    int viewport_width_;
-    int viewport_height_;
+    int viewport_width_ = 0;
+    int viewport_height_ = 0;
 
     ProjectionType proj_type_;
 

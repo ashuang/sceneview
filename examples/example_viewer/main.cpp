@@ -10,6 +10,7 @@
 #include "stock_shape_selector.hpp"
 #include "text_renderer.hpp"
 #include "texture_renderer.hpp"
+#include "hud_renderer.hpp"
 
 using sv::Viewport;
 using sv::Viewer;
@@ -23,6 +24,7 @@ using vis_examples::FixedFunctionRenderer;
 using vis_examples::PolylinesRenderer;
 using vis_examples::TextRenderer;
 using vis_examples::TextureRenderer;
+using vis_examples::HudRenderer;
 
 int main(int argc, char *argv[]) {
   QApplication app(argc, argv);
@@ -30,6 +32,27 @@ int main(int argc, char *argv[]) {
   Viewer viewer;
 
   Viewport* viewport = viewer.GetViewport();
+
+  // Create a new draw group for the HUD, that draws after the default draw
+  // group.
+  sv::Scene::Ptr scene = viewport->GetScene();
+  sv::DrawGroup* hud_group = scene->MakeDrawGroup(
+      sv::Scene::kDefaultDrawGroupOrder + 10,
+      "HUD");
+  hud_group->SetFrustumCulling(false);
+  hud_group->SetNodeOrdering(sv::NodeOrdering::kNone);
+  viewport->SetDrawGroups({scene->GetDefaultDrawGroup(), hud_group });
+
+  sv::CameraNode* hud_cam = scene->MakeCamera(scene->Root());
+  hud_group->SetCamera(hud_cam);
+  QObject::connect(viewport, &sv::Viewport::resized,
+      [viewport, hud_cam]() {
+      const int width = viewport->width();
+      const int height = viewport->height();
+      QMatrix4x4 mvp_mat;
+      mvp_mat.ortho(0, width, height, 0, -1, 1);
+      hud_cam->SetManual(mvp_mat);
+      });
 
   // Set initial camera position
   const QVector3D eye(5, 5, -10);
@@ -46,6 +69,7 @@ int main(int argc, char *argv[]) {
   viewport->AddRenderer(new TextRenderer("text", viewport));
   viewport->AddRenderer(new PolylinesRenderer("polylines", viewport));
   viewport->AddRenderer(new TextureRenderer("texture", viewport));
+  viewport->AddRenderer(new HudRenderer("hud", viewport));
 
   // Add input handlers
   viewport->AddInputHandler(new ViewHandlerHorizontal(viewport,

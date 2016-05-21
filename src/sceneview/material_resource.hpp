@@ -62,6 +62,8 @@ class MaterialResource {
 
     void SetParam(const QString& name, const std::vector<float>& val);
 
+    void SetParam(const QString& name, const QMatrix4x4& value);
+
     void AddTexture(const QString& name, const TexturePtr& texture);
 
     const TextureDictionary& GetTextures() { return textures_; }

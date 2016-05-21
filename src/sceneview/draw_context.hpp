@@ -17,20 +17,28 @@ namespace sv {
 
 class AxisAlignedBox;
 class CameraNode;
+class DrawGroup;
 class DrawNode;
 class Renderer;
+class Plane;
 
 class DrawContext {
   public:
     DrawContext(const ResourceManager::Ptr& resources,
         const Scene::Ptr& scene);
 
-    void Draw(CameraNode* camera, std::vector<Renderer*>* prenderers);
+    void Draw(int viewport_width,
+        int viewport_height,
+        std::vector<Renderer*>* prenderers);
 
     void SetClearColor(const QColor& color);
 
+    void SetDrawGroups(const std::vector<DrawGroup*>& groups);
+
   private:
     void PrepareFixedFunctionPipeline();
+
+    void DrawDrawGroup(DrawGroup* dgroup);
 
     void DrawDrawNode(DrawNode* node);
 
@@ -47,13 +55,17 @@ class DrawContext {
     QColor clear_color_;
 
     // Rendering variables
-    CameraNode* cur_camera_;
+    int viewport_width_ = 0;
+    int viewport_height_ = 0;
+    CameraNode* cur_camera_ = nullptr;
 
     MaterialResource::Ptr material_;
     GeometryResource::Ptr geometry_;
     ShaderResource::Ptr shader_;
     QOpenGLShaderProgram* program_;
     QMatrix4x4 model_mat_;
+
+    std::vector<DrawGroup*> draw_groups_;
 
     // For debugging
     DrawNode* bounding_box_node_;

@@ -19,6 +19,7 @@ class GroupNode;
 class LightNode;
 class DrawNode;
 class SceneNode;
+class DrawGroup;
 
 /**
  * A scene graph.
@@ -37,6 +38,16 @@ class Scene {
     typedef std::shared_ptr<Scene> Ptr;
 
     static const QString kAutoName;
+
+    /**
+     * The order assigned to the default render group.
+     */
+    static constexpr int kDefaultDrawGroupOrder = 10;
+
+    /**
+     * Name of the default render group. This is equal to "default".
+     */
+    static const QString kDefaultDrawGroupName;
 
   public:
     ~Scene();
@@ -87,10 +98,34 @@ class Scene {
         const MaterialResource::Ptr& material,
         const QString& name = kAutoName);
 
+    DrawGroup* MakeDrawGroup(int ordering,
+        const QString& name = kAutoName);
+
+    /**
+     * Sets the draw group that a draw node belongs to.
+     */
+    void SetDrawGroup(DrawNode* draw_node, DrawGroup* draw_group);
+
+    /**
+     * Convenience method to call SetDrawGroup() on all DrawNode descendants of
+     * the specified group.
+     */
+    void SetDrawGroup(GroupNode* node, DrawGroup* draw_group);
+
     /**
      * Destroys a node and all of its children.
      */
     void DestroyNode(SceneNode* node);
+
+    /**
+     * Destroys a draw group.
+     *
+     * Constraints:
+     * - The default draw group cannot be destroyed.
+     * - The draw group must be empty (i.e., no nodes assigned to the draw
+     *   group).
+     */
+    void DestroyDrawGroup(DrawGroup* draw_group);
 
     /**
      * Retrieve a list of all lights in the scene.
@@ -100,11 +135,14 @@ class Scene {
     std::vector<LightNode*>& Lights() { return lights_; }
 
     /**
-     * Retrieve a list of all DrawNode objects in the scene.
+     * Retrieve the draw group with the specified name.
      *
-     * Don't modify the returned vector.
+     * @throw std::invalid_argument if @c name does not correspond to a draw
+     * group in the scene.
      */
-    std::vector<DrawNode*>& DrawNodes() { return draw_nodes_; }
+    DrawGroup* GetDrawGroup(const QString& name);
+
+    DrawGroup* GetDefaultDrawGroup() { return default_draw_group_; }
 
     void PrintStats();
 
@@ -123,9 +161,11 @@ class Scene {
 
     int name_counter_;
 
+    DrawGroup* default_draw_group_;
+
     std::vector<LightNode*> lights_;
-    std::vector<DrawNode*> draw_nodes_;
     std::vector<CameraNode*> cameras_;
+    std::vector<DrawGroup*> draw_groups_;
     std::map<QString, SceneNode*> nodes_;
 };
 
