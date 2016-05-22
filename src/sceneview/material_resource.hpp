@@ -83,6 +83,10 @@ class MaterialResource {
 
     bool DepthTest() const { return depth_test_; }
 
+    void SetDepthFunc(GLenum func) { depth_func_ = func; }
+
+    GLenum DepthFunc() const { return depth_func_; }
+
     void SetColorWrite(bool val) { color_write_ = val; }
 
     bool ColorWrite() const { return color_write_; }
@@ -129,23 +133,25 @@ class MaterialResource {
 
     ShaderUniformMap shader_parameters_;
 
-    bool two_sided_;
+    bool two_sided_ = false;
 
-    bool depth_write_;
+    bool depth_write_ = true;
 
-    bool depth_test_;
+    bool depth_test_ = true;
 
-    bool color_write_;
+    GLenum depth_func_ = GL_LESS;
 
-    float point_size_;
+    bool color_write_ = true;
 
-    float line_width_;
+    float point_size_ = -1;
 
-    bool blend_;
+    float line_width_ = -1;
 
-    GLenum blend_sfactor_;
+    bool blend_ = false;
 
-    GLenum blend_dfactor_;
+    GLenum blend_sfactor_ = GL_ONE;
+
+    GLenum blend_dfactor_ = GL_ZERO;
 
     TextureDictionary textures_;
 };

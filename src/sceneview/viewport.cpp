@@ -7,6 +7,7 @@
 #include <vector>
 
 #include <QOpenGLFunctions>
+#include <QPainter>
 #include <QTimer>
 
 #include "sceneview/camera_node.hpp"
@@ -146,7 +147,12 @@ void Viewport::paintGL() {
   redraw_scheduled_ = false;
 
   // Delegate
+  QPainter painter(this);
+  painter.beginNativePainting();
   draw_->Draw(width(), height(), &renderers_);
+  painter.endNativePainting();
+  painter.setPen(QColor(255, 0, 255));
+  painter.drawEllipse(QRect(50, 50, 25, 100));
 
   gl_context_->swapBuffers(gl_context_->surface());
 }

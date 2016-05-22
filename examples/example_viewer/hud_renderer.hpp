@@ -28,9 +28,12 @@ class HudRenderer : public sv::Renderer {
 
     sv::MaterialResource::Ptr material_;
     sv::GeometryResource::Ptr geom_;
+    bool geom_dirty_ = true;
     sv::GeometryData gdata_;
     sv::DrawNode* draw_node_;
     sv::CameraNode* hud_camera_;
+
+    sv::TextBillboard::Ptr text_billboard_;
 
     QTime timer_;
 };

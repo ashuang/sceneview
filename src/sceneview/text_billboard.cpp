@@ -58,19 +58,9 @@ TextBillboard::TextBillboard(Viewport* viewport,
   qfont_("Helvetica"),
   text_() {
   // Implementation details
-  // The text display is rendered as three layered geometries:
+  // The text display is rendered as two layered geometries:
   // 1. Background layer (a single rectangle)
   // 2. Text layer (one textured quad per character)
-  // 3. Depth write layer (a single rectangle)
-  //
-  // Layers 1 and 3 have identical geometries, but differ in their material
-  // properties:
-  // - Layer 1: depth write disabled, color write enabled
-  // - Layer 3: depth write enabled, color write disabled
-  //
-  // The purpose is to allow the text to be rendered at the exact same depth as
-  // the background material without having to fudge the depth test or mess with
-  // things like glPolygonOffset().
 
   StockResources stock(resources_);
 
@@ -78,9 +68,9 @@ TextBillboard::TextBillboard(Viewport* viewport,
   ShaderResource::Ptr billboard_uniform_color =
     stock.Shader(StockResources::kBillboardUniformColor);
   bg_material_ = resources_->MakeMaterial(billboard_uniform_color);
-  bg_material_->SetDepthWrite(false);
   bg_material_->SetParam("color", 0.0, 0.0, 0.0, 0.0);
   bg_material_->SetBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+  bg_material_->SetTwoSided(true);
 
   // Create geometry for the background and the cap
   rect_geom_ = resources_->MakeGeometry();
@@ -89,13 +79,10 @@ TextBillboard::TextBillboard(Viewport* viewport,
   text_material_ = resources_->MakeMaterial(
       stock.Shader(StockResources::kBillboardTextured));
   text_material_->SetTwoSided(true);
+  text_material_->SetDepthFunc(GL_LEQUAL);
   text_material_->SetParam("text_color", 1.0, 1.0, 1.0, 1.0);
   text_material_->SetBlend(true);
   text_material_->SetBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-  // Create the depth write material
-  depth_write_material_ = resources_->MakeMaterial(billboard_uniform_color);
-  depth_write_material_->SetColorWrite(false);
 
   text_geom_ = resources_->MakeGeometry();
 
@@ -105,11 +92,8 @@ TextBillboard::TextBillboard(Viewport* viewport,
   // Use a custom Drawable to correctly compute the node bounding box.
   bg_drawable_ = new TextBillboardDrawable(rect_geom_, bg_material_);
   text_drawable_ = new TextBillboardDrawable(text_geom_, text_material_);
-  depth_write_drawable_ = new TextBillboardDrawable(rect_geom_,
-      depth_write_material_);
   draw_node_->Add(Drawable::Ptr(bg_drawable_));
   draw_node_->Add(Drawable::Ptr(text_drawable_));
-  draw_node_->Add(Drawable::Ptr(depth_write_drawable_));
 }
 
 TextBillboard::~TextBillboard() {
@@ -158,6 +142,13 @@ void TextBillboard::SetAlignment(HAlignment horizontal,
   Recompute();
 }
 
+void TextBillboard::SetYDirection(YDirection direction) {
+  if (direction != kPositive && direction != kNegative) {
+    throw std::invalid_argument("Invalid direction");
+  }
+  y_dir_ = direction;
+}
+
 void TextBillboard::Recompute() {
   font_resource_ = resources_->Font(qfont_);
 
@@ -167,8 +158,7 @@ void TextBillboard::Recompute() {
   const QVector3D normal(0, 0, 1);
 
   const float x_dir = 1;
-  const float y_dir = -1;
-  const float y_step = y_dir * line_height_;
+  const float y_step = y_dir_ * line_height_;
 
   float cursor_x = 0;
   float cursor_y = 0;
@@ -191,8 +181,8 @@ void TextBillboard::Recompute() {
     const FontResource::CharData& cdata = font_resource_->GetCharData(ch);
     const float x0 = cursor_x + x_dir * cdata.x0 * line_height_;
     const float x1 = cursor_x + x_dir * cdata.x1 * line_height_;
-    const float y0 = cursor_y + y_dir * cdata.y0 * line_height_;
-    const float y1 = cursor_y + y_dir * cdata.y1 * line_height_;
+    const float y0 = cursor_y + y_step * cdata.y0;
+    const float y1 = cursor_y + y_step * cdata.y1;
 
     min_x = std::min(min_x, std::min(x0, x1));
     min_y = std::min(min_y, std::min(y0, y1));
@@ -244,18 +234,34 @@ void TextBillboard::Recompute() {
       break;
   }
 
-  switch (v_align_) {
-    case kTop:
-      y_offset = -max_y;
-      break;
-    case kVCenter:
-      y_offset = -(max_y + min_y) / 2;
-      break;
-    case kBottom:
-      y_offset = -min_y;
-      break;
-    default:
-      break;
+  if (y_dir_ == kPositive) {
+    switch (v_align_) {
+      case kTop:
+        y_offset = -min_y;
+        break;
+      case kVCenter:
+        y_offset = -(max_y + min_y) / 2;
+        break;
+      case kBottom:
+        y_offset = -max_y;
+        break;
+      default:
+        break;
+    }
+  } else {
+    switch (v_align_) {
+      case kTop:
+        y_offset = -max_y;
+        break;
+      case kVCenter:
+        y_offset = -(max_y + min_y) / 2;
+        break;
+      case kBottom:
+        y_offset = -min_y;
+        break;
+      default:
+        break;
+    }
   }
 
   // Calculate bounding box margins to arrive at a final vertex offset
@@ -305,7 +311,6 @@ void TextBillboard::Recompute() {
 
   bg_drawable_->SetBoundingBox(box);
   text_drawable_->SetBoundingBox(box);
-  depth_write_drawable_->SetBoundingBox(box);
 }
 
 }  // namespace sv

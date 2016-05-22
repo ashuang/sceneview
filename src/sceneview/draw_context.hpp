@@ -67,6 +67,17 @@ class DrawContext {
 
     std::vector<DrawGroup*> draw_groups_;
 
+    bool gl_two_sided_;
+    bool gl_depth_test_;
+    GLenum gl_depth_func_;
+    bool gl_depth_write_;
+    bool gl_color_write_;
+    float gl_point_size_;
+    float gl_line_width_;
+    bool gl_blend_;
+    GLenum gl_sfactor_;
+    GLenum gl_dfactor_;
+
     // For debugging
     DrawNode* bounding_box_node_;
     bool draw_bounding_boxes_;

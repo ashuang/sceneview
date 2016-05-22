@@ -161,6 +161,27 @@ void DrawContext::Draw(int viewport_width,
     }
   }
 
+  // Set some OpenGL state to a known configuration
+  gl_two_sided_ = false;
+  glDisable(GL_CULL_FACE);
+  gl_depth_test_ = true;
+  glEnable(GL_DEPTH_TEST);
+  gl_depth_func_ = GL_LESS;
+  glDepthFunc(gl_depth_func_);
+  gl_depth_write_ = true;
+  glDepthMask(GL_TRUE);
+  gl_color_write_ = true;
+  glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
+  gl_point_size_ = 1;
+  glPointSize(gl_point_size_);
+  gl_line_width_ = 1;
+  glLineWidth(gl_line_width_);
+  gl_blend_ = false;
+  glDisable(GL_BLEND);
+  gl_sfactor_ = GL_ONE;
+  gl_dfactor_ = GL_ZERO;
+  glBlendFunc(gl_sfactor_, gl_dfactor_);
+
   // Draw nodes, ordered first by draw group.
   for (DrawGroup* dgroup : draw_groups_) {
     DrawDrawGroup(dgroup);
@@ -398,49 +419,86 @@ void DrawContext::ActivateMaterial() {
   glFrontFace(GL_CCW);
 
   // set OpenGL attributes based on material properties.
-  if (material_->TwoSided()) {
-    glDisable(GL_CULL_FACE);
-  } else {
-    glCullFace(GL_BACK);
-    glEnable(GL_CULL_FACE);
+  const bool mat_two_sided = material_->TwoSided();
+  if (mat_two_sided != gl_two_sided_) {
+    gl_two_sided_ = mat_two_sided;
+    if (gl_two_sided_) {
+      glDisable(GL_CULL_FACE);
+    } else {
+      glCullFace(GL_BACK);
+      glEnable(GL_CULL_FACE);
+    }
   }
 
-  if (material_->DepthTest()) {
-    glEnable(GL_DEPTH_TEST);
-  } else {
-    glDisable(GL_DEPTH_TEST);
+  const bool mat_depth_test = material_->DepthTest();
+  if (mat_depth_test != gl_depth_test_) {
+    gl_depth_test_ = mat_depth_test;
+    if (gl_depth_test_) {
+      glEnable(GL_DEPTH_TEST);
+    } else {
+      glDisable(GL_DEPTH_TEST);
+    }
   }
 
-  if (material_->DepthWrite()) {
-    glDepthMask(GL_TRUE);
-  } else {
-    glDepthMask(GL_FALSE);
+  const GLenum mat_depth_func = material_->DepthFunc();
+  if (mat_depth_func != gl_depth_func_) {
+    gl_depth_func_ = mat_depth_func;
+    glDepthFunc(gl_depth_func_);
   }
 
-  if (material_->ColorWrite()) {
-    glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
-  } else {
-    glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
+  const bool mat_depth_write = material_->DepthWrite();
+  if (gl_depth_write_ != mat_depth_write) {
+    gl_depth_write_ = mat_depth_write;
+    if (gl_depth_write_) {
+      glDepthMask(GL_TRUE);
+    } else {
+      glDepthMask(GL_FALSE);
+    }
   }
 
-  const float point_size = material_->PointSize();
-  if (point_size > 0) {
-    glPointSize(point_size);
+  const bool mat_color_write = material_->ColorWrite();
+  if (gl_color_write_ != mat_color_write) {
+    gl_color_write_ = mat_color_write;
+    if (gl_color_write_) {
+      glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
+    } else {
+      glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
+    }
   }
 
-  const float line_width = material_->LineWidth();
-  if (line_width > 0) {
-    glLineWidth(line_width);
+  const float mat_point_size = material_->PointSize();
+  if (gl_point_size_ != mat_point_size) {
+    gl_point_size_ = mat_point_size;
+    if (gl_point_size_ > 0) {
+      glPointSize(gl_point_size_);
+    }
   }
 
-  if (material_->Blend()) {
-    glEnable(GL_BLEND);
-    GLenum sfactor;
-    GLenum dfactor;
-    material_->BlendFunc(&sfactor, &dfactor);
-    glBlendFunc(sfactor, dfactor);
-  } else {
-    glDisable(GL_BLEND);
+  const float mat_line_width = material_->LineWidth();
+  if (gl_line_width_ != mat_line_width) {
+    gl_line_width_ = mat_line_width;
+    if (gl_line_width_ > 0) {
+      glLineWidth(gl_line_width_);
+    }
+  }
+
+  const bool mat_blend = material_->Blend();
+  if (gl_blend_ != mat_blend) {
+    gl_blend_ = mat_blend;
+    if (gl_blend_) {
+      glEnable(GL_BLEND);
+    } else {
+      glDisable(GL_BLEND);
+    }
+  }
+
+  GLenum mat_sfactor;
+  GLenum mat_dfactor;
+  material_->BlendFunc(&mat_sfactor, &mat_dfactor);
+  if (gl_sfactor_ != mat_sfactor || gl_dfactor_ != mat_dfactor) {
+    gl_sfactor_ = mat_sfactor;
+    gl_dfactor_ = mat_dfactor;
+    glBlendFunc(gl_sfactor_, gl_dfactor_);
   }
 
   // Set shader standard variables

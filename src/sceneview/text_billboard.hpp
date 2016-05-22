@@ -53,6 +53,11 @@ class TextBillboard {
       kTop,
     };
 
+    enum YDirection {
+      kNegative = -1,
+      kPositive = 1
+    };
+
     typedef std::shared_ptr<TextBillboard> Ptr;
 
     static Ptr Create(Viewport* viewport, GroupNode* parent);
@@ -105,6 +110,8 @@ class TextBillboard {
      */
     void SetAlignment(HAlignment horizontal, VAlignment vertical);
 
+    void SetYDirection(YDirection direction);
+
     GroupNode* Node() { return node_; }
 
   private:
@@ -125,12 +132,12 @@ class TextBillboard {
     GeometryResource::Ptr rect_geom_;
     MaterialResource::Ptr text_material_;
     GeometryResource::Ptr text_geom_;
-    MaterialResource::Ptr depth_write_material_;
     DrawNode* draw_node_;
 
     VAlignment v_align_;
     HAlignment h_align_;
     float line_height_;
+    YDirection y_dir_ = kNegative;
 
     float margin_top_;
     float margin_left_;
