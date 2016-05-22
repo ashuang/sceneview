@@ -8,8 +8,8 @@
 namespace vis_examples {
 
 /**
- * Demonstrates drawing billboard text in the scene that always faces the
- * camera.
+ * Demonstrates drawing HUD-style geometry and text that is fixed to the window
+ * and not the 3D scene.
  */
 class HudRenderer : public sv::Renderer {
   Q_OBJECT
