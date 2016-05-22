@@ -33,32 +33,30 @@ int main(int argc, char *argv[]) {
 
   Viewport* viewport = viewer.GetViewport();
 
-  // Create a new draw group for the HUD, that draws after the default draw
-  // group.
+  // Set initial camera position
+  const QVector3D eye(5, 5, -10);
+  const QVector3D look_at(0, 0, 0);
+  const QVector3D up(0, 0, -1);
+  viewport->GetCamera()->LookAt(eye, look_at, up);
+
+  // Setup the HUD
   sv::Scene::Ptr scene = viewport->GetScene();
   sv::DrawGroup* hud_group = scene->MakeDrawGroup(
-      sv::Scene::kDefaultDrawGroupOrder + 10,
-      "HUD");
+      sv::Scene::kDefaultDrawGroupOrder + 10, "HUD");
   hud_group->SetFrustumCulling(false);
   hud_group->SetNodeOrdering(sv::NodeOrdering::kNone);
   viewport->SetDrawGroups({scene->GetDefaultDrawGroup(), hud_group });
 
   sv::CameraNode* hud_cam = scene->MakeCamera(scene->Root());
   hud_group->SetCamera(hud_cam);
-  QObject::connect(viewport, &sv::Viewport::resized,
-      [viewport, hud_cam]() {
+  auto on_viewport_resize = [viewport, hud_cam]() {
       const int width = viewport->width();
       const int height = viewport->height();
       QMatrix4x4 mvp_mat;
       mvp_mat.ortho(0, width, height, 0, -1, 1);
       hud_cam->SetManual(mvp_mat);
-      });
-
-  // Set initial camera position
-  const QVector3D eye(5, 5, -10);
-  const QVector3D look_at(0, 0, 0);
-  const QVector3D up(0, 0, -1);
-  viewport->GetCamera()->LookAt(eye, look_at, up);
+      };
+  QObject::connect(viewport, &sv::Viewport::resized, on_viewport_resize);
 
   // Add renderers
   viewport->AddRenderer(new GridRenderer("grid", viewport));

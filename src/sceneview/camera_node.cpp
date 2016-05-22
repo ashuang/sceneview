@@ -20,8 +20,10 @@ CameraNode::CameraNode(const QString& name) :
   vfov_deg_(50),
   z_near_(0.1),
   z_far_(10000) {
+    // Choose an initial camera position/orientation such that the
+    // translation/rotation are both identity.
     LookAt(QVector3D(0, 0, 0),
-        QVector3D(0, 0, 1),
+        QVector3D(0, 0, -1),
         QVector3D(0, 1, 0));
 }
 
