@@ -53,6 +53,7 @@ install(FILES asset_importer.hpp
               axis_aligned_box.hpp
               camera_node.hpp
               drawable.hpp
+              draw_group.hpp
               draw_node.hpp
               expander_widget.hpp
               font_resource.hpp
