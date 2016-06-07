@@ -64,6 +64,8 @@ class Viewer : public QMainWindow {
 
     void LoadSettings(QSettings* settings);
 
+    RendererWidgetStack* GetRendererWidgetStack() { return renderer_widget_stack_; }
+
   signals:
     /**
      * Emitted when the window is about to close.

@@ -10,6 +10,7 @@ class QVBoxLayout;
 
 namespace sv {
 
+class ExpanderWidget;
 class Renderer;
 
 /**
@@ -28,6 +29,16 @@ class RendererWidgetStack : public QDockWidget {
 
   public:
     explicit RendererWidgetStack(QWidget* parent = nullptr);
+
+    /**
+     * Retrieve the expander widget for the corresponding renderer.
+     *
+     * If the renderer does not have a widget, then no expander widget is
+     * created.
+     *
+     * @return an ExpanderWidget for the renderer, or nullptr if no widget exists.
+     */
+    ExpanderWidget* GetExpanderWidget(Renderer* renderer);
 
   public slots:
     void AddRendererWidget(Renderer* renderer);

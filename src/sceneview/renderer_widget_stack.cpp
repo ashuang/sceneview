@@ -45,10 +45,20 @@ void RendererWidgetStack::AddRendererWidget(Renderer* renderer) {
   ExpanderWidget* expander = new ExpanderWidget(this);
   expander->SetWidget(rwidget);
   expander->SetTitle(renderer->Name());
+  expander->SetExpanded(false);
+  renderer->setProperty("sceneview/expander_widget", QVariant::fromValue(expander));
   layout_->addWidget(expander, 0, Qt::AlignTop);
 
   // Add a stretch item at the end to fill up empty space.
   layout_->addStretch();
+}
+
+ExpanderWidget* RendererWidgetStack::GetExpanderWidget(Renderer* renderer) {
+  QVariant expander_variant = renderer->property("sceneview/expander_widget");
+  if (!expander_variant.isValid()) {
+    return nullptr;
+  }
+  return expander_variant.value<ExpanderWidget*>();
 }
 
 }  // namespace sv
