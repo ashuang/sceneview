@@ -220,6 +220,8 @@ void DrawContext::SetDrawGroups(const std::vector<DrawGroup*>& groups) {
 }
 
 void DrawContext::PrepareFixedFunctionPipeline() {
+  cur_camera_ = scene_->GetDefaultDrawGroup()->GetCamera();
+
   // Enable the fixed function pipeline by disabling any active shader program.
   glUseProgram(0);
 
