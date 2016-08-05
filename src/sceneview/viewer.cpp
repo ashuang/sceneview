@@ -137,6 +137,8 @@ void Viewer::OnRendererAdded(Renderer* renderer) {
   enable_disable->setCheckable(true);
   enable_disable->setChecked(true);
   connect(enable_disable, &QAction::toggled, renderer, &Renderer::SetEnabled);
+  connect(renderer, &Renderer::EnableChanged, enable_disable,
+      &QAction::setChecked);
 
   renderer_widget_stack_->AddRendererWidget(renderer);
 }

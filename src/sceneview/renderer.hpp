@@ -192,6 +192,9 @@ class Renderer : public QObject {
      */
     virtual void LoadState(const QVariant& val) {}
 
+  signals:
+    void EnableChanged(bool enabled);
+
   public slots:
     void SetEnabled(bool enabled);
 

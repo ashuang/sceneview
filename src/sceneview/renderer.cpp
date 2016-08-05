@@ -41,6 +41,7 @@ void Renderer::SetEnabled(bool enabled) {
 
   enabled_ = enabled;
   base_node_->SetVisible(enabled_);
+  EnableChanged(enabled);
   OnEnableChanged(enabled_);
 }
 
