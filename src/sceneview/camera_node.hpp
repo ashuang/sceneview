@@ -106,7 +106,7 @@ class CameraNode : public SceneNode {
     double GetZFar() const { return z_far_; }
 
     /**
-     * Retrieve the direction the camera is facing.
+     * Retrieve the direction the camera is facing. This is always of unit length.
      */
     QVector3D GetLookDir() const;
 

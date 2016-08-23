@@ -66,6 +66,11 @@ class InputHandler {
     virtual void MouseReleaseEvent(QMouseEvent* event);
 
     /**
+     * Called when the mouse is double-clicked in the viewport.
+     */
+    virtual void MouseDoubleClickEvent(QMouseEvent* event);
+
+    /**
      * Called when the mouse wheel is scrolled.
      */
     virtual void WheelEvent(QWheelEvent* event);

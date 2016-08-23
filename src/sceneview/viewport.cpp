@@ -178,6 +178,13 @@ void Viewport::mouseReleaseEvent(QMouseEvent* event) {
   }
 }
 
+void Viewport::mouseDoubleClickEvent(QMouseEvent* event) {
+  if (input_handler_) {
+    makeCurrent();
+    input_handler_->MouseDoubleClickEvent(event);
+  }
+}
+
 void Viewport::wheelEvent(QWheelEvent* event) {
   if (input_handler_) {
     makeCurrent();

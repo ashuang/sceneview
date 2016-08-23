@@ -16,6 +16,10 @@ void InputHandler::MouseReleaseEvent(QMouseEvent* event) {
   event->ignore();
 }
 
+void InputHandler::MouseDoubleClickEvent(QMouseEvent* event) {
+  event->ignore();
+}
+
 void InputHandler::WheelEvent(QWheelEvent* event) {
   event->ignore();
 }
