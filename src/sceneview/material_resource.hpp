@@ -143,9 +143,9 @@ class MaterialResource {
 
     bool color_write_ = true;
 
-    float point_size_ = -1;
+    float point_size_ = 1;
 
-    float line_width_ = -1;
+    float line_width_ = 1;
 
     bool blend_ = false;
 

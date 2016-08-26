@@ -402,15 +402,6 @@ void DrawContext::DrawDrawNode(DrawNode* draw_node) {
     // Done. Release resources
     program_->release();
 
-    // If we called glPointSize() earlier, then reset the value.
-    if (material_->PointSize() > 0) {
-      glPointSize(1);
-    }
-
-    if (material_->LineWidth() > 0) {
-      glLineWidth(1);
-    }
-
     glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
   }
 }
@@ -471,17 +462,13 @@ void DrawContext::ActivateMaterial() {
   const float mat_point_size = material_->PointSize();
   if (gl_point_size_ != mat_point_size) {
     gl_point_size_ = mat_point_size;
-    if (gl_point_size_ > 0) {
-      glPointSize(gl_point_size_);
-    }
+    glPointSize(gl_point_size_);
   }
 
   const float mat_line_width = material_->LineWidth();
   if (gl_line_width_ != mat_line_width) {
     gl_line_width_ = mat_line_width;
-    if (gl_line_width_ > 0) {
-      glLineWidth(gl_line_width_);
-    }
+    glLineWidth(gl_line_width_);
   }
 
   const bool mat_blend = material_->Blend();

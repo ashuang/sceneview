@@ -25,7 +25,7 @@ void PolylinesRenderer::InitializeGL() {
   material_ = stock.NewMaterial(StockResources::kPerVertexColorNoLighting);
 
   // Draw fat thick lines.
-  material_->SetLineWidth(5.0f);
+  material_->SetLineWidth(10.0f);
 
   draw_node_ = GetScene()->MakeDrawNode(GetBaseNode(), geom_, material_);
 
