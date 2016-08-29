@@ -201,7 +201,8 @@ QVector3D CameraNode::Unproject(double x, double y) {
   const QVector3D world(pworld.x() / pworld.w(),
       pworld.y() / pworld.w(),
       pworld.z() / pworld.w());
-  return (world - Translation()).normalized();
+  const QVector3D eye = WorldTransform().map(QVector3D(0, 0, 0));
+  return (world - eye).normalized();
 }
 
 QMatrix4x4 CameraNode::GetProjectionMatrix() {

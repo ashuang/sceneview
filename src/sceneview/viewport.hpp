@@ -66,6 +66,8 @@ class Viewport : public QOpenGLWidget {
 
     void SetDrawGroups(const std::vector<DrawGroup*>& groups);
 
+    InputHandler* GetActiveInputHandler() { return input_handler_; }
+
   public slots:
     void ScheduleRedraw();
 
