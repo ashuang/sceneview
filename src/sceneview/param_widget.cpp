@@ -177,10 +177,20 @@ void ParamWidget::AddDouble(const QString& name,
     row_hbox->addWidget(label);
     widgets_[name] = slider;
     layout_->addWidget(row_widget);
+    slider->setProperty("param_widget_label", QVariant::fromValue(label));
+    label->setProperty("format_str", "");
     connect(slider, &QSlider::valueChanged,
         [this, name, label, min, step](int position) {
           const double value = min + step * position;
-          label->setText(QString::number(value));
+          const QString format_str = label->property("format_str").toString();
+          if (format_str == "") {
+            label->setText(QString::number(value));
+            label->setMinimumWidth(std::max(label->width(), label->minimumWidth()));
+          } else {
+            QString text;
+            text.sprintf(format_str.toStdString().c_str(), value);
+            label->setText(text);
+          }
           emit ParamChanged(name);
         });
   } else {
@@ -319,6 +329,31 @@ void ParamWidget::SetDouble(const QString& name, double val) {
   }
   throw std::runtime_error("Unable to determine widget type for param " +
       name.toStdString());
+}
+
+void ParamWidget::SetPrecision(const QString& name, int digits, int decimal_places)
+{
+  QWidget* widget = GetWidget(name);
+  QSlider* slider = dynamic_cast<QSlider*>(widget);
+  if (slider) {
+    QLabel* label = slider->property("param_widget_label").value<QLabel*>();
+    if (label) {
+      const QFont& font = label->font();
+      QFontMetrics font_metrics(font);
+      QString sample_text;
+      for (int i = 0; i < digits; ++i) {
+        sample_text.append('9');
+      }
+      if (decimal_places) {
+        sample_text.append('.');
+      }
+      const int width = font_metrics.width(sample_text);
+      QString format_str;
+      format_str.sprintf("%%%d.%df", digits, decimal_places);
+      label->setProperty("format_str", format_str);
+      label->setFixedWidth(width);
+    }
+  }
 }
 
 QVariant ParamWidget::SaveState() {

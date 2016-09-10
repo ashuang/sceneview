@@ -161,6 +161,8 @@ class ParamWidget : public QWidget {
 
     void SetDouble(const QString& name, double val);
 
+    void SetPrecision(const QString& name, int digits, int decimal_places);
+
     void SetEnabled(const QString& name, bool enabled);
 
     QVariant SaveState();
