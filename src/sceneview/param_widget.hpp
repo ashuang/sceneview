@@ -143,6 +143,11 @@ class ParamWidget : public QWidget {
      */
     void AddPushButtons(const std::vector<QString>& names);
 
+    /**
+     * Add a freeform text entry.
+     */
+    void AddString(const QString& name, const QString& initial_value);
+
     int GetEnum(const QString& name);
 
     QString GetEnumString(const QString& name);
@@ -153,6 +158,8 @@ class ParamWidget : public QWidget {
 
     double GetDouble(const QString& name);
 
+    QString GetString(const QString& name);
+
     void SetEnum(const QString& name, int val);
 
     void SetBool(const QString& name, bool val);
@@ -160,6 +167,8 @@ class ParamWidget : public QWidget {
     void SetInt(const QString& name, int val);
 
     void SetDouble(const QString& name, double val);
+
+    void SetString(const QString& name, const QString& val);
 
     void SetPrecision(const QString& name, int digits, int decimal_places);
 

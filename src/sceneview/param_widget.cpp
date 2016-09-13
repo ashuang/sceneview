@@ -10,6 +10,7 @@
 #include <QComboBox>
 #include <QDoubleSpinBox>
 #include <QLabel>
+#include <QLineEdit>
 #include <QPushButton>
 #include <QSlider>
 #include <QSpinBox>
@@ -217,6 +218,18 @@ void ParamWidget::AddPushButtons(const std::vector<QString>& names) {
   layout_->addWidget(row_widget);
 }
 
+void ParamWidget::AddString(const QString& name, const QString& initial_value) {
+  QWidget* row_widget = new QWidget(this);
+  QHBoxLayout* row_hbox = new QHBoxLayout(row_widget);
+  row_hbox->addWidget(new QLabel(name, this));
+  QLineEdit* ledit = new QLineEdit(initial_value, this);
+  row_hbox->addWidget(ledit);
+  widgets_[name] = ledit;
+  layout_->addWidget(row_widget);
+  connect(ledit, &QLineEdit::editingFinished,
+          [this, name]() { emit ParamChanged(name); });
+}
+
 int ParamWidget::GetEnum(const QString& name) {
   QComboBox* combobox = dynamic_cast<QComboBox*>(GetWidget(name));
   if (!combobox) {
@@ -266,6 +279,16 @@ double ParamWidget::GetDouble(const QString& name) {
     const double min = slider->property("min").toDouble();
     const double step = slider->property("step").toDouble();
     return min + step * slider->value();
+  }
+  throw std::runtime_error("Unable to determine widget type for param " +
+      name.toStdString());
+}
+
+QString ParamWidget::GetString(const QString& name) {
+  QWidget* widget = GetWidget(name);
+  QLineEdit* ledit = dynamic_cast<QLineEdit*>(widget);
+  if (ledit) {
+    return ledit->text();
   }
   throw std::runtime_error("Unable to determine widget type for param " +
       name.toStdString());
@@ -325,6 +348,17 @@ void ParamWidget::SetDouble(const QString& name, double val) {
     const double step = slider->property("step").toDouble();
     const int position = static_cast<int>(round((val - min) / step));
     slider->setValue(position);
+    return;
+  }
+  throw std::runtime_error("Unable to determine widget type for param " +
+      name.toStdString());
+}
+
+void ParamWidget::SetString(const QString& name, const QString& val) {
+  QWidget* widget = GetWidget(name);
+  QLineEdit* ledit = dynamic_cast<QLineEdit*>(widget);
+  if (ledit) {
+    ledit->setText(val);
     return;
   }
   throw std::runtime_error("Unable to determine widget type for param " +
