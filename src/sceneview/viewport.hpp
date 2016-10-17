@@ -80,6 +80,10 @@ class Viewport : public QOpenGLWidget {
 
     void CameraChanged(CameraNode* camera_node);
 
+    void GLInitialized();
+
+    void GLShuttingDown();
+
   protected:
     void initializeGL() override;
 

@@ -47,6 +47,7 @@ Viewport::~Viewport() {
   if (input_handler_) {
     input_handler_->Deactivated();
   }
+  emit GLShuttingDown();
   for (Renderer* renderer : renderers_) {
     renderer->ShutdownGL();
   }
@@ -135,6 +136,8 @@ void Viewport::initializeGL() {
   for (InputHandler* handler : input_handlers_) {
     handler->InitializeGL();
   }
+
+  emit GLInitialized();
 }
 
 void Viewport::resizeGL(int width, int height) {
