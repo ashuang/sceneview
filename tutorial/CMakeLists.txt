@@ -15,3 +15,4 @@ endif()
 
 add_subdirectory(tutorial_01)
 add_subdirectory(tutorial_02)
+add_subdirectory(tutorial_03)
