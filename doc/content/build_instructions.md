@@ -48,11 +48,6 @@ install location for Qt5 in /opt.
     sudo make install
     sudo ldconfig
 
-## Ubuntu 12.04 LTS {#build_instructions_ubuntu_precise}
-
-Instructions here are similar to Ubuntu 14.04. Instead of using
-`ppa:beineri/opt-qt55-trusty`, use `ppa:beineri/opt-qt551`
-
 # OS/X (via Homebrew) {#build_instructions_osx_homebrew}
 
 Install prerequisites
@@ -73,3 +68,30 @@ Otherwise:
 
 If you have a version of Qt5 other than 5.5.1, then replace the version number
 as appropriate.
+
+# Compiling and linking against Sceneview
+
+Sceneview provides a pkg-config file. You can obtain the required compiler
+flags by running:
+
+```
+pkg-config --cflags sceneview
+```
+
+The linker flags can be obtained by:
+```
+pkg-config --libs sceneview
+```
+
+## Including header files
+
+The easiest way include all the right header files for Sceneview is to include
+the master header file:
+
+```
+#include <sceneview/sceneview.hpp>
+```
+
+If you want to slightly optimize compile times, you can optionally include only
+the header files you need. The class documentation indicates what headers to
+include for each Sceneview class.
