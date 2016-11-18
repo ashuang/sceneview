@@ -80,24 +80,53 @@ class Scene {
         const QString& name = kAutoName);
 
     /**
-     * Create a camera.
+     * Create a camera. The returned camera is owned by this object.
      *
      * @return the newly created camera.
      */
     CameraNode* MakeCamera(GroupNode* parent,
         const QString& name = kAutoName);
 
+    /**
+     * Create a light. The returned light is owned by this object.
+     *
+     * @return a newly created LightNode.
+     */
     LightNode* MakeLight(GroupNode* parent,
         const QString& name = kAutoName);
 
+    /**
+     * Create an empty draw node. The returned node is owned by this object.
+     *
+     * To attach drawables to the node, use DrawNode::Add().
+     *
+     * @return a newly created DrawNode.
+     */
     DrawNode* MakeDrawNode(GroupNode* parent,
         const QString& name = kAutoName);
 
+    /**
+     * Create a draw node with a single drawable.
+     *
+     * The returned node is owned by this object.
+     *
+     * You can attach additional drawables to the draw node by calling
+     * DrawNode::Add().
+     *
+     * @return a newly created DrawNode.
+     */
     DrawNode* MakeDrawNode(GroupNode* parent,
         const GeometryResource::Ptr& geometry,
         const MaterialResource::Ptr& material,
         const QString& name = kAutoName);
 
+    /**
+     * Create a draw group.
+     *
+     * The returned DrawGroup is owned by this object.
+     *
+     * @return a newly created draw group.
+     */
     DrawGroup* MakeDrawGroup(int ordering,
         const QString& name = kAutoName);
 
