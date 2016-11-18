@@ -1,4 +1,4 @@
-Tutorial 01 - "Hello" {#tutorial_01}
+Tutorial 01 - Hello {#tutorial_01}
 ===========
 
 There are three major components of Sceneview:
@@ -9,26 +9,20 @@ There are three major components of Sceneview:
 This first tutorial describes how to use one of the Sceneview Qt widgets to
 create a GUI. Later tutorials will introduce the other components.
 
-@code
-#include <QApplication>
+@include tutorial_01/tutorial_01_hello.cpp
 
-#include <sceneview/sceneview.hpp>
+If you build and run this example, you would hopefully see something like:
 
-int main(int argc, char** argv)
-{
-  QApplication app(argc, argv);
+@image html tutorial_01.png "tutorial_01_hello"
 
-  // Create a sv::Viewer. This is a convenience widget that extends QMainWindow
-  // and creates a "stock" application with the following contained widgets:
-  // - sv::Viewport
-  // - sv::RendererWidgetStack
-  // - sv::InputHandlerWidgetStack
-  sv::Viewer viewer;
+This first snippet of code is our version of "Hello, world." sv::Viewer is a
+QMainWindow that bundles together a few commonly used widgets:
+- A viewport that contains the 3D rendering area
+- A couple more widgets that can be used for controlling rendering options and input handling (RendererWidgetStack and InputHandlerStack).
 
-  // Show the stock viewer.
-  viewer.show();
+There's nothing much to see yet other than the widgets showing up. We'll get to
+those in later tutorials.
 
-  // Run the Qt event loop
-  return app.exec();
-}
-@endcode
+In advanced usage, you don't need to use sv::Viewer, and you can create your
+own QMainWindow and mix-and-match Sceneview widgets however you like. However,
+sv::Viewer can be useful for prototyping and for throwing together something quick-and-dirty.

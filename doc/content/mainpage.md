@@ -9,6 +9,7 @@ scientific, engineering, and robotics applications.
 - \ref build_instructions
 - \ref design_overview
 - \ref tutorials
+- \ref memory_management
 
 ## Requirements
 

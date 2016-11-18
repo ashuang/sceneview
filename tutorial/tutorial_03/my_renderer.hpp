@@ -10,8 +10,6 @@ class MyRenderer : public sv::Renderer {
     MyRenderer(const QString& name, QWidget* parent = nullptr);
 
     void InitializeGL() override;
-
-  private:
 };
 
 #endif  // SCENEVIEW_TUTORIAL_MY_RENDERER_HPP__

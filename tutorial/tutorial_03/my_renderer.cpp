@@ -14,14 +14,15 @@ void MyRenderer::InitializeGL() {
   sv::ResourceManager::Ptr resources = GetResources();
   sv::GroupNode* base_node = GetBaseNode();
 
+  // Create a geometry resource from a stock cube.
   sv::StockResources stock(resources);
+  sv::GeometryResource::Ptr cube = stock.Cube();
 
   // Create a material that will be used to control the cube's appearance.
   sv::MaterialResource::Ptr material =
-      stock.NewMaterial(sv::StockResources::kUniformColorNoLighting);
-  material->SetParam(sv::kColor, 1.0, 0.5, 0.5, 1.0);
+      stock.NewMaterial(sv::StockResources::kUniformColorLighting);
+  material->SetParam(sv::kDiffuse, 1.0, 0.5, 0.5, 1.0);
 
-  // Create the cube, attach the material to it, and attach the cube as a child
-  // of the base node.
-  scene->MakeDrawNode(base_node, stock.Cube(), material);
+  // Create a draw node from the geometry and material.
+  scene->MakeDrawNode(base_node, cube, material);
 }
