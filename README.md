@@ -3,6 +3,9 @@ Sceneview
 Sceneview is a visualization toolkit for real time rendering in scientific,
 engineering, and robotics applications.
 
+## Quick links
+- [Documentation](https://ashuang.github.io/sceneview)
+
 ## Supported platforms
 - Ubuntu (14.04+)
 - OS/X (via Homebrew)
