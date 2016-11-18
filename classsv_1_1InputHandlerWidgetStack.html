@@ -4,7 +4,7 @@
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.6"/>
-<title>Sceneview: Sceneview</title>
+<title>Sceneview: sv::InputHandlerWidgetStack Class Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -36,10 +36,10 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </script>
   <div id="navrow1" class="tabs">
     <ul class="tablist">
-      <li class="current"><a href="index.html"><span>Main&#160;Page</span></a></li>
+      <li><a href="index.html"><span>Main&#160;Page</span></a></li>
       <li><a href="pages.html"><span>Related&#160;Pages</span></a></li>
       <li><a href="modules.html"><span>Modules</span></a></li>
-      <li><a href="annotated.html"><span>Classes</span></a></li>
+      <li class="current"><a href="annotated.html"><span>Classes</span></a></li>
       <li><a href="files.html"><span>Files</span></a></li>
       <li>
         <div id="MSearchBox" class="MSearchBoxInactive">
@@ -59,7 +59,14 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
       </li>
     </ul>
   </div>
-</div><!-- top -->
+  <div id="navrow2" class="tabs2">
+    <ul class="tablist">
+      <li><a href="annotated.html"><span>Class&#160;List</span></a></li>
+      <li><a href="classes.html"><span>Class&#160;Index</span></a></li>
+      <li><a href="hierarchy.html"><span>Class&#160;Hierarchy</span></a></li>
+      <li><a href="functions.html"><span>Class&#160;Members</span></a></li>
+    </ul>
+  </div>
 <!-- window showing the filter options -->
 <div id="MSearchSelectWindow"
      onmouseover="return searchBox.OnSearchSelectShow()"
@@ -74,27 +81,48 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </iframe>
 </div>
 
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><b>sv</b></li><li class="navelem"><a class="el" href="classsv_1_1InputHandlerWidgetStack.html">InputHandlerWidgetStack</a></li>  </ul>
+</div>
+</div><!-- top -->
 <div class="header">
+  <div class="summary">
+<a href="#nested-classes">Classes</a> &#124;
+<a href="#pub-methods">Public Member Functions</a> &#124;
+<a href="classsv_1_1InputHandlerWidgetStack-members.html">List of all members</a>  </div>
   <div class="headertitle">
-<div class="title">Sceneview </div>  </div>
+<div class="title">sv::InputHandlerWidgetStack Class Reference<div class="ingroups"><a class="el" href="group__sv__gui.html">GUI</a></div></div>  </div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><p>Sceneview is a 3D visualization toolkit targeted at real time rendering for scientific, engineering, and robotics applications.</p>
-<h2>Quick links</h2>
-<ul>
-<li><a class="el" href="build_instructions.html">Build instructions</a></li>
-<li><a class="el" href="design_overview.html">Design Overview</a></li>
-<li><a class="el" href="tutorials.html">Tutorials</a></li>
-<li><a class="el" href="memory_management.html">Memory management</a></li>
+
+<p>Contains and manages <a class="el" href="classsv_1_1InputHandler.html" title="Receive and handle mouse/keyboard input events. ">InputHandler</a> widgets.  
+ <a href="classsv_1_1InputHandlerWidgetStack.html#details">More...</a></p>
+
+<p><code>#include &lt;<a class="el" href="input__handler__widget__stack_8hpp_source.html">sceneview/input_handler_widget_stack.hpp</a>&gt;</code></p>
+<div class="dynheader">
+Inheritance diagram for sv::InputHandlerWidgetStack:</div>
+<div class="dyncontent">
+ <div class="center">
+  <img src="classsv_1_1InputHandlerWidgetStack.png" usemap="#sv::InputHandlerWidgetStack_map" alt=""/>
+  <map id="sv::InputHandlerWidgetStack_map" name="sv::InputHandlerWidgetStack_map">
+</map>
+ </div></div>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
+Public Member Functions</h2></td></tr>
+<tr class="memitem:ac1138c814b1d2b7c7ba258bf01e0d222"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ac1138c814b1d2b7c7ba258bf01e0d222"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>InputHandlerWidgetStack</b> (<a class="el" href="classsv_1_1Viewport.html">Viewport</a> *viewport, QWidget *parent=nullptr)</td></tr>
+<tr class="separator:ac1138c814b1d2b7c7ba258bf01e0d222"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>Contains and manages <a class="el" href="classsv_1_1InputHandler.html" title="Receive and handle mouse/keyboard input events. ">InputHandler</a> widgets. </p>
+<p>When an <a class="el" href="classsv_1_1InputHandler.html" title="Receive and handle mouse/keyboard input events. ">InputHandler</a> provides a widget by overriding <a class="el" href="classsv_1_1InputHandler.html#abf99185fe4a04181f677c1be4d9e8a30" title="Called to retrieve a widget for the InputHandler to manage. ">InputHandler::GetWidget()</a>, the <a class="el" href="classsv_1_1Viewer.html" title="A QMainWindow that can be used to provide an application-level UI. ">Viewer</a> class places them inside an <a class="el" href="classsv_1_1InputHandlerWidgetStack.html" title="Contains and manages InputHandler widgets. ">InputHandlerWidgetStack</a> widget.</p>
+<p>Sceneview users generally will not have to interact with this class. </p>
+</div><hr/>The documentation for this class was generated from the following file:<ul>
+<li><a class="el" href="input__handler__widget__stack_8hpp_source.html">input_handler_widget_stack.hpp</a></li>
 </ul>
-<h2>Requirements</h2>
-<p>The three requirements for Sceneview are:</p>
-<ul>
-<li>CMake (build system)</li>
-<li>Qt 5.4+</li>
-<li>Assimp </li>
-</ul>
-</div></div><!-- contents -->
+</div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
 Generated on Thu Nov 17 2016 21:51:34 for Sceneview by &#160;<a href="http://www.doxygen.org/index.html">

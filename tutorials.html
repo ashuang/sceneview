@@ -4,7 +4,7 @@
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.6"/>
-<title>Sceneview: Sceneview</title>
+<title>Sceneview: Tutorials</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -36,8 +36,8 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </script>
   <div id="navrow1" class="tabs">
     <ul class="tablist">
-      <li class="current"><a href="index.html"><span>Main&#160;Page</span></a></li>
-      <li><a href="pages.html"><span>Related&#160;Pages</span></a></li>
+      <li><a href="index.html"><span>Main&#160;Page</span></a></li>
+      <li class="current"><a href="pages.html"><span>Related&#160;Pages</span></a></li>
       <li><a href="modules.html"><span>Modules</span></a></li>
       <li><a href="annotated.html"><span>Classes</span></a></li>
       <li><a href="files.html"><span>Files</span></a></li>
@@ -59,7 +59,6 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
       </li>
     </ul>
   </div>
-</div><!-- top -->
 <!-- window showing the filter options -->
 <div id="MSearchSelectWindow"
      onmouseover="return searchBox.OnSearchSelectShow()"
@@ -74,27 +73,28 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </iframe>
 </div>
 
+</div><!-- top -->
 <div class="header">
   <div class="headertitle">
-<div class="title">Sceneview </div>  </div>
+<div class="title">Tutorials </div>  </div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><p>Sceneview is a 3D visualization toolkit targeted at real time rendering for scientific, engineering, and robotics applications.</p>
-<h2>Quick links</h2>
-<ul>
-<li><a class="el" href="build_instructions.html">Build instructions</a></li>
-<li><a class="el" href="design_overview.html">Design Overview</a></li>
-<li><a class="el" href="tutorials.html">Tutorials</a></li>
-<li><a class="el" href="memory_management.html">Memory management</a></li>
-</ul>
-<h2>Requirements</h2>
-<p>The three requirements for Sceneview are:</p>
-<ul>
-<li>CMake (build system)</li>
-<li>Qt 5.4+</li>
-<li>Assimp </li>
-</ul>
-</div></div><!-- contents -->
+<div class="textblock"><p>Tutorial source code is provided in the Sceneview source distribution, in the top-level "tutorials" directory.</p>
+<ol type="1">
+<li><a class="el" href="tutorial_01.html">Tutorial 01 - Hello</a></li>
+<li><a class="el" href="tutorial_02.html">Tutorial 02 - Bulitin renderers and Input handlers</a></li>
+<li><a class="el" href="tutorial_03.html">Tutorial 03 - Custom renderer</a></li>
+</ol>
+<h1><a class="anchor" id="tutorials_building"></a>
+Build and running tutorials</h1>
+<p>From the sceneview source tree:</p>
+<div class="fragment"><div class="line">mkdir tutorial_build</div>
+<div class="line">cd tutorial_build</div>
+<div class="line">cmake ../tutorial</div>
+<div class="line">make</div>
+</div><!-- fragment --><p>Each tutorial binary is placed in its own subdirectory. For example, to run tutorial 01, you could then run: </p>
+<div class="fragment"><div class="line">tutorial_01/tutorial_01_hello</div>
+</div><!-- fragment --> </div></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
 Generated on Thu Nov 17 2016 21:51:34 for Sceneview by &#160;<a href="http://www.doxygen.org/index.html">

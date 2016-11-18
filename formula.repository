@@ -1,0 +1,8 @@
+\form#0:\[ (a, b, c, d) \]
+\form#1:$ \mathbf{n} = (a, b, c) $
+\form#2:$ || \mathbf{n} || = 1 $
+\form#3:$(x, y, z)$
+\form#4:\[ a x + b y + c z + d = 0 \]
+\form#5:$|| (a, b, c)|| = 1$
+\form#6:\[ \mathbf{n} = (\mathbf{p_2} - \mathbf{p_1}) \times (\mathbf{p_3} - \mathbf{p_1}) \]
+\form#7:\[ \mathbf{n} \cdot \mathbf{point} + d \]

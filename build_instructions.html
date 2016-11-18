@@ -4,7 +4,7 @@
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.6"/>
-<title>Sceneview: Sceneview</title>
+<title>Sceneview: Build instructions</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -36,8 +36,8 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </script>
   <div id="navrow1" class="tabs">
     <ul class="tablist">
-      <li class="current"><a href="index.html"><span>Main&#160;Page</span></a></li>
-      <li><a href="pages.html"><span>Related&#160;Pages</span></a></li>
+      <li><a href="index.html"><span>Main&#160;Page</span></a></li>
+      <li class="current"><a href="pages.html"><span>Related&#160;Pages</span></a></li>
       <li><a href="modules.html"><span>Modules</span></a></li>
       <li><a href="annotated.html"><span>Classes</span></a></li>
       <li><a href="files.html"><span>Files</span></a></li>
@@ -59,7 +59,6 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
       </li>
     </ul>
   </div>
-</div><!-- top -->
 <!-- window showing the filter options -->
 <div id="MSearchSelectWindow"
      onmouseover="return searchBox.OnSearchSelectShow()"
@@ -74,26 +73,74 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </iframe>
 </div>
 
+</div><!-- top -->
 <div class="header">
   <div class="headertitle">
-<div class="title">Sceneview </div>  </div>
+<div class="title">Build instructions </div>  </div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><p>Sceneview is a 3D visualization toolkit targeted at real time rendering for scientific, engineering, and robotics applications.</p>
-<h2>Quick links</h2>
-<ul>
-<li><a class="el" href="build_instructions.html">Build instructions</a></li>
-<li><a class="el" href="design_overview.html">Design Overview</a></li>
-<li><a class="el" href="tutorials.html">Tutorials</a></li>
-<li><a class="el" href="memory_management.html">Memory management</a></li>
+<div class="toc"><h3>Table of Contents</h3>
+<ul><li class="level1"><a href="#build_instructions_ubuntu">Ubuntu</a><ul><li class="level2"><a href="#build_instructions_ubuntu_vivid">Ubuntu 15.04+</a></li>
+<li class="level2"><a href="#build_instructions_ubuntu_trusty">Ubuntu 14.04 LTS</a></li>
 </ul>
-<h2>Requirements</h2>
-<p>The three requirements for Sceneview are:</p>
-<ul>
-<li>CMake (build system)</li>
-<li>Qt 5.4+</li>
-<li>Assimp </li>
+</li>
+<li class="level1"><a href="#build_instructions_osx_homebrew">OS/X (via Homebrew)</a></li>
 </ul>
+</div>
+<div class="textblock"><h1><a class="anchor" id="build_instructions_ubuntu"></a>
+Ubuntu</h1>
+<h2><a class="anchor" id="build_instructions_ubuntu_vivid"></a>
+Ubuntu 15.04+</h2>
+<p>Install prerequisites </p>
+<pre class="fragment">sudo apt-get install build-essential cmake git libassimp-dev qtbase5-dev
+</pre><p>Download and build Sceneview </p>
+<pre class="fragment">git clone https://github.com/ashuang/sceneview
+cd sceneview
+mkdir build
+cd build
+cmake ..
+make
+sudo make install
+sudo ldconfig
+</pre><h2><a class="anchor" id="build_instructions_ubuntu_trusty"></a>
+Ubuntu 14.04 LTS</h2>
+<p>Install prerequisites. The version of Qt 5 shipped with stock Ubuntu 14.04 is too old, so you need to install an newer version from elsewhere. The way we recommend is: </p>
+<pre class="fragment">sudo apt-add-repository ppa:beineri/opt-qt55-trusty
+sudo apt-get update
+sudo apt-get install qt-latest
+</pre><p>Install the other dependencies and build tools </p>
+<pre class="fragment">sudo apt-get install build-essential cmake git libassimp-dev libgl1-mesa-dev
+</pre><p>Download and build Sceneview. You'll need to point CMake to the nonstandard install location for Qt5 in /opt. </p>
+<pre class="fragment">git clone https://github.com/ashuang/sceneview
+cd sceneview
+mkdir build
+cd build
+cmake -DCMAKE_PREFIX_PATH=/opt/qt55 ..
+make
+sudo make install
+sudo ldconfig
+</pre><h1><a class="anchor" id="build_instructions_osx_homebrew"></a>
+OS/X (via Homebrew)</h1>
+<p>Install prerequisites </p>
+<pre class="fragment">brew install qt5 assimp cmake
+</pre><p>Does anyone know how to automatically point CMake to the qt5 install location?</p>
+<p>Otherwise: </p>
+<pre class="fragment">git clone https://github.com/ashuang/sceneview
+cd sceneview
+mkdir build
+cd build
+cmake -DCMAKE_PREFIX_PATH=/usr/local/Cellar/qt5/5.5.1 ..
+make
+make install
+</pre><p>If you have a version of Qt5 other than 5.5.1, then replace the version number as appropriate.</p>
+<h1>Compiling and linking against Sceneview</h1>
+<p>Sceneview provides a pkg-config file. You can obtain the required compiler flags by running:</p>
+<p>``` pkg-config &ndash;cflags sceneview ```</p>
+<p>The linker flags can be obtained by: ``` pkg-config &ndash;libs sceneview ```</p>
+<h2>Including header files</h2>
+<p>The easiest way include all the right header files for Sceneview is to include the master header file:</p>
+<p>``` #include &lt;<a class="el" href="sceneview_8hpp_source.html">sceneview/sceneview.hpp</a>&gt; ```</p>
+<p>If you want to slightly optimize compile times, you can optionally include only the header files you need. The class documentation indicates what headers to include for each Sceneview class. </p>
 </div></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

@@ -4,7 +4,7 @@
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.6"/>
-<title>Sceneview: Sceneview</title>
+<title>Sceneview: Tutorial 01 - Hello</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -36,8 +36,8 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </script>
   <div id="navrow1" class="tabs">
     <ul class="tablist">
-      <li class="current"><a href="index.html"><span>Main&#160;Page</span></a></li>
-      <li><a href="pages.html"><span>Related&#160;Pages</span></a></li>
+      <li><a href="index.html"><span>Main&#160;Page</span></a></li>
+      <li class="current"><a href="pages.html"><span>Related&#160;Pages</span></a></li>
       <li><a href="modules.html"><span>Modules</span></a></li>
       <li><a href="annotated.html"><span>Classes</span></a></li>
       <li><a href="files.html"><span>Files</span></a></li>
@@ -59,7 +59,6 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
       </li>
     </ul>
   </div>
-</div><!-- top -->
 <!-- window showing the filter options -->
 <div id="MSearchSelectWindow"
      onmouseover="return searchBox.OnSearchSelectShow()"
@@ -74,26 +73,52 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </iframe>
 </div>
 
+</div><!-- top -->
 <div class="header">
   <div class="headertitle">
-<div class="title">Sceneview </div>  </div>
+<div class="title">Tutorial 01 - Hello </div>  </div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><p>Sceneview is a 3D visualization toolkit targeted at real time rendering for scientific, engineering, and robotics applications.</p>
-<h2>Quick links</h2>
+<div class="textblock"><p>There are three major components of Sceneview:</p>
 <ul>
-<li><a class="el" href="build_instructions.html">Build instructions</a></li>
-<li><a class="el" href="design_overview.html">Design Overview</a></li>
-<li><a class="el" href="tutorials.html">Tutorials</a></li>
-<li><a class="el" href="memory_management.html">Memory management</a></li>
+<li>Rendering engine</li>
+<li>Qt widgets for building user interfaces.</li>
+<li>Renderer / Input handler system</li>
 </ul>
-<h2>Requirements</h2>
-<p>The three requirements for Sceneview are:</p>
+<p>This first tutorial describes how to use one of the Sceneview Qt widgets to create a GUI. Later tutorials will introduce the other components.</p>
+<div class="fragment"><div class="line"><span class="preprocessor">#include &lt;QApplication&gt;</span></div>
+<div class="line"></div>
+<div class="line"><span class="preprocessor">#include &lt;sceneview/sceneview.hpp&gt;</span></div>
+<div class="line"></div>
+<div class="line"><span class="keywordtype">int</span> main(<span class="keywordtype">int</span> argc, <span class="keywordtype">char</span>** argv)</div>
+<div class="line">{</div>
+<div class="line">  QApplication app(argc, argv);</div>
+<div class="line"></div>
+<div class="line">  <span class="comment">// Create a sv::Viewer. This is a convenience widget that extends QMainWindow</span></div>
+<div class="line">  <span class="comment">// and creates a &quot;stock&quot; application with the following contained widgets:</span></div>
+<div class="line">  <span class="comment">// - sv::Viewport</span></div>
+<div class="line">  <span class="comment">// - sv::RendererWidgetStack</span></div>
+<div class="line">  <span class="comment">// - sv::InputHandlerWidgetStack</span></div>
+<div class="line">  <a class="code" href="classsv_1_1Viewer.html">sv::Viewer</a> viewer;</div>
+<div class="line"></div>
+<div class="line">  <span class="comment">// Show the stock viewer.</span></div>
+<div class="line">  viewer.show();</div>
+<div class="line"></div>
+<div class="line">  <span class="comment">// Run the Qt event loop</span></div>
+<div class="line">  <span class="keywordflow">return</span> app.exec();</div>
+<div class="line">}</div>
+</div><!-- fragment --><p>If you build and run this example, you would hopefully see something like:</p>
+<div class="image">
+<img src="tutorial_01.png" alt="tutorial_01.png"/>
+<div class="caption">
+tutorial_01_hello</div></div>
+<p> This first snippet of code is our version of "Hello, world." <a class="el" href="classsv_1_1Viewer.html" title="A QMainWindow that can be used to provide an application-level UI. ">sv::Viewer</a> is a QMainWindow that bundles together a few commonly used widgets:</p>
 <ul>
-<li>CMake (build system)</li>
-<li>Qt 5.4+</li>
-<li>Assimp </li>
+<li>A viewport that contains the 3D rendering area</li>
+<li>A couple more widgets that can be used for controlling rendering options and input handling (RendererWidgetStack and InputHandlerStack).</li>
 </ul>
+<p>There's nothing much to see yet other than the widgets showing up. We'll get to those in later tutorials.</p>
+<p>In advanced usage, you don't need to use <a class="el" href="classsv_1_1Viewer.html" title="A QMainWindow that can be used to provide an application-level UI. ">sv::Viewer</a>, and you can create your own QMainWindow and mix-and-match Sceneview widgets however you like. However, <a class="el" href="classsv_1_1Viewer.html" title="A QMainWindow that can be used to provide an application-level UI. ">sv::Viewer</a> can be useful for prototyping and for throwing together something quick-and-dirty. </p>
 </div></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

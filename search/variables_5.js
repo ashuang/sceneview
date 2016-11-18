@@ -1,0 +1,19 @@
+var searchData=
+[
+  ['shininess',['shininess',['../structsv_1_1GeometryData.html#a14a4d7fe7b6bcd66e022e5f62ced79d9',1,'sv::GeometryData']]],
+  ['specular',['specular',['../structsv_1_1GeometryData.html#a5fb828002fc9897570b8ceece3d27e66',1,'sv::GeometryData']]],
+  ['sv_5fambient',['sv_ambient',['../structsv_1_1ShaderStandardVariables.html#a0e166051400611dd0bd71a57168c0f9b',1,'sv::ShaderStandardVariables']]],
+  ['sv_5fdiffuse',['sv_diffuse',['../structsv_1_1ShaderStandardVariables.html#aa3173a527d167ea5d287ba5cc519dbb6',1,'sv::ShaderStandardVariables']]],
+  ['sv_5fmodel_5fmat',['sv_model_mat',['../structsv_1_1ShaderStandardVariables.html#a847c690de7e4973ea2ace14324a92263',1,'sv::ShaderStandardVariables']]],
+  ['sv_5fmodel_5fnormal_5fmat',['sv_model_normal_mat',['../structsv_1_1ShaderStandardVariables.html#afa6bdefe44b579a24c987e45eb0f3a3f',1,'sv::ShaderStandardVariables']]],
+  ['sv_5fmv_5fmat',['sv_mv_mat',['../structsv_1_1ShaderStandardVariables.html#aa9fac324761ade583ffe7e55215df8e3',1,'sv::ShaderStandardVariables']]],
+  ['sv_5fmvp_5fmat',['sv_mvp_mat',['../structsv_1_1ShaderStandardVariables.html#a502deff6af1f2ff51adec096e0bdab24',1,'sv::ShaderStandardVariables']]],
+  ['sv_5fnormal',['sv_normal',['../structsv_1_1ShaderStandardVariables.html#aa6daaad3a657d2d5064269f07bbe5c4d',1,'sv::ShaderStandardVariables']]],
+  ['sv_5fproj_5fmat',['sv_proj_mat',['../structsv_1_1ShaderStandardVariables.html#a3b26f5834a79d3d34ecc2b4fffa149cf',1,'sv::ShaderStandardVariables']]],
+  ['sv_5fshininess',['sv_shininess',['../structsv_1_1ShaderStandardVariables.html#a656d25eed05bf6769648dc87bc6ed7cc',1,'sv::ShaderStandardVariables']]],
+  ['sv_5fspecular',['sv_specular',['../structsv_1_1ShaderStandardVariables.html#a361dc438b8381f96fa0ee0d119d36ca2',1,'sv::ShaderStandardVariables']]],
+  ['sv_5ftex_5fcoords_5f0',['sv_tex_coords_0',['../structsv_1_1ShaderStandardVariables.html#a33ac1e9c22e7d69d2be23f9452da6974',1,'sv::ShaderStandardVariables']]],
+  ['sv_5fvert_5fpos',['sv_vert_pos',['../structsv_1_1ShaderStandardVariables.html#a80833f896c565fa9601eacc5c7c9caad',1,'sv::ShaderStandardVariables']]],
+  ['sv_5fview_5fmat',['sv_view_mat',['../structsv_1_1ShaderStandardVariables.html#a1d562d1b4b598faf8006aa88d510147a',1,'sv::ShaderStandardVariables']]],
+  ['sv_5fview_5fmat_5finv',['sv_view_mat_inv',['../structsv_1_1ShaderStandardVariables.html#a2227d8084c37c8040fbce3be2dd47b72',1,'sv::ShaderStandardVariables']]]
+];

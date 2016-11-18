@@ -4,7 +4,7 @@
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.6"/>
-<title>Sceneview: Sceneview</title>
+<title>Sceneview: sv::DrawContext Class Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -36,10 +36,10 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </script>
   <div id="navrow1" class="tabs">
     <ul class="tablist">
-      <li class="current"><a href="index.html"><span>Main&#160;Page</span></a></li>
+      <li><a href="index.html"><span>Main&#160;Page</span></a></li>
       <li><a href="pages.html"><span>Related&#160;Pages</span></a></li>
       <li><a href="modules.html"><span>Modules</span></a></li>
-      <li><a href="annotated.html"><span>Classes</span></a></li>
+      <li class="current"><a href="annotated.html"><span>Classes</span></a></li>
       <li><a href="files.html"><span>Files</span></a></li>
       <li>
         <div id="MSearchBox" class="MSearchBoxInactive">
@@ -59,7 +59,14 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
       </li>
     </ul>
   </div>
-</div><!-- top -->
+  <div id="navrow2" class="tabs2">
+    <ul class="tablist">
+      <li><a href="annotated.html"><span>Class&#160;List</span></a></li>
+      <li><a href="classes.html"><span>Class&#160;Index</span></a></li>
+      <li><a href="hierarchy.html"><span>Class&#160;Hierarchy</span></a></li>
+      <li><a href="functions.html"><span>Class&#160;Members</span></a></li>
+    </ul>
+  </div>
 <!-- window showing the filter options -->
 <div id="MSearchSelectWindow"
      onmouseover="return searchBox.OnSearchSelectShow()"
@@ -74,27 +81,39 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </iframe>
 </div>
 
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><b>sv</b></li><li class="navelem"><a class="el" href="classsv_1_1DrawContext.html">DrawContext</a></li>  </ul>
+</div>
+</div><!-- top -->
 <div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public Member Functions</a> &#124;
+<a href="classsv_1_1DrawContext-members.html">List of all members</a>  </div>
   <div class="headertitle">
-<div class="title">Sceneview </div>  </div>
+<div class="title">sv::DrawContext Class Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><p>Sceneview is a 3D visualization toolkit targeted at real time rendering for scientific, engineering, and robotics applications.</p>
-<h2>Quick links</h2>
-<ul>
-<li><a class="el" href="build_instructions.html">Build instructions</a></li>
-<li><a class="el" href="design_overview.html">Design Overview</a></li>
-<li><a class="el" href="tutorials.html">Tutorials</a></li>
-<li><a class="el" href="memory_management.html">Memory management</a></li>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
+Public Member Functions</h2></td></tr>
+<tr class="memitem:a6e67fe346499727532c67b4d592189b5"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a6e67fe346499727532c67b4d592189b5"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>DrawContext</b> (const ResourceManager::Ptr &amp;resources, const Scene::Ptr &amp;scene)</td></tr>
+<tr class="separator:a6e67fe346499727532c67b4d592189b5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7145c21bb7b556e2ca6c2cad38503484"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a7145c21bb7b556e2ca6c2cad38503484"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>Draw</b> (int viewport_width, int viewport_height, std::vector&lt; <a class="el" href="classsv_1_1Renderer.html">Renderer</a> * &gt; *prenderers)</td></tr>
+<tr class="separator:a7145c21bb7b556e2ca6c2cad38503484"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a70dbbcb3e1a90d91783f8ed77cb1deae"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a70dbbcb3e1a90d91783f8ed77cb1deae"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>SetClearColor</b> (const QColor &amp;color)</td></tr>
+<tr class="separator:a70dbbcb3e1a90d91783f8ed77cb1deae"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a04701b1ea30aa4ce155addc1a1dd4bc9"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a04701b1ea30aa4ce155addc1a1dd4bc9"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>SetDrawGroups</b> (const std::vector&lt; <a class="el" href="classsv_1_1DrawGroup.html">DrawGroup</a> * &gt; &amp;groups)</td></tr>
+<tr class="separator:a04701b1ea30aa4ce155addc1a1dd4bc9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<hr/>The documentation for this class was generated from the following file:<ul>
+<li><a class="el" href="draw__context_8hpp_source.html">draw_context.hpp</a></li>
 </ul>
-<h2>Requirements</h2>
-<p>The three requirements for Sceneview are:</p>
-<ul>
-<li>CMake (build system)</li>
-<li>Qt 5.4+</li>
-<li>Assimp </li>
-</ul>
-</div></div><!-- contents -->
+</div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
 Generated on Thu Nov 17 2016 21:51:34 for Sceneview by &#160;<a href="http://www.doxygen.org/index.html">
