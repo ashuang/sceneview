@@ -149,7 +149,6 @@ class TextBillboard {
 
     TextBillboardDrawable* bg_drawable_;
     TextBillboardDrawable* text_drawable_;
-    TextBillboardDrawable* depth_write_drawable_;
 };
 
 }  // namespace sv
