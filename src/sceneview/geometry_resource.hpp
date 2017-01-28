@@ -41,23 +41,41 @@ struct GeometryData {
   /**
    * Diffuse color component. This must be either empty or the same size as
    * vertices.
+   *
+   * This field is used by the following builtin materials:
+   * - sv::StockResources::kPerVertexColorLighting to provide the diffuse color
+   *   component for a vertex
+   * - sv::StockResources::kPerVertexColorNoLighting to provide the absolute
+   *   color for a vertex.
    */
   std::vector<QVector4D> diffuse;
 
   /**
    * Specular color component. This must be either empty or the same size as
    * vertices.
+   *
+   * This field is used by the following builtin materials:
+   * - sv::StockResources::kPerVertexColorLighting to provide the specular color
+   *   component for a vertex
    */
   std::vector<QVector4D> specular;
 
   /**
    * Shininess component. This must be either empty or the same size as
    * vertices.
+   *
+   * This field is used by the following builtin materials:
+   * - sv::StockResources::kPerVertexColorLighting to provide the shininess
+   *   value for a vertex
    */
   std::vector<float> shininess;
 
   /**
    * Texture coordinates. This must be either empty or the same size as vertices.
+   *
+   * This field is used by the following builtin materials:
+   * - sv::StockResouces::kTextureUniformColorNoLighting to provide texture
+   *   coordinates.
    */
   std::vector<QVector2D> tex_coords_0;
 

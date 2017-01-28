@@ -72,7 +72,7 @@ Viewer::Viewer(QWidget* parent) :
 }
 
 void Viewer::SetAutoRedrawInterval(int milliseconds) {
-  redraw_timer_.setInterval(50);
+  redraw_timer_.setInterval(milliseconds);
   connect(&redraw_timer_, &QTimer::timeout,
       viewport_, &Viewport::ScheduleRedraw);
   redraw_timer_.start();
