@@ -121,12 +121,20 @@ class CameraNode : public SceneNode {
     QVector3D GetUpDir() const;
 
     /**
+     * DEPRECATED. Use Unproject(x, y, z) instead.
+     *
      * Computes a world-space direction corresponding to the specified
      * screen-space pixel.
      *
      * The resulting vector is guaranteed to be unit length.
      */
     QVector3D Unproject(double x, double y);
+
+    /**
+     * Computes a world-space point corresponding to the specified screen-space
+     * pixel.
+     */
+    QVector3D Unproject(double x, double y, double z);
 
     /**
      * Retrieve the camera projection matrix.

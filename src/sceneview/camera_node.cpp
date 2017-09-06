@@ -205,6 +205,25 @@ QVector3D CameraNode::Unproject(double x, double y) {
   return (world - eye).normalized();
 }
 
+QVector3D CameraNode::Unproject(double x, double y, double z) {
+  // Window coordinates to screen coordinates
+  const double screen_x = x;
+  const double screen_y = viewport_height_ - y;
+
+  // Screen coordinates to normalized device coordinates (NDC).
+  const QVector4D clip_vec(2 * screen_x / viewport_width_ - 1,
+     2 * screen_y / viewport_height_ - 1,
+      2 * z - 1, 1);
+  // NDC to world coordinates
+  const QMatrix4x4 vp_inverse = GetViewProjectionMatrix().inverted();
+  const QVector4D pworld = vp_inverse * clip_vec;
+  // World coordinates to Cartesian world coordinates.
+  const QVector3D world(pworld.x() / pworld.w(),
+      pworld.y() / pworld.w(),
+      pworld.z() / pworld.w());
+  return world;
+}
+
 QMatrix4x4 CameraNode::GetProjectionMatrix() {
   return projection_matrix_;
 }

@@ -11,14 +11,14 @@
 
 #include "sceneview/camera_node.hpp"
 #include "sceneview/draw_group.hpp"
+#include "sceneview/draw_node.hpp"
 #include "sceneview/group_node.hpp"
 #include "sceneview/light_node.hpp"
-#include "sceneview/draw_node.hpp"
-#include "sceneview/resource_manager.hpp"
+#include "sceneview/plane.hpp"
 #include "sceneview/renderer.hpp"
+#include "sceneview/resource_manager.hpp"
 #include "sceneview/scene_node.hpp"
 #include "sceneview/stock_resources.hpp"
-#include "sceneview/plane.hpp"
 
 #if 0
 #define dbg(fmt, ...) printf(fmt, __VA_ARGS__)
@@ -41,13 +41,13 @@ struct DrawNodeData {
  * Frustum data structure used for view frustum culling.
  */
 class Frustum {
-  public:
-    Frustum(CameraNode* camera);
+ public:
+  Frustum(CameraNode* camera);
 
-    bool Intersects(const AxisAlignedBox& box);
+  bool Intersects(const AxisAlignedBox& box);
 
-  private:
-    std::vector<Plane> planes_;
+ private:
+  std::vector<Plane> planes_;
 };
 
 Frustum::Frustum(CameraNode* camera) {
@@ -56,23 +56,45 @@ Frustum::Frustum(CameraNode* camera) {
   const int x1 = viewport_size.width();
   const int y1 = viewport_size.height();
 
-  const QVector3D top_left = camera->Unproject(0, 0);
-  const QVector3D bot_left = camera->Unproject(0, y1);
-  const QVector3D top_right = camera->Unproject(x1, 0);
-  const QVector3D bot_right = camera->Unproject(x1, y1);
+  QVector3D top_left_start;
+  QVector3D bot_left_start;
+  QVector3D top_right_start;
+  QVector3D bot_right_start;
 
-  const QVector3D eye = camera->WorldTransform().map(QVector3D(0, 0, 0));
+  QVector3D top_left_end = camera->Unproject(0, 0, 1);
+  QVector3D bot_left_end = camera->Unproject(0, y1, 1);
+  QVector3D top_right_end = camera->Unproject(x1, 0, 1);
+  QVector3D bot_right_end = camera->Unproject(x1, y1, 1);
+
+  if (camera->GetProjectionType() == sv::CameraNode::kOrthographic) {
+    top_left_start = camera->Unproject(0, 0, 0);
+    bot_left_start = camera->Unproject(0, y1, 0);
+    top_right_start = camera->Unproject(x1, 0, 0);
+    bot_right_start = camera->Unproject(x1, y1, 0);
+  } else {
+    const QVector3D eye = camera->WorldTransform().map(QVector3D(0, 0, 0));
+    top_left_start = eye;
+    bot_left_start = eye;
+    top_right_start = eye;
+    bot_right_start = eye;
+  }
+
+  const QVector3D top_left_dir = (top_left_end - top_left_start).normalized();
+  const QVector3D bot_left_dir = (bot_left_end - bot_left_start).normalized();
+  const QVector3D top_right_dir = (top_right_end - top_right_start).normalized();
+  const QVector3D bot_right_dir = (bot_right_end - bot_right_start).normalized();
+
   const double near = camera->GetZNear();
   const double far = camera->GetZFar();
 
-  const QVector3D ntl = eye + near * top_left;
-  const QVector3D ntr = eye + near * top_right;
-  const QVector3D nbl = eye + near * bot_left;
-  const QVector3D nbr = eye + near * bot_right;
-  const QVector3D ftl = eye + far * top_left;
-  const QVector3D ftr = eye + far * top_right;
-  const QVector3D fbl = eye + far * bot_left;
-  const QVector3D fbr = eye + far * bot_right;
+  const QVector3D ntl = top_left_start + near * top_left_dir;
+  const QVector3D ntr = top_right_start + near * top_right_dir;
+  const QVector3D nbl = bot_left_start + near * bot_left_dir;
+  const QVector3D nbr = bot_right_start + near * bot_right_dir;
+  const QVector3D ftl = top_left_start + far * top_left_dir;
+  const QVector3D ftr = top_right_start + far * top_right_dir;
+  const QVector3D fbl = bot_left_start + far * bot_left_dir;
+  const QVector3D fbr = bot_right_start + far * bot_right_dir;
 
   planes_.push_back(Plane::FromThreePoints(ntr, ftl, ftr));  // top
   planes_.push_back(Plane::FromThreePoints(nbr, fbr, fbl));  // bottom
@@ -87,10 +109,9 @@ bool Frustum::Intersects(const AxisAlignedBox& box) {
   const QVector3D& bmax = box.Max();
   for (const Plane& plane : planes_) {
     const QVector3D& normal = plane.Normal();
-    const QVector3D test_point(
-        normal.x() > 0 ? bmax.x() : bmin.x(),
-        normal.y() > 0 ? bmax.y() : bmin.y(),
-        normal.z() > 0 ? bmax.z() : bmin.z());
+    const QVector3D test_point(normal.x() > 0 ? bmax.x() : bmin.x(),
+                               normal.y() > 0 ? bmax.y() : bmin.y(),
+                               normal.z() > 0 ? bmax.z() : bmin.z());
     if (plane.SignedDistance(test_point) < 0) {
       return false;
     }
@@ -100,7 +121,7 @@ bool Frustum::Intersects(const AxisAlignedBox& box) {
 
 static void CheckGLErrors(const QString& name) {
   GLenum err_code = glGetError();
-  const char *err_str;
+  const char* err_str;
   while (err_code != GL_NO_ERROR) {
     err_str = sv::glErrorString(err_code);
     fprintf(stderr, "OpenGL Error (%s)\n", name.toStdString().c_str());
@@ -110,7 +131,7 @@ static void CheckGLErrors(const QString& name) {
 }
 
 static double squaredDistanceToAABB(const QVector3D& point,
-    const AxisAlignedBox& box) {
+                                    const AxisAlignedBox& box) {
   const QVector3D center = (box.Max() + box.Min()) / 2;
   const QVector3D half_sz = (box.Max() - box.Min()) / 2;
   const QVector3D vec(max(0.0, fabs(center.x() - point.x()) - half_sz.x()),
@@ -120,24 +141,22 @@ static double squaredDistanceToAABB(const QVector3D& point,
 }
 
 DrawContext::DrawContext(const ResourceManager::Ptr& resources,
-    const Scene::Ptr& scene) :
-  resources_(resources),
-  scene_(scene),
-  clear_color_(0, 0, 0, 255),
-  bounding_box_node_(nullptr),
-  draw_bounding_boxes_(false) {}
+                         const Scene::Ptr& scene)
+    : resources_(resources),
+      scene_(scene),
+      clear_color_(0, 0, 0, 255),
+      bounding_box_node_(nullptr),
+      draw_bounding_boxes_(false) {}
 
-void DrawContext::Draw(int viewport_width,
-    int viewport_height, std::vector<Renderer*>* prenderers) {
+void DrawContext::Draw(int viewport_width, int viewport_height,
+                       std::vector<Renderer*>* prenderers) {
   viewport_width_ = viewport_width;
   viewport_height_ = viewport_height;
   cur_camera_ = scene_->GetDefaultDrawGroup()->GetCamera();
 
   // Clear the drawing area
-  glClearColor(clear_color_.redF(),
-      clear_color_.greenF(),
-      clear_color_.blueF(),
-      clear_color_.alphaF());
+  glClearColor(clear_color_.redF(), clear_color_.greenF(), clear_color_.blueF(),
+               clear_color_.alphaF());
 
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -150,7 +169,7 @@ void DrawContext::Draw(int viewport_width,
   for (Renderer* renderer : renderers) {
     if (renderer->Enabled()) {
       glPushAttrib(GL_ENABLE_BIT | GL_POINT_BIT | GL_POLYGON_STIPPLE_BIT |
-          GL_POLYGON_BIT | GL_LINE_BIT | GL_FOG_BIT | GL_LIGHTING_BIT);
+                   GL_POLYGON_BIT | GL_LINE_BIT | GL_FOG_BIT | GL_LIGHTING_BIT);
       glMatrixMode(GL_MODELVIEW);
       glPushMatrix();
       renderer->RenderBegin();
@@ -194,7 +213,7 @@ void DrawContext::Draw(int viewport_width,
   for (Renderer* renderer : renderers) {
     if (renderer->Enabled()) {
       glPushAttrib(GL_ENABLE_BIT | GL_POINT_BIT | GL_POLYGON_STIPPLE_BIT |
-          GL_POLYGON_BIT | GL_LINE_BIT | GL_FOG_BIT | GL_LIGHTING_BIT);
+                   GL_POLYGON_BIT | GL_LINE_BIT | GL_FOG_BIT | GL_LIGHTING_BIT);
       glMatrixMode(GL_MODELVIEW);
       glPushMatrix();
       renderer->RenderEnd();
@@ -208,15 +227,14 @@ void DrawContext::Draw(int viewport_width,
   cur_camera_ = nullptr;
 }
 
-void DrawContext::SetClearColor(const QColor& color) {
-  clear_color_ = color;
-}
+void DrawContext::SetClearColor(const QColor& color) { clear_color_ = color; }
 
 void DrawContext::SetDrawGroups(const std::vector<DrawGroup*>& groups) {
   draw_groups_ = groups;
   std::sort(draw_groups_.begin(), draw_groups_.end(),
-      [](const DrawGroup* draw_group_a, const DrawGroup* draw_group_b) {
-      return draw_group_a->Order() < draw_group_b->Order(); });
+            [](const DrawGroup* draw_group_a, const DrawGroup* draw_group_b) {
+              return draw_group_a->Order() < draw_group_b->Order();
+            });
 }
 
 void DrawContext::PrepareFixedFunctionPipeline() {
@@ -234,10 +252,8 @@ void DrawContext::PrepareFixedFunctionPipeline() {
   glMultMatrixf(cur_camera_->GetViewMatrix().constData());
 
   // Setup lights
-  const GLenum gl_lights[] = {
-    GL_LIGHT0, GL_LIGHT1, GL_LIGHT2, GL_LIGHT3,
-    GL_LIGHT4, GL_LIGHT5, GL_LIGHT6, GL_LIGHT7
-  };
+  const GLenum gl_lights[] = {GL_LIGHT0, GL_LIGHT1, GL_LIGHT2, GL_LIGHT3,
+                              GL_LIGHT4, GL_LIGHT5, GL_LIGHT6, GL_LIGHT7};
   std::vector<LightNode*> lights = scene_->Lights();
   for (int light_ind = 0; light_ind < 8; ++light_ind) {
     const GLenum gl_light = gl_lights[light_ind];
@@ -246,11 +262,11 @@ void DrawContext::PrepareFixedFunctionPipeline() {
 
     if (light_type == LightType::kDirectional) {
       const QVector3D dir = light->Direction();
-      const float dir4f[4] = { dir.x(), dir.y(), dir.z(), 0 };
+      const float dir4f[4] = {dir.x(), dir.y(), dir.z(), 0};
       glLightfv(gl_light, GL_POSITION, dir4f);
     } else {
       const QVector3D posf = light->Translation();
-      const float pos4f[4] = { posf.x(), posf.y(), posf.z(), 1};
+      const float pos4f[4] = {posf.x(), posf.y(), posf.z(), 1};
       glLightfv(gl_light, GL_POSITION, pos4f);
 
       const float attenuation = light->Attenuation();
@@ -267,9 +283,9 @@ void DrawContext::PrepareFixedFunctionPipeline() {
     const QVector3D& color = light->Color();
     const QVector3D& ambient = color * light->Ambient();
     const QVector3D& specular = color * light->Specular();
-    const float color4f[4] = { color.x(),  color.y(),  color.z(), 1 };
-    const float ambient4f[4] = { ambient.x(),  ambient.y(),  ambient.z(), 1 };
-    const float specular4f[4] = { specular.x(),  specular.y(),  specular.z(), 1 };
+    const float color4f[4] = {color.x(), color.y(), color.z(), 1};
+    const float ambient4f[4] = {ambient.x(), ambient.y(), ambient.z(), 1};
+    const float specular4f[4] = {specular.x(), specular.y(), specular.z(), 1};
     glLightfv(gl_light, GL_AMBIENT, ambient4f);
     glLightfv(gl_light, GL_DIFFUSE, color4f);
     glLightfv(gl_light, GL_SPECULAR, specular4f);
@@ -326,14 +342,12 @@ void DrawContext::DrawDrawGroup(DrawGroup* dgroup) {
     dndata.world_bbox = draw_node->WorldBoundingBox();
 
     // View frustum culling
-    if (do_frustum_culling &&
-        dndata.world_bbox.Valid() &&
+    if (do_frustum_culling && dndata.world_bbox.Valid() &&
         !frustum.Intersects(dndata.world_bbox)) {
       continue;
     }
 
-    dndata.squared_distance = squaredDistanceToAABB(eye,
-        dndata.world_bbox);
+    dndata.squared_distance = squaredDistanceToAABB(eye, dndata.world_bbox);
 
     to_draw.push_back(dndata);
   }
@@ -342,16 +356,16 @@ void DrawContext::DrawDrawGroup(DrawGroup* dgroup) {
     case NodeOrdering::kBackToFront:
       // Sort nodes to draw back to front
       std::sort(to_draw.begin(), to_draw.end(),
-          [](const DrawNodeData& dndata_a, const DrawNodeData& dndata_b) {
-          return dndata_a.squared_distance > dndata_b.squared_distance;
-          });
+                [](const DrawNodeData& dndata_a, const DrawNodeData& dndata_b) {
+                  return dndata_a.squared_distance > dndata_b.squared_distance;
+                });
       break;
     case NodeOrdering::kFrontToBack:
       // Sort nodes to draw front to back
       std::sort(to_draw.begin(), to_draw.end(),
-          [](const DrawNodeData& dndata_a, const DrawNodeData& dndata_b) {
-          return dndata_a.squared_distance < dndata_b.squared_distance;
-          });
+                [](const DrawNodeData& dndata_a, const DrawNodeData& dndata_b) {
+                  return dndata_a.squared_distance < dndata_b.squared_distance;
+                });
       break;
     case NodeOrdering::kNone:
     default:
@@ -510,14 +524,14 @@ void DrawContext::ActivateMaterial() {
   }
   if (locs.sv_mvp_mat >= 0) {
     program_->setUniformValue(locs.sv_mvp_mat,
-        proj_mat * view_mat * model_mat_);
+                              proj_mat * view_mat * model_mat_);
   }
   if (locs.sv_mv_mat >= 0) {
     program_->setUniformValue(locs.sv_mv_mat, view_mat * model_mat_);
   }
   if (locs.sv_model_normal_mat >= 0) {
     program_->setUniformValue(locs.sv_model_normal_mat,
-        model_mat_.normalMatrix());
+                              model_mat_.normalMatrix());
   }
 
   const std::vector<LightNode*>& lights = scene_->Lights();
@@ -589,17 +603,16 @@ void DrawContext::ActivateMaterial() {
   }
 }
 
-static void SetupAttributeArray(QOpenGLShaderProgram* program,
-    int location, int num_attributes,
-    GLenum attr_type, int offset, int attribute_size) {
+static void SetupAttributeArray(QOpenGLShaderProgram* program, int location,
+                                int num_attributes, GLenum attr_type,
+                                int offset, int attribute_size) {
   if (location < 0) {
     return;
   }
 
   if (num_attributes > 0) {
     program->enableAttributeArray(location);
-    program->setAttributeBuffer(location,
-        attr_type, offset, attribute_size, 0);
+    program->setAttributeBuffer(location, attr_type, offset, attribute_size, 0);
   } else {
     program->disableAttributeArray(location);
   }
@@ -612,18 +625,19 @@ void DrawContext::DrawGeometry() {
 
   // Load per-vertex attribute arrays
   const ShaderStandardVariables& locs = shader_->StandardVariables();
-  SetupAttributeArray(program_, locs.sv_vert_pos,
-      geometry_->NumVertices(), GL_FLOAT, geometry_->VertexOffset(), 3);
-  SetupAttributeArray(program_, locs.sv_normal,
-      geometry_->NumNormals(), GL_FLOAT, geometry_->NormalOffset(), 3);
-  SetupAttributeArray(program_, locs.sv_diffuse,
-      geometry_->NumDiffuse(), GL_FLOAT, geometry_->DiffuseOffset(), 4);
-  SetupAttributeArray(program_, locs.sv_specular,
-      geometry_->NumSpecular(), GL_FLOAT, geometry_->SpecularOffset(), 4);
-  SetupAttributeArray(program_, locs.sv_shininess,
-      geometry_->NumShininess(), GL_FLOAT, geometry_->ShininessOffset(), 1);
+  SetupAttributeArray(program_, locs.sv_vert_pos, geometry_->NumVertices(),
+                      GL_FLOAT, geometry_->VertexOffset(), 3);
+  SetupAttributeArray(program_, locs.sv_normal, geometry_->NumNormals(),
+                      GL_FLOAT, geometry_->NormalOffset(), 3);
+  SetupAttributeArray(program_, locs.sv_diffuse, geometry_->NumDiffuse(),
+                      GL_FLOAT, geometry_->DiffuseOffset(), 4);
+  SetupAttributeArray(program_, locs.sv_specular, geometry_->NumSpecular(),
+                      GL_FLOAT, geometry_->SpecularOffset(), 4);
+  SetupAttributeArray(program_, locs.sv_shininess, geometry_->NumShininess(),
+                      GL_FLOAT, geometry_->ShininessOffset(), 1);
   SetupAttributeArray(program_, locs.sv_tex_coords_0,
-      geometry_->NumTexCoords0(), GL_FLOAT, geometry_->TexCoords0Offset(), 2);
+                      geometry_->NumTexCoords0(), GL_FLOAT,
+                      geometry_->TexCoords0Offset(), 2);
 
   // TODO load custom attribute arrays
 
@@ -632,7 +646,7 @@ void DrawContext::DrawGeometry() {
   if (index_buffer) {
     index_buffer->bind();
     glDrawElements(geometry_->GLMode(), geometry_->NumIndices(),
-        geometry_->IndexType(), 0);
+                   geometry_->IndexType(), 0);
     index_buffer->release();
   } else {
     glDrawArrays(geometry_->GLMode(), 0, geometry_->NumVertices());
@@ -644,7 +658,7 @@ void DrawContext::DrawBoundingBox(const AxisAlignedBox& box) {
   if (!bounding_box_node_) {
     StockResources stock(resources_);
     ShaderResource::Ptr shader =
-      stock.Shader(StockResources::kUniformColorNoLighting);
+        stock.Shader(StockResources::kUniformColorNoLighting);
 
     MaterialResource::Ptr material = resources_->MakeMaterial(shader);
     material->SetParam("color", 0.0f, 1.0f, 0.0f, 1.0f);
@@ -653,19 +667,12 @@ void DrawContext::DrawBoundingBox(const AxisAlignedBox& box) {
     GeometryData gdata;
     gdata.gl_mode = GL_LINES;
     gdata.vertices = {
-      { QVector3D(0, 0, 0) },
-      { QVector3D(0, 1, 0) },
-      { QVector3D(1, 1, 0) },
-      { QVector3D(1, 0, 0) },
-      { QVector3D(0, 0, 1) },
-      { QVector3D(0, 1, 1) },
-      { QVector3D(1, 1, 1) },
-      { QVector3D(1, 0, 1) },
+        {QVector3D(0, 0, 0)}, {QVector3D(0, 1, 0)}, {QVector3D(1, 1, 0)},
+        {QVector3D(1, 0, 0)}, {QVector3D(0, 0, 1)}, {QVector3D(0, 1, 1)},
+        {QVector3D(1, 1, 1)}, {QVector3D(1, 0, 1)},
     };
-    gdata.indices = {
-      0, 1, 1, 2, 2, 3, 3, 0,
-      4, 5, 5, 6, 6, 7, 7, 4,
-      0, 4, 1, 5, 2, 6, 3, 7 };
+    gdata.indices = {0, 1, 1, 2, 2, 3, 3, 0, 4, 5, 5, 6,
+                     6, 7, 7, 4, 0, 4, 1, 5, 2, 6, 3, 7};
     geometry->Load(gdata);
 
     bounding_box_node_ = scene_->MakeDrawNode(nullptr);
