@@ -154,6 +154,16 @@ class SceneNode {
      */
     virtual const AxisAlignedBox& WorldBoundingBox() = 0;
 
+    /**
+     * Set the draw order of this node within the draw group. Use this to force
+     * certain nodes to draw before or after other nodes within the draw group.
+     *
+     * Nodes with a lower order are drawn first.
+     */
+    void SetDrawOrder(int order) { draw_order_ = order; }
+
+    int DrawOrder() const { return draw_order_; }
+
   protected:
     /**
      * Constructs a scene node with an identity transform.
@@ -191,6 +201,8 @@ class SceneNode {
 
     bool visible_ = true;
     int64_t selection_mask_ = 0;
+
+    int draw_order_ = 0;
 };
 
 }  // namespace sv

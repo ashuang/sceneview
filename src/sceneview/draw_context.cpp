@@ -357,19 +357,25 @@ void DrawContext::DrawDrawGroup(DrawGroup* dgroup) {
       // Sort nodes to draw back to front
       std::sort(to_draw.begin(), to_draw.end(),
                 [](const DrawNodeData& dndata_a, const DrawNodeData& dndata_b) {
-                  return dndata_a.squared_distance > dndata_b.squared_distance;
+                  return dndata_a.node->DrawOrder() < dndata_b.node->DrawOrder() ||
+                  dndata_a.squared_distance > dndata_b.squared_distance;
                 });
       break;
     case NodeOrdering::kFrontToBack:
       // Sort nodes to draw front to back
       std::sort(to_draw.begin(), to_draw.end(),
                 [](const DrawNodeData& dndata_a, const DrawNodeData& dndata_b) {
-                  return dndata_a.squared_distance < dndata_b.squared_distance;
+                  return dndata_a.node->DrawOrder() < dndata_b.node->DrawOrder() ||
+                  dndata_a.squared_distance < dndata_b.squared_distance;
                 });
       break;
     case NodeOrdering::kNone:
     default:
-      // Don't sort nodes
+      // Sort nodes only by DrawOrder() vaules
+      std::sort(to_draw.begin(), to_draw.end(),
+                [](const DrawNodeData& dndata_a, const DrawNodeData& dndata_b) {
+                  return dndata_a.node->DrawOrder() < dndata_b.node->DrawOrder();
+                });
       break;
   }
 

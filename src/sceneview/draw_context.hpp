@@ -31,6 +31,9 @@ class DrawContext {
         int viewport_height,
         std::vector<Renderer*>* prenderers);
 
+    /**
+     * Value passed to glClearColor() at the beginning of each render cycle.
+     */
     void SetClearColor(const QColor& color);
 
     void SetDrawGroups(const std::vector<DrawGroup*>& groups);

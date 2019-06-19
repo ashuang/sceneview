@@ -14,8 +14,25 @@ class Scene;
 class DrawNode;
 
 enum class NodeOrdering {
+  /**
+   * Deprecated. Do not use.
+   */
   kNone = 0,
+  /**
+   * Nodes are sorted by values returned by SceneNode::DrawOrder()
+   */
+  kNodeDrawOrder = 0,
+  /**
+   * Nodes are first sorted by values returned by SceneNode::DrawOrder().
+   * Nodes with identical SceneNode::DrawOrder() values are sorted by depth
+   * (nodes in back are drawn first).
+   */
   kBackToFront = 1,
+  /**
+   * Nodes are first sorted by values returned by SceneNode::DrawOrder().
+   * Nodes with identical SceneNode::DrawOrder() values are sorted by depth
+   * (nodes in back are drawn first).
+   */
   kFrontToBack = 2
 };
 
