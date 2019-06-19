@@ -1,0 +1,16 @@
+# - Config file for the Sceneview package
+# It defines the following variables
+#  SCENEVIEW_INCLUDE_DIRS - include directories for Sceneview
+#  SCENEVIEW_LIBRARIES    - libraries to link against
+
+# Compute paths
+get_filename_component(SCENEVIEW_CMAKE_DIR "${CMAKE_CURRENT_LIST_FILE}" PATH)
+set(SCENEVIEW_INCLUDE_DIRS "@CMAKE_INSTALL_INCLUDEDIR@")
+
+# Library dependencies (contains definitions for IMPORTED targets)
+if(NOT TARGET sview AND NOT Sceneview_BINARY_DIR)
+  include("${SCENEVIEW_CMAKE_DIR}/SceneviewTargets.cmake")
+endif()
+
+# These are IMPORTED targets created by SceneviewTargets.cmake
+set(SCENEVIEW_LIBRARIES Sceneview::sview)
