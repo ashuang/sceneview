@@ -21,6 +21,7 @@ add_executable(sv_example_viewer
                hud_renderer.cpp
                stock_shape_selector.cpp
                stock_shape_renderer.cpp
+               stencil_renderer.cpp
                text_renderer.cpp
                texture_renderer.cpp)
 

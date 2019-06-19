@@ -6,6 +6,32 @@
 
 namespace sv {
 
+bool StencilFaceSettings::operator!=(const StencilFaceSettings& other) const
+{
+  return func != other.func ||
+         func_ref != other.func_ref ||
+         func_mask != other.func_mask ||
+         sfail != other.sfail ||
+         dpfail != other.dpfail ||
+         dppass != other.dppass ||
+         mask != other.mask;
+}
+
+bool StencilFaceSettings::operator==(const StencilFaceSettings& other) const
+{
+  return !(*this != other);
+}
+
+bool StencilSettings::operator!=(const StencilSettings& other) const
+{
+  return front != other.front || back != other.back;
+}
+
+bool StencilSettings::operator==(const StencilSettings& other) const
+{
+  return !(*this != other);
+}
+
 MaterialResource::MaterialResource(const QString& name,
     ShaderResource::Ptr shader) :
   name_(name),
@@ -23,6 +49,26 @@ void SUMapSet(ShaderUniformMap* psu_map, const QString& name, ValueType val) {
     su_map[name] = ShaderUniform(name);
     su_map[name].Set(val);
   }
+}
+
+
+void MaterialResource::SetStencil(const StencilSettings& stencil)
+{
+  if (stencil_) {
+    *stencil_ = stencil;
+  } else {
+    stencil_.reset(new StencilSettings(stencil));
+  }
+}
+
+void MaterialResource::DisableStencil()
+{
+  stencil_.reset();
+}
+
+const StencilSettings* MaterialResource::Stencil() const
+{
+  return stencil_ ? stencil_.get() : nullptr;
 }
 
 void MaterialResource::SetParam(const QString& name, int val) {

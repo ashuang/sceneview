@@ -16,6 +16,8 @@ class QOpenGLTexture;
 
 namespace sv {
 
+struct StencilSettings;
+
 /**
  * Controls the appearance of a Drawable.
  *
@@ -87,6 +89,18 @@ class MaterialResource {
 
     GLenum DepthFunc() const { return depth_func_; }
 
+    /**
+     * Enable stencil test and set its options.
+     */
+    void SetStencil(const StencilSettings& stencil);
+
+    /**
+     * Disable stencil test.
+     */
+    void DisableStencil();
+
+    const StencilSettings* Stencil() const;
+
     void SetColorWrite(bool val) { color_write_ = val; }
 
     bool ColorWrite() const { return color_write_; }
@@ -141,6 +155,8 @@ class MaterialResource {
 
     GLenum depth_func_ = GL_LESS;
 
+    std::unique_ptr<StencilSettings> stencil_;
+
     bool color_write_ = true;
 
     float point_size_ = 1;
@@ -154,6 +170,38 @@ class MaterialResource {
     GLenum blend_dfactor_ = GL_ZERO;
 
     TextureDictionary textures_;
+};
+
+/**
+ * Face-specific stencil test settings
+ */
+struct StencilFaceSettings {
+  // see: glStencilFunc() for func, func_ref, func_mask
+  GLenum func = GL_ALWAYS;
+  int func_ref = 0;
+  unsigned int func_mask = 0xffffffff;
+
+  // see: glStencilOp() for sfail, dpfail, dppass
+  GLenum sfail = GL_KEEP;
+  GLenum dpfail = GL_KEEP;
+  GLenum dppass = GL_KEEP;
+
+  // see: glStencilMask() for mask
+  unsigned int mask = 0xffffffff;
+
+  bool operator!=(const StencilFaceSettings& other) const;
+  bool operator==(const StencilFaceSettings& other) const;
+};
+
+/**
+ * https://www.khronos.org/opengl/wiki/Stencil_Test
+ */
+struct StencilSettings {
+  StencilFaceSettings front;
+  StencilFaceSettings back;
+
+  bool operator!=(const StencilSettings& other) const;
+  bool operator==(const StencilSettings& other) const;
 };
 
 }  // namespace sv

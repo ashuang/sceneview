@@ -11,6 +11,7 @@
 #include "text_renderer.hpp"
 #include "texture_renderer.hpp"
 #include "hud_renderer.hpp"
+#include "stencil_renderer.hpp"
 
 using sv::Viewport;
 using sv::Viewer;
@@ -25,6 +26,7 @@ using vis_examples::PolylinesRenderer;
 using vis_examples::TextRenderer;
 using vis_examples::TextureRenderer;
 using vis_examples::HudRenderer;
+using vis_examples::StencilRenderer;
 
 int main(int argc, char *argv[]) {
   QApplication app(argc, argv);
@@ -68,6 +70,7 @@ int main(int argc, char *argv[]) {
   viewport->AddRenderer(new PolylinesRenderer("polylines", viewport));
   viewport->AddRenderer(new TextureRenderer("texture", viewport));
   viewport->AddRenderer(new HudRenderer("hud", viewport));
+  viewport->AddRenderer(new StencilRenderer("stencil", viewport));
 
   // Add input handlers
   viewport->AddInputHandler(new ViewHandlerHorizontal(viewport,
