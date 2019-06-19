@@ -6,47 +6,58 @@ add_definitions(-fPIC)
 qt5_add_resources(sceneview_resources
                   resources.qrc)
 
+set(sview_src
+    asset_importer.cpp
+    axis_aligned_box.cpp
+    camera_node.cpp
+    drawable.cpp
+    draw_context.cpp
+    draw_group.cpp
+    draw_node.cpp
+    expander_widget.cpp
+    font_resource.cpp
+    geometry_resource.cpp
+    grid_renderer.cpp
+    group_node.cpp
+    importer_assimp.cpp
+    importer_rwx.cpp
+    input_handler.cpp
+    input_handler_widget_stack.cpp
+    internal_gl.cpp
+    light_node.cpp
+    material_resource.cpp
+    param_widget.cpp
+    plane.cpp
+    renderer.cpp
+    renderer_widget_stack.cpp
+    resource_manager.cpp
+    scene.cpp
+    scene_node.cpp
+    selection_query.cpp
+    shader_resource.cpp
+    shader_uniform.cpp
+    stock_resources.cpp
+    text_billboard.cpp
+    viewer.cpp
+    view_handler_horizontal.cpp
+    viewport.cpp
+    ${sceneview_resources})
+
 # Create the main sceneview library
-add_library(sceneview SHARED
-            asset_importer.cpp
-            axis_aligned_box.cpp
-            camera_node.cpp
-            drawable.cpp
-            draw_context.cpp
-            draw_group.cpp
-            draw_node.cpp
-            expander_widget.cpp
-            font_resource.cpp
-            geometry_resource.cpp
-            grid_renderer.cpp
-            group_node.cpp
-            importer_assimp.cpp
-            importer_rwx.cpp
-            input_handler.cpp
-            input_handler_widget_stack.cpp
-            internal_gl.cpp
-            light_node.cpp
-            material_resource.cpp
-            param_widget.cpp
-            plane.cpp
-            renderer.cpp
-            renderer_widget_stack.cpp
-            resource_manager.cpp
-            scene.cpp
-            scene_node.cpp
-            selection_query.cpp
-            shader_resource.cpp
-            shader_uniform.cpp
-            stock_resources.cpp
-            text_billboard.cpp
-            viewer.cpp
-            view_handler_horizontal.cpp
-            viewport.cpp
-            ${sceneview_resources})
+add_library(sview SHARED ${sview_src})
+set_target_properties(sview PROPERTIES
+                      VERSION ${SV_VERSION}
+                      SOVERSION ${SV_VERSION_MAJOR})
+add_library(Sceneview::sview ALIAS sview)
 
-target_link_libraries(sceneview ${OPENGL_LIBS} assimp Qt5::Widgets Qt5::Gui)
+target_link_libraries(sview
+                      PUBLIC ${OPENGL_LIBS} Qt5::Widgets Qt5::Gui
+                      PRIVATE assimp)
 
-install(TARGETS sceneview LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}${LIB_SUFFIX})
+install(TARGETS sview
+    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}${LIB_SUFFIX}
+    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}${LIB_SUFFIX}
+    )
 
 # Install public header files
 install(FILES asset_importer.hpp
@@ -94,7 +105,7 @@ file(WRITE ${pc_fname}
      "Description: Sceneview visualization toolkit\n"
      "Requires: Qt5Widgets Qt5Gui\n"
      "Version: ${SV_VERSION}\n"
-     "Libs: -L\${libdir} -lsceneview\n"
+     "Libs: -L\${libdir} -lsview\n"
      "Cflags: -I\${includedir}\n")
 install(FILES ${pc_fname} DESTINATION ${CMAKE_INSTALL_LIBDIR}${LIB_SUFFIX}/pkgconfig)
 
@@ -102,12 +113,12 @@ install(FILES ${pc_fname} DESTINATION ${CMAKE_INSTALL_LIBDIR}${LIB_SUFFIX}/pkgco
 add_executable(sv_expander_widget_example
                expander_widget_example.cpp)
 target_link_libraries(sv_expander_widget_example
-                      sceneview Qt5::Widgets Qt5::Gui)
+                      Sceneview::sview Qt5::Widgets Qt5::Gui)
 
 if(HAVE_GTEST)
 macro(sv_test name)
   add_executable(${name}_test ${name}_test.cpp)
-  target_link_libraries(${name}_test sceneview gtest gtest_main)
+  target_link_libraries(${name}_test Sceneview::sview gtest gtest_main)
   add_test(${name}_test ${EXECUTABLE_OUTPUT_PATH}/${name}_test)
 endmacro()
 
