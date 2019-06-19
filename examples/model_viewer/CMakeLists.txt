@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 2.8.11)
+cmake_minimum_required(VERSION 3.10.0)
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_AUTOMOC ON)
@@ -13,4 +13,4 @@ add_executable(sv_model_viewer
 
 target_link_libraries(sv_model_viewer sceneview Qt5::Widgets Qt5::Gui)
 
-install(TARGETS sv_model_viewer RUNTIME DESTINATION bin)
+install(TARGETS sv_model_viewer RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})

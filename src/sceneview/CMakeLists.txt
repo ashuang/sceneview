@@ -46,7 +46,7 @@ add_library(sceneview SHARED
 
 target_link_libraries(sceneview ${OPENGL_LIBS} assimp Qt5::Widgets Qt5::Gui)
 
-install(TARGETS sceneview LIBRARY DESTINATION lib)
+install(TARGETS sceneview LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}${LIB_SUFFIX})
 
 # Install public header files
 install(FILES asset_importer.hpp
@@ -80,15 +80,15 @@ install(FILES asset_importer.hpp
               viewer.hpp
               view_handler_horizontal.hpp
               viewport.hpp
-        DESTINATION include/sceneview)
+        DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/sceneview)
 
 # Create a .pc (pkg-config) file to install
 set(pc_fname ${CMAKE_CURRENT_BINARY_DIR}/sceneview.pc)
 file(WRITE ${pc_fname}
      "prefix=${CMAKE_INSTALL_PREFIX}\n"
      "exec_prefix=\${prefix}\n"
-     "libdir=${CMAKE_INSTALL_PREFIX}/lib\n"
-     "includedir=${CMAKE_INSTALL_PREFIX}/include\n"
+     "libdir=\${exec_prefix}/${CMAKE_INSTALL_LIBDIR}${LIB_SUFFIX}\n"
+     "includedir=\${prefix}/${CMAKE_INSTALL_INCLUDEDIR}\n"
      "\n"
      "Name: sceneview\n"
      "Description: Sceneview visualization toolkit\n"
@@ -96,7 +96,7 @@ file(WRITE ${pc_fname}
      "Version: ${SV_VERSION}\n"
      "Libs: -L\${libdir} -lsceneview\n"
      "Cflags: -I\${includedir}\n")
-install(FILES ${pc_fname} DESTINATION lib/pkgconfig)
+install(FILES ${pc_fname} DESTINATION ${CMAKE_INSTALL_LIBDIR}${LIB_SUFFIX}/pkgconfig)
 
 # Examples / tests
 add_executable(sv_expander_widget_example
