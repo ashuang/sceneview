@@ -8,9 +8,9 @@
 #include <vector>
 
 #include <sceneview/drawable.hpp>
-#include <sceneview/scene_node.hpp>
 #include <sceneview/geometry_resource.hpp>
 #include <sceneview/material_resource.hpp>
+#include <sceneview/scene_node.hpp>
 
 namespace sv {
 
@@ -24,59 +24,55 @@ class DrawGroup;
  * @headerfile sceneview/draw_node.hpp
  */
 class DrawNode : public SceneNode {
-  public:
-    virtual ~DrawNode();
+ public:
+  virtual ~DrawNode();
 
-    SceneNodeType NodeType() const override { return SceneNodeType::kDrawNode; }
+  SceneNodeType NodeType() const override { return SceneNodeType::kDrawNode; }
 
-    /**
-     * Attaches a generic drawable item to the node.
-     *
-     * The node can have multiple drawable objects, and they are always drawn
-     * in the order that they are added, relative to each other.
-     */
-    void Add(const Drawable::Ptr& drawable);
+  /**
+   * Attaches a generic drawable item to the node.
+   *
+   * The node can have multiple drawable objects, and they are always drawn
+   * in the order that they are added, relative to each other.
+   */
+  void Add(const Drawable::Ptr& drawable);
 
-    /**
-     * Convenience method to attach a drawable object from a geometry resource
-     * and a material resource.
-     *
-     * This method is equivalent to:
-     * @code
-     *    draw_node->Add(Drawable::Create(geometry, material));
-     * @endcode
-     */
-    void Add(const GeometryResource::Ptr& geometry,
-        const MaterialResource::Ptr& material);
+  /**
+   * Convenience method to attach a drawable object from a geometry resource
+   * and a material resource.
+   *
+   * This method is equivalent to:
+   * @code
+   *    draw_node->Add(Drawable::Create(geometry, material));
+   * @endcode
+   */
+  void Add(const GeometryResource::Ptr& geometry,
+           const MaterialResource::Ptr& material);
 
-    /**
-     * Retrieve a list of the drawables attached to the node.
-     */
-    const std::vector<Drawable::Ptr>& Drawables() const;
+  /**
+   * Retrieve a list of the drawables attached to the node.
+   */
+  const std::vector<Drawable::Ptr>& Drawables() const;
 
-    const AxisAlignedBox& WorldBoundingBox() override;
+  const AxisAlignedBox& WorldBoundingBox() override;
 
-  protected:
-    void BoundingBoxChanged() override;
+ protected:
+  void BoundingBoxChanged() override;
 
-  private:
-    DrawGroup* GetDrawGroup() { return draw_group_; }
+ private:
+  DrawGroup* GetDrawGroup();
 
-    void SetDrawGroup(DrawGroup* draw_group) {
-      draw_group_ = draw_group; }
+  void SetDrawGroup(DrawGroup* draw_group);
 
-    friend class Scene;
+  friend class Scene;
 
-    friend class Drawable;
+  friend class Drawable;
 
-    explicit DrawNode(const QString& name);
+  explicit DrawNode(const QString& name);
 
-    std::vector<Drawable::Ptr> drawables_;
+  struct Priv;
 
-    AxisAlignedBox bounding_box_;
-    bool bounding_box_dirty_;
-
-    DrawGroup* draw_group_ = nullptr;
+  Priv* p_;
 };
 
 }  // namespace sv

@@ -29,9 +29,9 @@ class Drawable {
       return Ptr(new Drawable(geometry, material));
     }
 
-    const GeometryResource::Ptr& Geometry() { return geometry_; }
+    const GeometryResource::Ptr& Geometry();
 
-    const MaterialResource::Ptr& Material() { return material_; }
+    const MaterialResource::Ptr& Material();
 
     virtual void SetMaterial(const MaterialResource::Ptr& material);
 
@@ -67,9 +67,7 @@ class Drawable {
      * Called by the render engine to determine the axis-aligned bounding box
      * of the Drawable, in the Drawable's own coordinate frame.
      */
-    virtual const AxisAlignedBox& BoundingBox() {
-      return geometry_->BoundingBox();
-    }
+    virtual const AxisAlignedBox& BoundingBox();
 
   protected:
     Drawable(const GeometryResource::Ptr& geometry,
@@ -89,10 +87,9 @@ class Drawable {
 
     void RemoveListener(DrawNode* listener);
 
-    std::vector<DrawNode*> listeners_;
+    class Priv;
 
-    GeometryResource::Ptr geometry_;
-    MaterialResource::Ptr material_;
+    Priv* p_;
 };
 
 }  // namespace sv

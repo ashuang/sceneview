@@ -15,11 +15,7 @@ namespace sv {
  *
  * @ingroup sv_scenegraph
  */
-enum class LightType {
-  kPoint,
-  kDirectional,
-  kSpot
-};
+enum class LightType { kPoint, kDirectional, kSpot };
 
 /**
  * A light in a scene graph used by some shaders to calculate lighting effects.
@@ -30,90 +26,83 @@ enum class LightType {
  * @headerfile sceneview/light_node.hpp
  */
 class LightNode : public SceneNode {
-  public:
-    virtual ~LightNode() {}
+ public:
+  virtual ~LightNode();
 
-    SceneNodeType NodeType() const override {
-      return SceneNodeType::kLightNode; }
+  SceneNodeType NodeType() const override { return SceneNodeType::kLightNode; }
 
-    /**
-     * Sets the light type.
-     */
-    void SetLightType(LightType light_type) { light_type_ = light_type; }
+  /**
+   * Sets the light type.
+   */
+  void SetLightType(LightType light_type);
 
-    LightType GetLightType() const { return light_type_; }
+  LightType GetLightType() const;
 
-    void SetDirection(const QVector3D& dir) { direction_ = dir; }
+  void SetDirection(const QVector3D& dir);
 
-    /**
-     * Sets the light direction.
-     *
-     * Only useful for directional and spot lights.
-     */
-    const QVector3D& Direction() const { return direction_; }
+  /**
+   * Sets the light direction.
+   *
+   * Only useful for directional and spot lights.
+   */
+  const QVector3D& Direction() const;
 
-    float Ambient() const { return ambient_; }
+  float Ambient() const;
 
-    /**
-     * Sets the ambient coefficient for this light.
-     */
-    void SetAmbient(const float ambient) { ambient_ = ambient; }
+  /**
+   * Sets the ambient coefficient for this light.
+   */
+  void SetAmbient(const float ambient);
 
-    float Specular() const { return specular_; }
+  float Specular() const;
 
-    /**
-     * Sets the specular coefficient for this light.
-     */
-    void SetSpecular(const float specular) { specular_ = specular;}
+  /**
+   * Sets the specular coefficient for this light.
+   */
+  void SetSpecular(const float specular);
 
-    const QVector3D& Color() const { return color_; }
+  const QVector3D& Color() const;
 
-    void SetColor(const QVector3D& color) { color_ = color; }
+  void SetColor(const QVector3D& color);
 
-    /**
-     * Sets the attenuation factor.
-     *
-     * Only useful for point and spot lights.
-     */
-    void SetAttenuation(const float val) { attenuation_ = val; }
+  /**
+   * Sets the attenuation factor.
+   *
+   * Only useful for point and spot lights.
+   */
+  void SetAttenuation(const float val);
 
-    float Attenuation() const { return attenuation_; }
+  float Attenuation() const;
 
-    /**
-     * Sets the light cone angle (in degrees).
-     *
-     * Only useful for spot lights.
-     */
-    void SetConeAngle(float cone_angle_deg) {
-      cone_angle_deg_ = cone_angle_deg;
-    }
+  /**
+   * Sets the light cone angle (in degrees).
+   *
+   * Only useful for spot lights.
+   */
+  void SetConeAngle(float cone_angle_deg);
 
-    /**
-     * Retrieve the cone angle, in degrees.
-     */
-    float ConeAngle() const { return cone_angle_deg_; }
+  /**
+   * Retrieve the cone angle, in degrees.
+   */
+  float ConeAngle() const;
 
-    /**
-     * Disabled for this class.
-     */
-    void SetScale(const QVector3D& vec) override;
+  /**
+   * Disabled for this class.
+   */
+  void SetScale(const QVector3D& vec) override;
 
-    const AxisAlignedBox& WorldBoundingBox() override;
+  const AxisAlignedBox& WorldBoundingBox() override;
 
-  private:
-    friend class Scene;
+ private:
+  friend class Scene;
 
-    explicit LightNode(const QString& name);
+  explicit LightNode(const QString& name);
 
-    static const AxisAlignedBox kBoundingBox;
+  static const AxisAlignedBox kBoundingBox;
 
-    LightType light_type_;
-    QVector3D direction_;
-    QVector3D color_;
-    float ambient_;
-    float specular_;
-    float attenuation_;
-    float cone_angle_deg_;
+  struct Priv;
+
+  Priv* p_;
 };
 
 }  // namespace sv

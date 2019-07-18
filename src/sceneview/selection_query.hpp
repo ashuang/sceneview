@@ -8,8 +8,8 @@
 namespace sv {
 
 struct QueryResult {
-  QueryResult(SceneNode* node, double distance) :
-    node(node), distance(distance) {}
+  QueryResult(SceneNode* node, double distance)
+      : node(node), distance(distance) {}
 
   SceneNode* node;
   double distance;
@@ -34,27 +34,33 @@ struct QueryResult {
  * selectable by default.
  */
 class SelectionQuery {
-  public:
-    SelectionQuery(const Scene::Ptr& scene);
+ public:
+  SelectionQuery(const Scene::Ptr& scene);
 
-    /**
-     * Perform a ray cast selection query.
-     *
-     * @param selection_mask the selection mask to use when considering nodes.
-     * @param start the ray starting point, in world coordinates.
-     * @param dir the ray direction, in world coordinates.  Does not need to be
-     *            normalized.
-     *
-     * @return a vector of matching nodes, sorted in ascending order of
-     * distance along the ray (i.e., the closest matching nodes are first).
-     */
-    std::vector<QueryResult> CastRay(const int64_t selection_mask,
-        const QVector3D& start, const QVector3D& dir);
+  virtual ~SelectionQuery();
 
-    static bool Intersection(const AxisAlignedBox& box,
-        const QVector3D& ray_start, const QVector3D& ray_dir, double* result);
-  private:
-    Scene::Ptr scene_;
+  /**
+   * Perform a ray cast selection query.
+   *
+   * @param selection_mask the selection mask to use when considering nodes.
+   * @param start the ray starting point, in world coordinates.
+   * @param dir the ray direction, in world coordinates.  Does not need to be
+   *            normalized.
+   *
+   * @return a vector of matching nodes, sorted in ascending order of
+   * distance along the ray (i.e., the closest matching nodes are first).
+   */
+  std::vector<QueryResult> CastRay(const int64_t selection_mask,
+                                   const QVector3D& start,
+                                   const QVector3D& dir);
+
+  static bool Intersection(const AxisAlignedBox& box,
+                           const QVector3D& ray_start, const QVector3D& ray_dir,
+                           double* result);
+
+ private:
+  struct Priv;
+  Priv* p_;
 };
 
 }  // namespace sv

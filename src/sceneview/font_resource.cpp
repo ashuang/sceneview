@@ -6,23 +6,41 @@
 
 #include <QFontMetrics>
 #include <QOpenGLTexture>
-#include <QPixmap>
 #include <QPainter>
+#include <QPixmap>
 
 namespace sv {
+
+struct FontResource::Priv {
+  int num_rows;
+  int num_cols;
+  int block_size;
+
+  CharData char_data[256];
+
+  std::shared_ptr<QOpenGLTexture> texture;
+};
+
+FontResource::~FontResource() { delete p_; }
+
+const std::shared_ptr<QOpenGLTexture>& FontResource::Texture() {
+  return p_->texture;
+}
+
+const FontResource::CharData& FontResource::GetCharData(int c) {
+  return p_->char_data[c];
+}
 
 FontResource::Ptr FontResource::Create(const QFont& font) {
   return Ptr(new FontResource(font));
 }
 
-FontResource::FontResource(const QFont& font) {
-  Build(font);
-}
+FontResource::FontResource(const QFont& font) : p_(new Priv) { Build(font); }
 
 void FontResource::Build(const QFont& base_font) {
   // Build a texture with a grid of characters.
-  num_cols_ = 16;
-  num_rows_ = 16;
+  p_->num_cols = 16;
+  p_->num_rows = 16;
 
   // The nominal size of each character.
   const int pixel_size = 64;
@@ -34,7 +52,7 @@ void FontResource::Build(const QFont& base_font) {
 
   // Calculate the bounding rectangles for each character, and the maximum
   // extents that a character might deviate from its anchor point.
-  block_size_ = 0;
+  p_->block_size = 0;
   int leftmost = 0;
   int topmost = 0;
   int rightmost = 0;
@@ -51,9 +69,9 @@ void FontResource::Build(const QFont& base_font) {
 
   // Use the bounding data to calculate how big each grid cell should be, and
   // subsequently the size of the texture.
-  block_size_ = std::max(bottommost - topmost, rightmost - leftmost);
-  const int width = num_cols_ * block_size_ + rightmost;
-  const int height = num_rows_ * block_size_ + bottommost;
+  p_->block_size = std::max(bottommost - topmost, rightmost - leftmost);
+  const int width = p_->num_cols * p_->block_size + rightmost;
+  const int height = p_->num_rows * p_->block_size + bottommost;
 
   // Initialize the texture to completely transparent and prepare to draw.
   QPixmap pixmap(width, height);
@@ -65,8 +83,8 @@ void FontResource::Build(const QFont& base_font) {
 
   // Draw each character and compute its draw data.
   for (int c = 0; c < 256; ++c) {
-    const int x = block_size_ * (c % num_cols_);
-    const int y = block_size_ * (c / num_cols_ + 1);
+    const int x = p_->block_size * (c % p_->num_cols);
+    const int y = p_->block_size * (c / p_->num_cols + 1);
     painter.drawText(x, y, QString(QChar(c)));
 
     const QRect& bounding_rect = bounding_rects[c];
@@ -74,24 +92,28 @@ void FontResource::Build(const QFont& base_font) {
     const int y0 = y + bounding_rect.top();
     const int x1 = x + bounding_rect.right() + 1;
     const int y1 = y + bounding_rect.bottom() + 1;
-    char_data_[c].u0 = static_cast<float>(x0) / width;
-    char_data_[c].v0 = static_cast<float>(y0) / height;
-    char_data_[c].u1 = static_cast<float>(x1) / width;
-    char_data_[c].v1 = static_cast<float>(y1) / height;
-    char_data_[c].width_to_height = static_cast<float>(
-        font_metrics.width(c)) / block_size_;
+    p_->char_data[c].u0 = static_cast<float>(x0) / width;
+    p_->char_data[c].v0 = static_cast<float>(y0) / height;
+    p_->char_data[c].u1 = static_cast<float>(x1) / width;
+    p_->char_data[c].v1 = static_cast<float>(y1) / height;
+    p_->char_data[c].width_to_height =
+        static_cast<float>(font_metrics.width(c)) / p_->block_size;
 
-    char_data_[c].x0 = bounding_rect.left() / static_cast<float>(block_size_);
-    char_data_[c].y0 = bounding_rect.top() / static_cast<float>(block_size_);
-    char_data_[c].x1 = bounding_rect.right() / static_cast<float>(block_size_);
-    char_data_[c].y1 = bounding_rect.bottom() / static_cast<float>(block_size_);
+    p_->char_data[c].x0 =
+        bounding_rect.left() / static_cast<float>(p_->block_size);
+    p_->char_data[c].y0 =
+        bounding_rect.top() / static_cast<float>(p_->block_size);
+    p_->char_data[c].x1 =
+        bounding_rect.right() / static_cast<float>(p_->block_size);
+    p_->char_data[c].y1 =
+        bounding_rect.bottom() / static_cast<float>(p_->block_size);
   }
 
   const QImage image = pixmap.toImage();
   const QImage converted = image.convertToFormat(QImage::Format_RGBA8888);
-  texture_.reset(new QOpenGLTexture(converted));
-  texture_->setMinificationFilter(QOpenGLTexture::LinearMipMapLinear);
-  texture_->setMagnificationFilter(QOpenGLTexture::Linear);
+  p_->texture.reset(new QOpenGLTexture(converted));
+  p_->texture->setMinificationFilter(QOpenGLTexture::LinearMipMapLinear);
+  p_->texture->setMagnificationFilter(QOpenGLTexture::Linear);
 }
 
 }  // namespace sv

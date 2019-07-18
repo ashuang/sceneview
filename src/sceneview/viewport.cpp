@@ -1,7 +1,7 @@
 // Copyright [2015] Albert Huang
 
-#include "sceneview/internal_gl.hpp"
 #include "sceneview/viewport.hpp"
+#include "sceneview/internal_gl.hpp"
 
 #include <iostream>
 #include <vector>
@@ -19,18 +19,37 @@
 
 namespace sv {
 
+struct Viewport::Priv {
+  ResourceManager::Ptr resources;
+
+  Scene::Ptr scene;
+
+  CameraNode* camera;
+
+  InputHandler* input_handler;
+
+  std::unique_ptr<DrawContext> draw;
+
+  std::vector<Renderer*> renderers;
+
+  std::vector<InputHandler*> input_handlers;
+
+  bool redraw_scheduled;
+
+  QOpenGLContext* gl_context;
+};
+
 Viewport::Viewport(const ResourceManager::Ptr& resources,
-    const Scene::Ptr& scene, QWidget* parent) :
-  QOpenGLWidget(parent),
-  resources_(resources),
-  scene_(scene),
-  camera_(nullptr),
-  input_handler_(nullptr),
-  draw_(new DrawContext(resources_, scene)),
-  renderers_(),
-  input_handlers_(),
-  redraw_scheduled_(false),
-  gl_context_(nullptr) {
+                   const Scene::Ptr& scene, QWidget* parent)
+    : QOpenGLWidget(parent), p_(new Priv) {
+  p_->resources = resources;
+  p_->scene = scene;
+  p_->camera = nullptr;
+  p_->input_handler = nullptr;
+  p_->draw.reset(new DrawContext(p_->resources, scene));
+  p_->redraw_scheduled = false;
+  p_->gl_context = nullptr;
+
   // Enable multisampling so that things draw a little smoother.
   QSurfaceFormat format = QSurfaceFormat::defaultFormat();
   format.setSamples(2);
@@ -38,33 +57,33 @@ Viewport::Viewport(const ResourceManager::Ptr& resources,
 
   setFocusPolicy(Qt::ClickFocus);
 
-  draw_->SetDrawGroups({scene_->GetDefaultDrawGroup()});
+  p_->draw->SetDrawGroups({p_->scene->GetDefaultDrawGroup()});
 }
 
 Viewport::~Viewport() {
   // Activate the opengl context and then shut down the renderers.
   makeCurrent();
-  if (input_handler_) {
-    input_handler_->Deactivated();
+  if (p_->input_handler) {
+    p_->input_handler->Deactivated();
   }
   emit GLShuttingDown();
-  for (Renderer* renderer : renderers_) {
+  for (Renderer* renderer : p_->renderers) {
     renderer->ShutdownGL();
   }
-  for (InputHandler* handler : input_handlers_) {
+  for (InputHandler* handler : p_->input_handlers) {
     handler->ShutdownGL();
   }
-  renderers_.clear();
-  gl_context_ = nullptr;
+  p_->renderers.clear();
+  p_->gl_context = nullptr;
 }
 
 void Viewport::AddRenderer(Renderer* renderer) {
-  renderers_.push_back(renderer);
+  p_->renderers.push_back(renderer);
   renderer->SetViewport(this);
-  renderer->SetBaseNode(scene_->MakeGroup(scene_->Root(),
-        "basenode_" + renderer->Name()));
+  renderer->SetBaseNode(
+      p_->scene->MakeGroup(p_->scene->Root(), "basenode_" + renderer->Name()));
 
-  if (gl_context_) {
+  if (p_->gl_context) {
     makeCurrent();
     renderer->InitializeGL();
   }
@@ -73,67 +92,81 @@ void Viewport::AddRenderer(Renderer* renderer) {
 }
 
 void Viewport::AddInputHandler(InputHandler* handler) {
-  input_handlers_.push_back(handler);
-  if (gl_context_) {
+  p_->input_handlers.push_back(handler);
+  if (p_->gl_context) {
     handler->InitializeGL();
   }
   emit InputHandlerAdded(handler);
 
   // If it's the only input handers, activate it.
-  if (input_handlers_.size() == 1) {
+  if (p_->input_handlers.size() == 1) {
     ActivateInputHandler(handler);
   }
 }
 
 void Viewport::SetCamera(CameraNode* camera_node) {
-  if (camera_ == camera_node) {
+  if (p_->camera == camera_node) {
     return;
   }
-  if (!scene_->ContainsNode(camera_node)) {
+  if (!p_->scene->ContainsNode(camera_node)) {
     throw std::invalid_argument("camera doesn't belong the scene");
   }
-  camera_ = camera_node;
-  camera_->SetViewportSize(width(), height());
-  scene_->GetDefaultDrawGroup()->SetCamera(camera_);
+  p_->camera = camera_node;
+  p_->camera->SetViewportSize(width(), height());
+  p_->scene->GetDefaultDrawGroup()->SetCamera(p_->camera);
 
-  emit CameraChanged(camera_);
+  emit CameraChanged(p_->camera);
 }
 
+CameraNode* Viewport::GetCamera() { return p_->camera; }
+
 void Viewport::ScheduleRedraw() {
-  if (!redraw_scheduled_) {
+  if (!p_->redraw_scheduled) {
     QTimer::singleShot(30, this, SLOT(Render()));
-    redraw_scheduled_ = true;
+    p_->redraw_scheduled = true;
   }
 }
 
 void Viewport::ActivateInputHandler(InputHandler* handler) {
-  if (input_handler_ == handler) {
+  if (p_->input_handler == handler) {
     return;
   }
-  if (input_handler_) {
-    input_handler_->Deactivated();
+  if (p_->input_handler) {
+    p_->input_handler->Deactivated();
   }
-  input_handler_ = handler;
-  input_handler_->Activated();
+  p_->input_handler = handler;
+  p_->input_handler->Activated();
   emit InputHandlerActivated(handler);
 }
 
+Scene::Ptr Viewport::GetScene() { return p_->scene; }
+
+ResourceManager::Ptr Viewport::GetResources() { return p_->resources; }
+
+std::vector<Renderer*> Viewport::GetRenderers() { return p_->renderers; }
+
+std::vector<InputHandler*> Viewport::GetInputHandlers() {
+  return p_->input_handlers;
+}
+
 void Viewport::SetBackgroundColor(const QColor& color) {
-  draw_->SetClearColor(color);
+  p_->draw->SetClearColor(color);
 }
 
 void Viewport::SetDrawGroups(const std::vector<DrawGroup*>& groups) {
-  draw_->SetDrawGroups(groups);
+  p_->draw->SetDrawGroups(groups);
 }
 
-void Viewport::initializeGL() {
-  gl_context_ = QOpenGLContext::currentContext();
+InputHandler* Viewport::GetActiveInputHandler() { return p_->input_handler; }
 
-  for (Renderer* renderer : renderers_) {
+void Viewport::initializeGL() {
+  p_->gl_context = QOpenGLContext::currentContext();
+
+  for (Renderer* renderer : p_->renderers) {
     renderer->InitializeGL();
   }
 
-  for (InputHandler* handler : input_handlers_) {
+  for (InputHandler* handler : p_->input_handlers) {
     handler->InitializeGL();
   }
 
@@ -141,70 +174,67 @@ void Viewport::initializeGL() {
 }
 
 void Viewport::resizeGL(int width, int height) {
-  if (camera_) {
-    camera_->SetViewportSize(width, height);
+  if (p_->camera) {
+    p_->camera->SetViewportSize(width, height);
   }
 }
 
 void Viewport::paintGL() {
-  redraw_scheduled_ = false;
-  draw_->Draw(width(), height(), &renderers_);
+  p_->redraw_scheduled = false;
+  p_->draw->Draw(width(), height(), &p_->renderers);
 }
 
-void Viewport::mousePressEvent(QMouseEvent *event) {
-  if (input_handler_) {
+void Viewport::mousePressEvent(QMouseEvent* event) {
+  if (p_->input_handler) {
     makeCurrent();
-    input_handler_->MousePressEvent(event);
+    p_->input_handler->MousePressEvent(event);
   }
 }
 
-void Viewport::mouseMoveEvent(QMouseEvent *event) {
-  if (input_handler_) {
+void Viewport::mouseMoveEvent(QMouseEvent* event) {
+  if (p_->input_handler) {
     makeCurrent();
-    input_handler_->MouseMoveEvent(event);
+    p_->input_handler->MouseMoveEvent(event);
   }
 }
 
 void Viewport::mouseReleaseEvent(QMouseEvent* event) {
-  if (input_handler_) {
+  if (p_->input_handler) {
     makeCurrent();
-    input_handler_->MouseReleaseEvent(event);
+    p_->input_handler->MouseReleaseEvent(event);
   }
 }
 
 void Viewport::mouseDoubleClickEvent(QMouseEvent* event) {
-  if (input_handler_) {
+  if (p_->input_handler) {
     makeCurrent();
-    input_handler_->MouseDoubleClickEvent(event);
+    p_->input_handler->MouseDoubleClickEvent(event);
   }
 }
 
 void Viewport::wheelEvent(QWheelEvent* event) {
-  if (input_handler_) {
+  if (p_->input_handler) {
     makeCurrent();
-    input_handler_->WheelEvent(event);
+    p_->input_handler->WheelEvent(event);
   }
 }
 
 void Viewport::keyPressEvent(QKeyEvent* event) {
-  if (input_handler_) {
+  if (p_->input_handler) {
     makeCurrent();
-    input_handler_->KeyPressEvent(event);
+    p_->input_handler->KeyPressEvent(event);
   } else {
     event->ignore();
   }
 }
 
 void Viewport::keyReleaseEvent(QKeyEvent* event) {
-  if (input_handler_) {
+  if (p_->input_handler) {
     makeCurrent();
-    input_handler_->KeyReleaseEvent(event);
+    p_->input_handler->KeyReleaseEvent(event);
   }
 }
 
-void Viewport::Render() {
-  repaint(0, 0, width(), height());
-}
-
+void Viewport::Render() { repaint(0, 0, width(), height()); }
 
 }  // namespace sv

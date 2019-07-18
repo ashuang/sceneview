@@ -7,10 +7,6 @@
 
 #include <QDockWidget>
 
-class QComboBox;
-class QStackedWidget;
-class QVBoxLayout;
-
 namespace sv {
 
 class InputHandler;
@@ -31,28 +27,27 @@ class Viewport;
 class InputHandlerWidgetStack : public QDockWidget {
   Q_OBJECT
 
-  public:
-    explicit InputHandlerWidgetStack(Viewport* viewport,
-        QWidget* parent = nullptr);
+ public:
+  explicit InputHandlerWidgetStack(Viewport* viewport,
+                                   QWidget* parent = nullptr);
 
-  private:
-    struct HandlerData {
-      int stack_index;
-      InputHandler* handler;
-    };
+  ~InputHandlerWidgetStack();
 
-    void AddInputHandler(InputHandler* handler);
+ private:
+  struct HandlerData {
+    int stack_index;
+    InputHandler* handler;
+  };
 
-    void OnInputHandlerActivated(InputHandler* handler);
+  void AddInputHandler(InputHandler* handler);
 
-    HandlerData* GetHandlerData(InputHandler* Handler);
+  void OnInputHandlerActivated(InputHandler* handler);
 
-    Viewport* viewport_;
+  HandlerData* GetHandlerData(InputHandler* Handler);
 
-    QStackedWidget* stack_;
-    QVBoxLayout* layout_;
+  struct Priv;
 
-    std::vector<HandlerData> handler_data_;
+  Priv* p_;
 };
 
 }  // namespace sv

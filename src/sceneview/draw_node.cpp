@@ -6,49 +6,62 @@
 
 namespace sv {
 
-DrawNode::DrawNode(const QString& name) :
-  SceneNode(name),
-  drawables_(),
-  bounding_box_(),
-  bounding_box_dirty_(true) {}
+struct DrawNode::Priv {
+  std::vector<Drawable::Ptr> drawables;
+
+  AxisAlignedBox bounding_box;
+  bool bounding_box_dirty;
+
+  DrawGroup* draw_group = nullptr;
+};
+
+DrawNode::DrawNode(const QString& name) : SceneNode(name), p_(new Priv) {
+  p_->bounding_box_dirty = true;
+}
 
 DrawNode::~DrawNode() {
-  for (Drawable::Ptr& drawable : drawables_) {
+  for (Drawable::Ptr& drawable : p_->drawables) {
     drawable->RemoveListener(this);
   }
+  delete p_;
 }
 
 void DrawNode::Add(const GeometryResource::Ptr& geometry,
-    const MaterialResource::Ptr& material) {
+                   const MaterialResource::Ptr& material) {
   Add(Drawable::Create(geometry, material));
 }
 
 void DrawNode::Add(const Drawable::Ptr& drawable) {
-  drawables_.push_back(drawable);
+  p_->drawables.push_back(drawable);
   drawable->AddListener(this);
   BoundingBoxChanged();
 }
 
-const std::vector<Drawable::Ptr>&
-DrawNode::Drawables() const {
-  return drawables_;
+const std::vector<Drawable::Ptr>& DrawNode::Drawables() const {
+  return p_->drawables;
 }
 
 const AxisAlignedBox& DrawNode::WorldBoundingBox() {
-  if (bounding_box_dirty_) {
-    bounding_box_ = AxisAlignedBox();
-    for (auto& item : drawables_) {
-      bounding_box_.IncludeBox(item->BoundingBox());
+  if (p_->bounding_box_dirty) {
+    p_->bounding_box = AxisAlignedBox();
+    for (auto& item : p_->drawables) {
+      p_->bounding_box.IncludeBox(item->BoundingBox());
     }
-    bounding_box_ = bounding_box_.Transformed(WorldTransform());
-    bounding_box_dirty_ = false;
+    p_->bounding_box = p_->bounding_box.Transformed(WorldTransform());
+    p_->bounding_box_dirty = false;
   }
-  return bounding_box_;
+  return p_->bounding_box;
 }
 
 void DrawNode::BoundingBoxChanged() {
   SceneNode::BoundingBoxChanged();
-  bounding_box_dirty_ = true;
+  p_->bounding_box_dirty = true;
+}
+
+DrawGroup* DrawNode::GetDrawGroup() { return p_->draw_group; }
+
+void DrawNode::SetDrawGroup(DrawGroup* draw_group) {
+  p_->draw_group = draw_group;
 }
 
 }  // namespace sv

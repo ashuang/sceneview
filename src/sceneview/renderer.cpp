@@ -8,41 +8,51 @@
 
 namespace sv {
 
-Renderer::Renderer(const QString& name, QObject* parent) :
-  QObject(parent),
-  name_(name),
-  enabled_(true) {
+struct Renderer::Priv {
+  QString name;
+
+  Viewport* viewport;
+
+  GroupNode* base_node;
+
+  bool enabled;
+};
+
+Renderer::Renderer(const QString& name, QObject* parent)
+    : QObject(parent), p_(new Priv) {
+  p_->name = name;
+  p_->enabled = true;
 }
 
-Scene::Ptr Renderer::GetScene() {
-  return viewport_->GetScene();
-}
+Renderer::~Renderer() { delete p_; }
+
+const QString& Renderer::Name() const { return p_->name; }
+
+Viewport* Renderer::GetViewport() { return p_->viewport; }
+
+Scene::Ptr Renderer::GetScene() { return p_->viewport->GetScene(); }
 
 ResourceManager::Ptr Renderer::GetResources() {
-  return viewport_->GetResources();
+  return p_->viewport->GetResources();
 }
 
-GroupNode* Renderer::GetBaseNode() {
-  return base_node_;
-}
+GroupNode* Renderer::GetBaseNode() { return p_->base_node; }
 
-void Renderer::SetViewport(Viewport* viewport) {
-  viewport_ = viewport;
-}
+void Renderer::SetViewport(Viewport* viewport) { p_->viewport = viewport; }
 
-void Renderer::SetBaseNode(GroupNode* node) {
-  base_node_ = node;
-}
+void Renderer::SetBaseNode(GroupNode* node) { p_->base_node = node; }
 
 void Renderer::SetEnabled(bool enabled) {
-  if (enabled_ == enabled) {
+  if (p_->enabled == enabled) {
     return;
   }
 
-  enabled_ = enabled;
-  base_node_->SetVisible(enabled_);
+  p_->enabled = enabled;
+  p_->base_node->SetVisible(p_->enabled);
   EnableChanged(enabled);
-  OnEnableChanged(enabled_);
+  OnEnableChanged(p_->enabled);
 }
+
+bool Renderer::Enabled() const { return p_->enabled; }
 
 }  // namespace sv

@@ -138,48 +138,47 @@ struct ShaderStandardVariables {
  * @headerfile sceneview/shader_resource.hpp
  */
 class ShaderResource {
-  public:
-    typedef std::shared_ptr<ShaderResource> Ptr;
+ public:
+  typedef std::shared_ptr<ShaderResource> Ptr;
 
-    const QString Name() const { return name_; }
+  virtual ~ShaderResource();
 
-    /**
-     * Loads a vertex shader and fragment shader into this resource.
-     *
-     * @prefix filename prefix. ".vshader" will automatically be added to the
-     *         vertex shader filename, and ".fshader" will automatically be
-     *         added to the fragment shader filename.
-     */
-    void LoadFromFiles(const QString& prefix);
+  const QString Name() const;
 
-    /**
-     * Loads a vertex shader and fragment shader into this resource.
-     *
-     * @param prefix filename prefix. ".vshader" will automatically be added to
-     *        the vertex shader filename, and ".fshader" will automatically be
-     *        added to the fragment shader filename.
-     * @param preamble text to prepend to both the vertex and fragment shaders
-     *        before compiling. You can use this to define preprocessor
-     *        constants, etc.
-     */
-    void LoadFromFiles(const QString& prefix, const QString& preamble);
+  /**
+   * Loads a vertex shader and fragment shader into this resource.
+   *
+   * @prefix filename prefix. ".vshader" will automatically be added to the
+   *         vertex shader filename, and ".fshader" will automatically be
+   *         added to the fragment shader filename.
+   */
+  void LoadFromFiles(const QString& prefix);
 
-    QOpenGLShaderProgram* Program() { return program_.get(); }
+  /**
+   * Loads a vertex shader and fragment shader into this resource.
+   *
+   * @param prefix filename prefix. ".vshader" will automatically be added to
+   *        the vertex shader filename, and ".fshader" will automatically be
+   *        added to the fragment shader filename.
+   * @param preamble text to prepend to both the vertex and fragment shaders
+   *        before compiling. You can use this to define preprocessor
+   *        constants, etc.
+   */
+  void LoadFromFiles(const QString& prefix, const QString& preamble);
 
-    const ShaderStandardVariables& StandardVariables() const;
+  QOpenGLShaderProgram* Program();
 
-  private:
-    friend class ResourceManager;
+  const ShaderStandardVariables& StandardVariables() const;
 
-    explicit ShaderResource(const QString& name);
+ private:
+  friend class ResourceManager;
 
-    void LoadLocations();
+  explicit ShaderResource(const QString& name);
 
-    QString name_;
+  void LoadLocations();
 
-    std::unique_ptr<QOpenGLShaderProgram> program_;
-
-    ShaderStandardVariables locations_;
+  struct Priv;
+  Priv* p_;
 };
 
 }  // namespace sv

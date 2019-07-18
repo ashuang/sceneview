@@ -8,8 +8,8 @@
 #include <utility>
 #include <vector>
 
-#include <sceneview/shader_resource.hpp>
 #include <sceneview/geometry_resource.hpp>
+#include <sceneview/shader_resource.hpp>
 #include <sceneview/shader_uniform.hpp>
 
 class QOpenGLTexture;
@@ -34,142 +34,110 @@ struct StencilSettings;
  * @headerfile sceneview/material_resource.hpp
  */
 class MaterialResource {
-  public:
-    typedef std::shared_ptr<MaterialResource> Ptr;
+ public:
+  typedef std::shared_ptr<MaterialResource> Ptr;
 
-    typedef std::shared_ptr<QOpenGLTexture> TexturePtr;
+  typedef std::shared_ptr<QOpenGLTexture> TexturePtr;
 
-    typedef std::map<QString, TexturePtr> TextureDictionary;
+  typedef std::map<QString, TexturePtr> TextureDictionary;
 
-    typedef std::map<QString, TexturePtr> Textures;
+  typedef std::map<QString, TexturePtr> Textures;
 
-    const ShaderResource::Ptr& Shader() { return shader_; }
+  virtual ~MaterialResource();
 
-    ShaderUniformMap& ShaderParameters() { return shader_parameters_; }
+  const ShaderResource::Ptr& Shader();
 
-    void SetParam(const QString& name, int val);
+  ShaderUniformMap& ShaderParameters();
 
-    void SetParam(const QString& name, const std::vector<int>& val);
+  void SetParam(const QString& name, int val);
 
-    void SetParam(const QString& name, float val);
+  void SetParam(const QString& name, const std::vector<int>& val);
 
-    void SetParam(const QString& name,
-        float val1, float val2);
+  void SetParam(const QString& name, float val);
 
-    void SetParam(const QString& name,
-        float val1, float val2, float val3);
+  void SetParam(const QString& name, float val1, float val2);
 
-    void SetParam(const QString& name,
-        float val1, float val2, float val3, float val4);
+  void SetParam(const QString& name, float val1, float val2, float val3);
 
-    void SetParam(const QString& name, const std::vector<float>& val);
+  void SetParam(const QString& name, float val1, float val2, float val3,
+                float val4);
 
-    void SetParam(const QString& name, const QMatrix4x4& value);
+  void SetParam(const QString& name, const std::vector<float>& val);
 
-    void AddTexture(const QString& name, const TexturePtr& texture);
+  void SetParam(const QString& name, const QMatrix4x4& value);
 
-    const TextureDictionary& GetTextures() { return textures_; }
+  void AddTexture(const QString& name, const TexturePtr& texture);
 
-    /**
-     * Sets whether or not to draw back-facing polygons.
-     */
-    void SetTwoSided(bool two_sided);
+  const TextureDictionary& GetTextures();
 
-    bool TwoSided() const { return two_sided_; }
+  /**
+   * Sets whether or not to draw back-facing polygons.
+   */
+  void SetTwoSided(bool two_sided);
 
-    void SetDepthWrite(bool val) { depth_write_ = val; }
+  bool TwoSided() const;
 
-    bool DepthWrite() const { return depth_write_; }
+  void SetDepthWrite(bool val);
 
-    void SetDepthTest(bool val) { depth_test_ = val; }
+  bool DepthWrite() const;
 
-    bool DepthTest() const { return depth_test_; }
+  void SetDepthTest(bool val);
 
-    void SetDepthFunc(GLenum func) { depth_func_ = func; }
+  bool DepthTest() const;
 
-    GLenum DepthFunc() const { return depth_func_; }
+  void SetDepthFunc(GLenum func);
 
-    /**
-     * Enable stencil test and set its options.
-     */
-    void SetStencil(const StencilSettings& stencil);
+  GLenum DepthFunc() const;
 
-    /**
-     * Disable stencil test.
-     */
-    void DisableStencil();
+  /**
+   * Enable stencil test and set its options.
+   */
+  void SetStencil(const StencilSettings& stencil);
 
-    const StencilSettings* Stencil() const;
+  /**
+   * Disable stencil test.
+   */
+  void DisableStencil();
 
-    void SetColorWrite(bool val) { color_write_ = val; }
+  const StencilSettings* Stencil() const;
 
-    bool ColorWrite() const { return color_write_; }
+  void SetColorWrite(bool val);
 
-    void SetPointSize(float size) { point_size_ = size; }
+  bool ColorWrite() const;
 
-    float PointSize() const { return point_size_; }
+  void SetPointSize(float size);
 
-    void SetLineWidth(float line_width) { line_width_ = line_width; }
+  float PointSize() const;
 
-    float LineWidth() const { return line_width_; }
+  void SetLineWidth(float line_width);
 
-    /**
-     * Controls GL_BLEND
-     *
-     * @param value if true, then the GL_BLEND is enabled for this material. If
-     * false, then GL_BLEND is disabled.
-     */
-    void SetBlend(bool value) { blend_ = value; }
+  float LineWidth() const;
 
-    /**
-     * Retrieve whether GL_BLEND should be enabled or disabled.
-     */
-    bool Blend() const { return blend_; }
+  /**
+   * Controls GL_BLEND
+   *
+   * @param value if true, then the GL_BLEND is enabled for this material. If
+   * false, then GL_BLEND is disabled.
+   */
+  void SetBlend(bool value);
 
-    void SetBlendFunc(GLenum sfactor, GLenum dfactor) {
-      blend_sfactor_ = sfactor;
-      blend_dfactor_ = dfactor;
-    }
+  /**
+   * Retrieve whether GL_BLEND should be enabled or disabled.
+   */
+  bool Blend() const;
 
-    void BlendFunc(GLenum* sfactor, GLenum* dfactor) {
-      *sfactor = blend_sfactor_;
-      *dfactor = blend_dfactor_;
-    }
+  void SetBlendFunc(GLenum sfactor, GLenum dfactor);
 
-  private:
-    friend class ResourceManager;
+  void BlendFunc(GLenum* sfactor, GLenum* dfactor);
 
-    MaterialResource(const QString& name, ShaderResource::Ptr shader);
+ private:
+  friend class ResourceManager;
 
-    const QString name_;
+  MaterialResource(const QString& name, ShaderResource::Ptr shader);
 
-    ShaderResource::Ptr shader_;
+  struct Priv;
 
-    ShaderUniformMap shader_parameters_;
-
-    bool two_sided_ = false;
-
-    bool depth_write_ = true;
-
-    bool depth_test_ = true;
-
-    GLenum depth_func_ = GL_LESS;
-
-    std::unique_ptr<StencilSettings> stencil_;
-
-    bool color_write_ = true;
-
-    float point_size_ = 1;
-
-    float line_width_ = 1;
-
-    bool blend_ = false;
-
-    GLenum blend_sfactor_ = GL_ONE;
-
-    GLenum blend_dfactor_ = GL_ZERO;
-
-    TextureDictionary textures_;
+  Priv* p_;
 };
 
 /**

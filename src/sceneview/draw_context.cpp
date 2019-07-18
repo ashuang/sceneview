@@ -10,6 +10,7 @@
 #include <QOpenGLTexture>
 
 #include "sceneview/camera_node.hpp"
+#include "sceneview/drawable.hpp"
 #include "sceneview/draw_group.hpp"
 #include "sceneview/draw_node.hpp"
 #include "sceneview/group_node.hpp"
@@ -140,23 +141,65 @@ static double squaredDistanceToAABB(const QVector3D& point,
   return vec.lengthSquared();
 }
 
+struct DrawContext::Priv {
+  ResourceManager::Ptr resources;
+
+  Scene::Ptr scene;
+
+  QColor clear_color;
+
+  // Rendering variables
+  int viewport_width = 0;
+  int viewport_height = 0;
+  CameraNode* cur_camera = nullptr;
+
+  MaterialResource::Ptr material;
+  GeometryResource::Ptr geometry;
+  ShaderResource::Ptr shader;
+  QOpenGLShaderProgram* program;
+  QMatrix4x4 model_mat;
+
+  std::vector<DrawGroup*> draw_groups;
+
+  bool gl_two_sided;
+  bool gl_depth_test;
+  GLenum gl_depth_func;
+  bool gl_depth_write;
+  bool gl_color_write;
+  float gl_point_size;
+  float gl_line_width;
+  bool gl_blend;
+  GLenum gl_sfactor;
+  GLenum gl_dfactor;
+
+  // For debugging
+  DrawNode* bounding_box_node;
+  bool draw_bounding_boxes;
+};
+
 DrawContext::DrawContext(const ResourceManager::Ptr& resources,
-                         const Scene::Ptr& scene)
-    : resources_(resources),
-      scene_(scene),
-      clear_color_(0, 0, 0, 255),
-      bounding_box_node_(nullptr),
-      draw_bounding_boxes_(false) {}
+                         const Scene::Ptr& scene) : p_(new Priv) {
+  p_->resources = resources;
+  p_->scene = scene;
+  p_->clear_color = QColor(0, 0, 0, 255);
+  p_->bounding_box_node = nullptr;
+  p_->draw_bounding_boxes = false;
+}
+
+DrawContext::~DrawContext()
+{
+  delete p_;
+}
 
 void DrawContext::Draw(int viewport_width, int viewport_height,
                        std::vector<Renderer*>* prenderers) {
-  viewport_width_ = viewport_width;
-  viewport_height_ = viewport_height;
-  cur_camera_ = scene_->GetDefaultDrawGroup()->GetCamera();
+  p_->viewport_width = viewport_width;
+  p_->viewport_height = viewport_height;
+  p_->cur_camera = p_->scene->GetDefaultDrawGroup()->GetCamera();
 
   // Clear the drawing area
-  glClearColor(clear_color_.redF(), clear_color_.greenF(), clear_color_.blueF(),
-               clear_color_.alphaF());
+  glClearColor(p_->clear_color.redF(), p_->clear_color.greenF(), p_->clear_color.blueF(),
+               p_->clear_color.alphaF());
 
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -181,28 +224,28 @@ void DrawContext::Draw(int viewport_width, int viewport_height,
   }
 
   // Set some OpenGL state to a known configuration
-  gl_two_sided_ = false;
+  p_->gl_two_sided = false;
   glDisable(GL_CULL_FACE);
-  gl_depth_test_ = true;
+  p_->gl_depth_test = true;
   glEnable(GL_DEPTH_TEST);
-  gl_depth_func_ = GL_LESS;
-  glDepthFunc(gl_depth_func_);
-  gl_depth_write_ = true;
+  p_->gl_depth_func = GL_LESS;
+  glDepthFunc(p_->gl_depth_func);
+  p_->gl_depth_write = true;
   glDepthMask(GL_TRUE);
-  gl_color_write_ = true;
+  p_->gl_color_write = true;
   glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
-  gl_point_size_ = 1;
-  glPointSize(gl_point_size_);
-  gl_line_width_ = 1;
-  glLineWidth(gl_line_width_);
-  gl_blend_ = false;
+  p_->gl_point_size = 1;
+  glPointSize(p_->gl_point_size);
+  p_->gl_line_width = 1;
+  glLineWidth(p_->gl_line_width);
+  p_->gl_blend = false;
   glDisable(GL_BLEND);
-  gl_sfactor_ = GL_ONE;
-  gl_dfactor_ = GL_ZERO;
-  glBlendFunc(gl_sfactor_, gl_dfactor_);
+  p_->gl_sfactor = GL_ONE;
+  p_->gl_dfactor = GL_ZERO;
+  glBlendFunc(p_->gl_sfactor, p_->gl_dfactor);
 
   // Draw nodes, ordered first by draw group.
-  for (DrawGroup* dgroup : draw_groups_) {
+  for (DrawGroup* dgroup : p_->draw_groups) {
     DrawDrawGroup(dgroup);
   }
 
@@ -224,21 +267,21 @@ void DrawContext::Draw(int viewport_width, int viewport_height,
     }
   }
 
-  cur_camera_ = nullptr;
+  p_->cur_camera = nullptr;
 }
 
-void DrawContext::SetClearColor(const QColor& color) { clear_color_ = color; }
+void DrawContext::SetClearColor(const QColor& color) { p_->clear_color = color; }
 
 void DrawContext::SetDrawGroups(const std::vector<DrawGroup*>& groups) {
-  draw_groups_ = groups;
-  std::sort(draw_groups_.begin(), draw_groups_.end(),
+  p_->draw_groups = groups;
+  std::sort(p_->draw_groups.begin(), p_->draw_groups.end(),
             [](const DrawGroup* draw_group_a, const DrawGroup* draw_group_b) {
               return draw_group_a->Order() < draw_group_b->Order();
             });
 }
 
 void DrawContext::PrepareFixedFunctionPipeline() {
-  cur_camera_ = scene_->GetDefaultDrawGroup()->GetCamera();
+  p_->cur_camera = p_->scene->GetDefaultDrawGroup()->GetCamera();
 
   // Enable the fixed function pipeline by disabling any active shader program.
   glUseProgram(0);
@@ -246,15 +289,15 @@ void DrawContext::PrepareFixedFunctionPipeline() {
   // Setup the projection and view matrices
   glMatrixMode(GL_PROJECTION);
   glLoadIdentity();
-  glMultMatrixf(cur_camera_->GetProjectionMatrix().constData());
+  glMultMatrixf(p_->cur_camera->GetProjectionMatrix().constData());
   glMatrixMode(GL_MODELVIEW);
   glLoadIdentity();
-  glMultMatrixf(cur_camera_->GetViewMatrix().constData());
+  glMultMatrixf(p_->cur_camera->GetViewMatrix().constData());
 
   // Setup lights
   const GLenum gl_lights[] = {GL_LIGHT0, GL_LIGHT1, GL_LIGHT2, GL_LIGHT3,
                               GL_LIGHT4, GL_LIGHT5, GL_LIGHT6, GL_LIGHT7};
-  std::vector<LightNode*> lights = scene_->Lights();
+  std::vector<LightNode*> lights = p_->scene->Lights();
   for (int light_ind = 0; light_ind < 8; ++light_ind) {
     const GLenum gl_light = gl_lights[light_ind];
     LightNode* light = lights[light_ind];
@@ -302,11 +345,11 @@ void DrawContext::PrepareFixedFunctionPipeline() {
 }
 
 void DrawContext::DrawDrawGroup(DrawGroup* dgroup) {
-  cur_camera_ = dgroup->GetCamera();
-  cur_camera_->SetViewportSize(viewport_width_, viewport_height_);
+  p_->cur_camera = dgroup->GetCamera();
+  p_->cur_camera->SetViewportSize(p_->viewport_width, p_->viewport_height);
 
-  Frustum frustum = cur_camera_;
-  const QVector3D eye = cur_camera_->WorldTransform().map(QVector3D(0, 0, 0));
+  Frustum frustum = p_->cur_camera;
+  const QVector3D eye = p_->cur_camera->WorldTransform().map(QVector3D(0, 0, 0));
 
   // Figure out which nodes to draw and some data about them.
   std::vector<DrawNodeData> to_draw;
@@ -382,10 +425,10 @@ void DrawContext::DrawDrawGroup(DrawGroup* dgroup) {
   // Draw each draw node
   for (DrawNodeData& dndata : to_draw) {
     const QString name = dndata.node->Name();
-    model_mat_ = dndata.model_mat;
+    p_->model_mat = dndata.model_mat;
     DrawDrawNode(dndata.node);
 
-    if (draw_bounding_boxes_) {
+    if (p_->draw_bounding_boxes) {
       DrawBoundingBox(dndata.world_bbox);
     }
   }
@@ -393,16 +436,16 @@ void DrawContext::DrawDrawGroup(DrawGroup* dgroup) {
 
 void DrawContext::DrawDrawNode(DrawNode* draw_node) {
   for (const Drawable::Ptr& drawable : draw_node->Drawables()) {
-    geometry_ = drawable->Geometry();
-    material_ = drawable->Material();
-    shader_ = material_->Shader();
+    p_->geometry = drawable->Geometry();
+    p_->material = drawable->Material();
+    p_->shader = p_->material->Shader();
 
     // Activate the shader program
-    if (!shader_) {
+    if (!p_->shader) {
       continue;
     }
-    program_ = shader_->Program();
-    if (!program_) {
+    p_->program = p_->shader->Program();
+    if (!p_->program) {
       continue;
     }
 
@@ -420,22 +463,22 @@ void DrawContext::DrawDrawNode(DrawNode* draw_node) {
     }
 
     // Done. Release resources
-    program_->release();
+    p_->program->release();
 
     glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
   }
 }
 
 void DrawContext::ActivateMaterial() {
-  program_->bind();
+  p_->program->bind();
 
   glFrontFace(GL_CCW);
 
   // set OpenGL attributes based on material properties.
-  const bool mat_two_sided = material_->TwoSided();
-  if (mat_two_sided != gl_two_sided_) {
-    gl_two_sided_ = mat_two_sided;
-    if (gl_two_sided_) {
+  const bool mat_two_sided = p_->material->TwoSided();
+  if (mat_two_sided != p_->gl_two_sided) {
+    p_->gl_two_sided = mat_two_sided;
+    if (p_->gl_two_sided) {
       glDisable(GL_CULL_FACE);
     } else {
       glCullFace(GL_BACK);
@@ -443,58 +486,58 @@ void DrawContext::ActivateMaterial() {
     }
   }
 
-  const bool mat_depth_test = material_->DepthTest();
-  if (mat_depth_test != gl_depth_test_) {
-    gl_depth_test_ = mat_depth_test;
-    if (gl_depth_test_) {
+  const bool mat_depth_test = p_->material->DepthTest();
+  if (mat_depth_test != p_->gl_depth_test) {
+    p_->gl_depth_test = mat_depth_test;
+    if (p_->gl_depth_test) {
       glEnable(GL_DEPTH_TEST);
     } else {
       glDisable(GL_DEPTH_TEST);
     }
   }
 
-  const GLenum mat_depth_func = material_->DepthFunc();
-  if (mat_depth_func != gl_depth_func_) {
-    gl_depth_func_ = mat_depth_func;
-    glDepthFunc(gl_depth_func_);
+  const GLenum mat_depth_func = p_->material->DepthFunc();
+  if (mat_depth_func != p_->gl_depth_func) {
+    p_->gl_depth_func = mat_depth_func;
+    glDepthFunc(p_->gl_depth_func);
   }
 
-  const bool mat_depth_write = material_->DepthWrite();
-  if (gl_depth_write_ != mat_depth_write) {
-    gl_depth_write_ = mat_depth_write;
-    if (gl_depth_write_) {
+  const bool mat_depth_write = p_->material->DepthWrite();
+  if (p_->gl_depth_write != mat_depth_write) {
+    p_->gl_depth_write = mat_depth_write;
+    if (p_->gl_depth_write) {
       glDepthMask(GL_TRUE);
     } else {
       glDepthMask(GL_FALSE);
     }
   }
 
-  const bool mat_color_write = material_->ColorWrite();
-  if (gl_color_write_ != mat_color_write) {
-    gl_color_write_ = mat_color_write;
-    if (gl_color_write_) {
+  const bool mat_color_write = p_->material->ColorWrite();
+  if (p_->gl_color_write != mat_color_write) {
+    p_->gl_color_write = mat_color_write;
+    if (p_->gl_color_write) {
       glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
     } else {
       glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
     }
   }
 
-  const float mat_point_size = material_->PointSize();
-  if (gl_point_size_ != mat_point_size) {
-    gl_point_size_ = mat_point_size;
-    glPointSize(gl_point_size_);
+  const float mat_point_size = p_->material->PointSize();
+  if (p_->gl_point_size != mat_point_size) {
+    p_->gl_point_size = mat_point_size;
+    glPointSize(p_->gl_point_size);
   }
 
-  const float mat_line_width = material_->LineWidth();
-  if (gl_line_width_ != mat_line_width) {
-    gl_line_width_ = mat_line_width;
-    glLineWidth(gl_line_width_);
+  const float mat_line_width = p_->material->LineWidth();
+  if (p_->gl_line_width != mat_line_width) {
+    p_->gl_line_width = mat_line_width;
+    glLineWidth(p_->gl_line_width);
   }
 
-  const bool mat_blend = material_->Blend();
-  if (gl_blend_ != mat_blend) {
-    gl_blend_ = mat_blend;
-    if (gl_blend_) {
+  const bool mat_blend = p_->material->Blend();
+  if (p_->gl_blend != mat_blend) {
+    p_->gl_blend = mat_blend;
+    if (p_->gl_blend) {
       glEnable(GL_BLEND);
     } else {
       glDisable(GL_BLEND);
@@ -503,44 +546,44 @@ void DrawContext::ActivateMaterial() {
 
   GLenum mat_sfactor;
   GLenum mat_dfactor;
-  material_->BlendFunc(&mat_sfactor, &mat_dfactor);
-  if (gl_sfactor_ != mat_sfactor || gl_dfactor_ != mat_dfactor) {
-    gl_sfactor_ = mat_sfactor;
-    gl_dfactor_ = mat_dfactor;
-    glBlendFunc(gl_sfactor_, gl_dfactor_);
+  p_->material->BlendFunc(&mat_sfactor, &mat_dfactor);
+  if (p_->gl_sfactor != mat_sfactor || p_->gl_dfactor != mat_dfactor) {
+    p_->gl_sfactor = mat_sfactor;
+    p_->gl_dfactor = mat_dfactor;
+    glBlendFunc(p_->gl_sfactor, p_->gl_dfactor);
   }
 
   // Set shader standard variables
-  const ShaderStandardVariables& locs = shader_->StandardVariables();
-  const QMatrix4x4 proj_mat = cur_camera_->GetProjectionMatrix();
-  const QMatrix4x4 view_mat = cur_camera_->GetViewMatrix();
+  const ShaderStandardVariables& locs = p_->shader->StandardVariables();
+  const QMatrix4x4 proj_mat = p_->cur_camera->GetProjectionMatrix();
+  const QMatrix4x4 view_mat = p_->cur_camera->GetViewMatrix();
 
   // Set uniform variables
   if (locs.sv_proj_mat >= 0) {
-    program_->setUniformValue(locs.sv_proj_mat, proj_mat);
+    p_->program->setUniformValue(locs.sv_proj_mat, proj_mat);
   }
   if (locs.sv_view_mat >= 0) {
-    program_->setUniformValue(locs.sv_view_mat, view_mat);
+    p_->program->setUniformValue(locs.sv_view_mat, view_mat);
   }
   if (locs.sv_view_mat_inv >= 0) {
-    program_->setUniformValue(locs.sv_view_mat_inv, view_mat.inverted());
+    p_->program->setUniformValue(locs.sv_view_mat_inv, view_mat.inverted());
   }
   if (locs.sv_model_mat >= 0) {
-    program_->setUniformValue(locs.sv_model_mat, model_mat_);
+    p_->program->setUniformValue(locs.sv_model_mat, p_->model_mat);
   }
   if (locs.sv_mvp_mat >= 0) {
-    program_->setUniformValue(locs.sv_mvp_mat,
-                              proj_mat * view_mat * model_mat_);
+    p_->program->setUniformValue(locs.sv_mvp_mat,
+                              proj_mat * view_mat * p_->model_mat);
   }
   if (locs.sv_mv_mat >= 0) {
-    program_->setUniformValue(locs.sv_mv_mat, view_mat * model_mat_);
+    p_->program->setUniformValue(locs.sv_mv_mat, view_mat * p_->model_mat);
   }
   if (locs.sv_model_normal_mat >= 0) {
-    program_->setUniformValue(locs.sv_model_normal_mat,
-                              model_mat_.normalMatrix());
+    p_->program->setUniformValue(locs.sv_model_normal_mat,
+                              p_->model_mat.normalMatrix());
   }
 
-  const std::vector<LightNode*>& lights = scene_->Lights();
+  const std::vector<LightNode*>& lights = p_->scene->Lights();
   int num_lights = lights.size();
   if (num_lights > kShaderMaxLights) {
     printf("Too many lights. Max: %d\n", kShaderMaxLights);
@@ -554,58 +597,58 @@ void DrawContext::ActivateMaterial() {
 
     if (light_loc.is_directional >= 0) {
       const bool is_directional = light_type == LightType::kDirectional;
-      program_->setUniformValue(light_loc.is_directional, is_directional);
+      p_->program->setUniformValue(light_loc.is_directional, is_directional);
     }
 
     if (light_loc.direction >= 0) {
       const QVector3D light_dir = light_node->Direction();
-      program_->setUniformValue(light_loc.direction, light_dir);
+      p_->program->setUniformValue(light_loc.direction, light_dir);
     }
 
     if (light_loc.position >= 0) {
       const QVector3D light_pos = light_node->Translation();
-      program_->setUniformValue(light_loc.position, light_pos);
+      p_->program->setUniformValue(light_loc.position, light_pos);
     }
 
     if (light_loc.ambient >= 0) {
       const float ambient = light_node->Ambient();
-      program_->setUniformValue(light_loc.ambient, ambient);
+      p_->program->setUniformValue(light_loc.ambient, ambient);
     }
 
     if (light_loc.specular >= 0) {
       const float specular = light_node->Specular();
-      program_->setUniformValue(light_loc.specular, specular);
+      p_->program->setUniformValue(light_loc.specular, specular);
     }
 
     if (light_loc.color >= 0) {
       const QVector3D color = light_node->Color();
-      program_->setUniformValue(light_loc.color, color);
+      p_->program->setUniformValue(light_loc.color, color);
     }
 
     if (light_loc.attenuation >= 0) {
       const float attenuation = light_node->Attenuation();
-      program_->setUniformValue(light_loc.attenuation, attenuation);
+      p_->program->setUniformValue(light_loc.attenuation, attenuation);
     }
 
     if (light_loc.cone_angle >= 0) {
       const float cone_angle = light_node->ConeAngle() * M_PI / 180;
-      program_->setUniformValue(light_loc.cone_angle, cone_angle);
+      p_->program->setUniformValue(light_loc.cone_angle, cone_angle);
     }
   }
 
   // Load shader uniform variables from the material
-  for (auto& item : material_->ShaderParameters()) {
+  for (auto& item : p_->material->ShaderParameters()) {
     ShaderUniform& uniform = item.second;
-    uniform.LoadToProgram(program_);
+    uniform.LoadToProgram(p_->program);
   }
 
   // Load textures
   unsigned int texunit = 0;
-  for (auto& item : material_->GetTextures()) {
+  for (auto& item : p_->material->GetTextures()) {
     const QString& texname = item.first;
     const std::shared_ptr<QOpenGLTexture>& texture = item.second;
     texture->bind(texunit);
-    program_->setUniformValue(texname.toStdString().c_str(), texunit);
+    p_->program->setUniformValue(texname.toStdString().c_str(), texunit);
   }
 }
 
@@ -626,50 +669,50 @@ static void SetupAttributeArray(QOpenGLShaderProgram* program, int location,
 
 void DrawContext::DrawGeometry() {
   // Load geometry and bind a vertex buffer
-  QOpenGLBuffer* vbo = geometry_->VBO();
+  QOpenGLBuffer* vbo = p_->geometry->VBO();
   vbo->bind();
 
   // Load per-vertex attribute arrays
-  const ShaderStandardVariables& locs = shader_->StandardVariables();
-  SetupAttributeArray(program_, locs.sv_vert_pos, geometry_->NumVertices(),
-                      GL_FLOAT, geometry_->VertexOffset(), 3);
-  SetupAttributeArray(program_, locs.sv_normal, geometry_->NumNormals(),
-                      GL_FLOAT, geometry_->NormalOffset(), 3);
-  SetupAttributeArray(program_, locs.sv_diffuse, geometry_->NumDiffuse(),
-                      GL_FLOAT, geometry_->DiffuseOffset(), 4);
-  SetupAttributeArray(program_, locs.sv_specular, geometry_->NumSpecular(),
-                      GL_FLOAT, geometry_->SpecularOffset(), 4);
-  SetupAttributeArray(program_, locs.sv_shininess, geometry_->NumShininess(),
-                      GL_FLOAT, geometry_->ShininessOffset(), 1);
-  SetupAttributeArray(program_, locs.sv_tex_coords_0,
-                      geometry_->NumTexCoords0(), GL_FLOAT,
-                      geometry_->TexCoords0Offset(), 2);
+  const ShaderStandardVariables& locs = p_->shader->StandardVariables();
+  SetupAttributeArray(p_->program, locs.sv_vert_pos, p_->geometry->NumVertices(),
+                      GL_FLOAT, p_->geometry->VertexOffset(), 3);
+  SetupAttributeArray(p_->program, locs.sv_normal, p_->geometry->NumNormals(),
+                      GL_FLOAT, p_->geometry->NormalOffset(), 3);
+  SetupAttributeArray(p_->program, locs.sv_diffuse, p_->geometry->NumDiffuse(),
+                      GL_FLOAT, p_->geometry->DiffuseOffset(), 4);
+  SetupAttributeArray(p_->program, locs.sv_specular, p_->geometry->NumSpecular(),
+                      GL_FLOAT, p_->geometry->SpecularOffset(), 4);
+  SetupAttributeArray(p_->program, locs.sv_shininess, p_->geometry->NumShininess(),
+                      GL_FLOAT, p_->geometry->ShininessOffset(), 1);
+  SetupAttributeArray(p_->program, locs.sv_tex_coords_0,
+                      p_->geometry->NumTexCoords0(), GL_FLOAT,
+                      p_->geometry->TexCoords0Offset(), 2);
 
   // TODO load custom attribute arrays
 
   // Draw the geometry
-  QOpenGLBuffer* index_buffer = geometry_->IndexBuffer();
+  QOpenGLBuffer* index_buffer = p_->geometry->IndexBuffer();
   if (index_buffer) {
     index_buffer->bind();
-    glDrawElements(geometry_->GLMode(), geometry_->NumIndices(),
-                   geometry_->IndexType(), 0);
+    glDrawElements(p_->geometry->GLMode(), p_->geometry->NumIndices(),
+                   p_->geometry->IndexType(), 0);
     index_buffer->release();
   } else {
-    glDrawArrays(geometry_->GLMode(), 0, geometry_->NumVertices());
+    glDrawArrays(p_->geometry->GLMode(), 0, p_->geometry->NumVertices());
   }
   vbo->release();
 }
 
 void DrawContext::DrawBoundingBox(const AxisAlignedBox& box) {
-  if (!bounding_box_node_) {
-    StockResources stock(resources_);
+  if (!p_->bounding_box_node) {
+    StockResources stock(p_->resources);
     ShaderResource::Ptr shader =
         stock.Shader(StockResources::kUniformColorNoLighting);
 
-    MaterialResource::Ptr material = resources_->MakeMaterial(shader);
+    MaterialResource::Ptr material = p_->resources->MakeMaterial(shader);
     material->SetParam("color", 0.0f, 1.0f, 0.0f, 1.0f);
 
-    GeometryResource::Ptr geometry = resources_->MakeGeometry();
+    GeometryResource::Ptr geometry = p_->resources->MakeGeometry();
     GeometryData gdata;
     gdata.gl_mode = GL_LINES;
     gdata.vertices = {
@@ -681,18 +724,18 @@ void DrawContext::DrawBoundingBox(const AxisAlignedBox& box) {
                      6, 7, 7, 4, 0, 4, 1, 5, 2, 6, 3, 7};
     geometry->Load(gdata);
 
-    bounding_box_node_ = scene_->MakeDrawNode(nullptr);
-    bounding_box_node_->Add(geometry, material);
+    p_->bounding_box_node = p_->scene->MakeDrawNode(nullptr);
+    p_->bounding_box_node->Add(geometry, material);
 
     // hack to prevent the bounding box to appear during normal rendering
-    bounding_box_node_->SetVisible(false);
+    p_->bounding_box_node->SetVisible(false);
   }
 
-  bounding_box_node_->SetScale(box.Max() - box.Min());
-  bounding_box_node_->SetTranslation(box.Min());
-  model_mat_ = bounding_box_node_->WorldTransform();
+  p_->bounding_box_node->SetScale(box.Max() - box.Min());
+  p_->bounding_box_node->SetTranslation(box.Min());
+  p_->model_mat = p_->bounding_box_node->WorldTransform();
 
-  DrawDrawNode(bounding_box_node_);
+  DrawDrawNode(p_->bounding_box_node);
 }
 
 }  // namespace sv

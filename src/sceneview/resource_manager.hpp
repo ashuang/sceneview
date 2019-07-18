@@ -40,6 +40,8 @@ class ResourceManager {
     static const QString kAutoName;
 
   public:
+    virtual ~ResourceManager();
+
     static Ptr Create();
 
     /**
@@ -123,13 +125,8 @@ class ResourceManager {
     QString PickName(const QString& name);
     bool NameExists(const QString& name);
 
-    std::map<QString, MaterialResourceWeakPtr> materials_;
-    std::map<QString, ShaderResourceWeakPtr> shaders_;
-    std::map<QString, GeometryResourceWeakPtr> geometries_;
-    std::map<QString, SceneWeakPtr> scenes_;
-    std::map<QString, FontResourceWeakPtr> fonts_;
-
-    int64_t name_counter_;
+    struct Priv;
+    Priv* p_;
 };
 
 }  // namespace sv

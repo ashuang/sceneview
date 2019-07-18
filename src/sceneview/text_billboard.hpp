@@ -112,7 +112,7 @@ class TextBillboard {
 
     void SetYDirection(YDirection direction);
 
-    GroupNode* Node() { return node_; }
+    GroupNode* Node();
 
   private:
     TextBillboard(Viewport* viewport,
@@ -120,35 +120,8 @@ class TextBillboard {
 
     void Recompute();
 
-    Viewport* viewport_;
-    ResourceManager::Ptr resources_;
-    Scene::Ptr scene_;
-
-    GroupNode* parent_;
-    GroupNode* node_;
-
-    FontResource::Ptr font_resource_;
-    MaterialResource::Ptr bg_material_;
-    GeometryResource::Ptr rect_geom_;
-    MaterialResource::Ptr text_material_;
-    GeometryResource::Ptr text_geom_;
-    DrawNode* draw_node_;
-
-    VAlignment v_align_;
-    HAlignment h_align_;
-    float line_height_;
-    YDirection y_dir_ = kNegative;
-
-    float margin_top_;
-    float margin_left_;
-    float margin_bottom_;
-    float margin_right_;
-
-    QFont qfont_;
-    std::string text_;
-
-    TextBillboardDrawable* bg_drawable_;
-    TextBillboardDrawable* text_drawable_;
+    struct Priv;
+    Priv* p_;
 };
 
 }  // namespace sv

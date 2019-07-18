@@ -19,12 +19,21 @@
 
 namespace sv {
 
+struct ParamWidget::Priv {
+  QVBoxLayout* layout;
+
+  std::map<QString, QWidget*> widgets;
+};
+
 ParamWidget::ParamWidget(QWidget* parent) :
- layout_(new QVBoxLayout(this)),
- widgets_() {
-  layout_->setSpacing(0);
-  layout_->setContentsMargins(2, 2, 2, 2);
+  QWidget(parent),
+  p_(new Priv) {
+ p_->layout = new QVBoxLayout(this);
+  p_->layout->setSpacing(0);
+  p_->layout->setContentsMargins(2, 2, 2, 2);
 }
+
+ParamWidget::~ParamWidget() { delete p_; }
 
 void ParamWidget::AddEnum(const QString& name,
     const EnumVector& items,
@@ -50,7 +59,7 @@ void ParamWidget::AddEnum(const QString& name,
   if (!found_initial_value) {
     throw std::invalid_argument("Invalid initial value");
   }
-  widgets_[name] = combobox;
+  p_->widgets[name] = combobox;
   AddLabeledRow(name, combobox);
   connect(combobox,
       static_cast<void(QComboBox::*)(int)>(&QComboBox::activated),
@@ -85,14 +94,14 @@ void ParamWidget::AddBooleans(const std::vector<BoolItem>& to_add,
     }
     checkbox->setProperty("param_widget_type", kParamBool);
 
-    widgets_[item.name] = checkbox;
+    p_->widgets[item.name] = checkbox;
     hbox->addWidget(checkbox);
 
     connect(checkbox, &QCheckBox::stateChanged,
         [this, item](int val) { emit ParamChanged(item.name); });
   }
 
-  layout_->addWidget(row_widget);
+  p_->layout->addWidget(row_widget);
 }
 
 void ParamWidget::AddInt(const QString& name,
@@ -106,7 +115,7 @@ void ParamWidget::AddInt(const QString& name,
     spinbox->setSingleStep(step);
     spinbox->setValue(initial_value);
     spinbox->setProperty("param_widget_type", kParamInt);
-    widgets_[name] = spinbox;
+    p_->widgets[name] = spinbox;
     AddLabeledRow(name, spinbox);
     connect(spinbox,
         static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged),
@@ -126,8 +135,8 @@ void ParamWidget::AddInt(const QString& name,
     row_hbox->addWidget(new QLabel(name, this));
     row_hbox->addWidget(slider);
     row_hbox->addWidget(label);
-    widgets_[name] = slider;
-    layout_->addWidget(row_widget);
+    p_->widgets[name] = slider;
+    p_->layout->addWidget(row_widget);
     connect(slider, &QSlider::valueChanged,
         [this, name, label](int value) {
           label->setText(QString::number(value));
@@ -149,7 +158,7 @@ void ParamWidget::AddDouble(const QString& name,
     spinbox->setSingleStep(step);
     spinbox->setValue(initial_value);
     spinbox->setProperty("param_widget_type", kParamDouble);
-    widgets_[name] = spinbox;
+    p_->widgets[name] = spinbox;
     AddLabeledRow(name, spinbox);
     connect(spinbox,
         static_cast<void(QDoubleSpinBox::*)(double)>(
@@ -176,8 +185,8 @@ void ParamWidget::AddDouble(const QString& name,
     row_hbox->addWidget(new QLabel(name, this));
     row_hbox->addWidget(slider);
     row_hbox->addWidget(label);
-    widgets_[name] = slider;
-    layout_->addWidget(row_widget);
+    p_->widgets[name] = slider;
+    p_->layout->addWidget(row_widget);
     slider->setProperty("param_widget_label", QVariant::fromValue(label));
     label->setProperty("format_str", "");
     connect(slider, &QSlider::valueChanged,
@@ -213,9 +222,9 @@ void ParamWidget::AddPushButtons(const std::vector<QString>& names) {
     hbox->addWidget(button);
     connect(button, &QPushButton::clicked,
         [this, name](bool ignored) { emit ParamChanged(name); });
-    widgets_[name] = button;
+    p_->widgets[name] = button;
   }
-  layout_->addWidget(row_widget);
+  p_->layout->addWidget(row_widget);
 }
 
 void ParamWidget::AddString(const QString& name, const QString& initial_value) {
@@ -224,8 +233,8 @@ void ParamWidget::AddString(const QString& name, const QString& initial_value) {
   row_hbox->addWidget(new QLabel(name, this));
   QLineEdit* ledit = new QLineEdit(initial_value, this);
   row_hbox->addWidget(ledit);
-  widgets_[name] = ledit;
-  layout_->addWidget(row_widget);
+  p_->widgets[name] = ledit;
+  p_->layout->addWidget(row_widget);
   connect(ledit, &QLineEdit::editingFinished,
           [this, name]() { emit ParamChanged(name); });
 }
@@ -393,7 +402,7 @@ void ParamWidget::SetPrecision(const QString& name, int digits, int decimal_plac
 QVariant ParamWidget::SaveState() {
   QMap<QString, QVariant> data;
 
-  for (auto& item : widgets_) {
+  for (auto& item : p_->widgets) {
     const QString& name = item.first;
     const QString qname = name;
     QWidget* widget = item.second;
@@ -424,7 +433,7 @@ QVariant ParamWidget::SaveState() {
 void ParamWidget::LoadState(const QVariant& variant) {
   QMap<QString, QVariant> data = variant.toMap();
 
-  for (auto& item : widgets_) {
+  for (auto& item : p_->widgets) {
     const QString& name = item.first;
     const QString qname = name;
     QWidget* widget = item.second;
@@ -466,7 +475,7 @@ void ParamWidget::SetEnabled(const QString& name, bool enabled) {
 }
 
 void ParamWidget::ExpectNameNotFound(const QString& name) {
-  if (widgets_.find(name) != widgets_.end()) {
+  if (p_->widgets.find(name) != p_->widgets.end()) {
     throw std::invalid_argument("Duplicate parameter name " +
         name.toStdString());
   }
@@ -478,12 +487,12 @@ void ParamWidget::AddLabeledRow(const QString& name, QWidget* widget) {
   QHBoxLayout* hboxlayout = new QHBoxLayout(row_widget);
   hboxlayout->addWidget(label);
   hboxlayout->addWidget(widget);
-  layout_->addWidget(row_widget);
+  p_->layout->addWidget(row_widget);
 }
 
 QWidget* ParamWidget::GetWidget(const QString& name) {
-  auto iter = widgets_.find(name);
-  if (iter == widgets_.end()) {
+  auto iter = p_->widgets.find(name);
+  if (iter == p_->widgets.end()) {
     throw std::invalid_argument("No such parameter name " + name.toStdString());
   }
   return iter->second;

@@ -11,10 +11,19 @@
 
 namespace sv {
 
+struct InputHandlerWidgetStack::Priv {
+  Viewport* viewport;
+
+  QStackedWidget* stack;
+  QVBoxLayout* layout;
+
+  std::vector<HandlerData> handler_data;
+};
+
 InputHandlerWidgetStack::InputHandlerWidgetStack(Viewport* viewport,
-    QWidget* parent) :
-  QDockWidget(parent),
-  viewport_(viewport) {
+                                                 QWidget* parent)
+    : QDockWidget(parent), p_(new Priv) {
+  p_->viewport = viewport;
   setObjectName("sceneview/input_handler_stack");
 
   setWindowTitle("Input");
@@ -22,26 +31,28 @@ InputHandlerWidgetStack::InputHandlerWidgetStack(Viewport* viewport,
   // Setup the widget
   QWidget* container = new QWidget(this);
   setWidget(container);
-  layout_ = new QVBoxLayout(container);
-  stack_ = new QStackedWidget(this);
-  layout_->addWidget(stack_);
+  p_->layout = new QVBoxLayout(container);
+  p_->stack = new QStackedWidget(this);
+  p_->layout->addWidget(p_->stack);
 
-  for (InputHandler* handler : viewport_->GetInputHandlers()) {
+  for (InputHandler* handler : p_->viewport->GetInputHandlers()) {
     AddInputHandler(handler);
   }
 
-  connect(viewport_, &Viewport::InputHandlerActivated,
-      this, &InputHandlerWidgetStack::OnInputHandlerActivated);
+  connect(p_->viewport, &Viewport::InputHandlerActivated, this,
+          &InputHandlerWidgetStack::OnInputHandlerActivated);
 
-  connect(viewport_, &Viewport::InputHandlerAdded,
-      this, &InputHandlerWidgetStack::AddInputHandler);
+  connect(p_->viewport, &Viewport::InputHandlerAdded, this,
+          &InputHandlerWidgetStack::AddInputHandler);
 }
 
+InputHandlerWidgetStack::~InputHandlerWidgetStack() { delete p_; }
+
 void InputHandlerWidgetStack::AddInputHandler(InputHandler* handler) {
-  for (const HandlerData& hdata : handler_data_) {
+  for (const HandlerData& hdata : p_->handler_data) {
     if (handler->Name() == hdata.handler->Name()) {
       throw std::invalid_argument("Duplicate input handlers named " +
-          handler->Name().toStdString());
+                                  handler->Name().toStdString());
     }
   }
 
@@ -51,22 +62,22 @@ void InputHandlerWidgetStack::AddInputHandler(InputHandler* handler) {
   }
 
   HandlerData hdata;
-  hdata.stack_index = stack_->addWidget(widget);
+  hdata.stack_index = p_->stack->addWidget(widget);
   hdata.handler = handler;
 
-  handler_data_.push_back(hdata);
+  p_->handler_data.push_back(hdata);
 }
 
 void InputHandlerWidgetStack::OnInputHandlerActivated(InputHandler* handler) {
   setWindowTitle("Input (" + handler->Name() + ")");
 
   HandlerData* hdata = GetHandlerData(handler);
-  stack_->setCurrentIndex(hdata->stack_index);
+  p_->stack->setCurrentIndex(hdata->stack_index);
 }
 
 InputHandlerWidgetStack::HandlerData* InputHandlerWidgetStack::GetHandlerData(
     InputHandler* handler) {
-  for (HandlerData& hdata : handler_data_) {
+  for (HandlerData& hdata : p_->handler_data) {
     if (hdata.handler == handler) {
       return &hdata;
     }

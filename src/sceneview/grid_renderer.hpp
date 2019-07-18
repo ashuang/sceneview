@@ -22,6 +22,8 @@ class GridRenderer : public Renderer {
   public:
     explicit GridRenderer(const QString& name, QObject* parent = 0);
 
+    virtual ~GridRenderer();
+
     void InitializeGL() override;
 
     void RenderBegin() override;
@@ -29,17 +31,9 @@ class GridRenderer : public Renderer {
   private:
     void UpdateGeometry();
 
-    MaterialResource::Ptr base_material_;
-    MaterialResource::Ptr grid_material_;
-    MaterialResource::Ptr depth_write_material_;
+    struct Priv;
 
-    GeometryResource::Ptr grid_geom_;
-    GeometryResource::Ptr base_geom_;
-    DrawNode* draw_node_;
-
-    int grid_size_;
-
-    GeometryData gdata_;
+    Priv* p_;
 };
 
 }  // namespace sv

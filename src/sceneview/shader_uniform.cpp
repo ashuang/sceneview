@@ -7,61 +7,75 @@
 
 namespace sv {
 
-ShaderUniform::ShaderUniform() :
-  name_(),
-  type_(Type::kInvalid),
-  location_(-1) {}
+struct ShaderUniform::Priv {
+  QString name;
+  Type type;
+  int location;
+  Value value;
+};
 
-ShaderUniform::ShaderUniform(const QString& name) :
-  name_(name),
-  type_(Type::kInvalid),
-  location_(-1) {
+ShaderUniform::ShaderUniform() : p_(new Priv) {
+  p_->type = Type::kInvalid;
+  p_->location = -1;
+}
+
+ShaderUniform::ShaderUniform(const QString& name) : p_(new Priv) {
+  p_->name = name;
+  p_->type = Type::kInvalid;
+  p_->location = -1;
 }
 
 ShaderUniform::~ShaderUniform() {
   Clear();
+  delete p_;
 }
+
+void ShaderUniform::SetLocation(int location) { p_->location = location; }
+
+int ShaderUniform::Location() const { return p_->location; }
+
+ShaderUniform::Type ShaderUniform::ParamType() const { return p_->type; }
 
 void ShaderUniform::Set(int val) {
   Clear();
-  type_ = Type::kInt;
-  new(&(value_.int_data)) IntVec({val});
+  p_->type = Type::kInt;
+  new (&(p_->value.int_data)) IntVec({val});
 }
 
 void ShaderUniform::Set(const std::vector<int>& val) {
   Clear();
-  type_ = Type::kInt;
-  new(&(value_.int_data)) IntVec(val);
+  p_->type = Type::kInt;
+  new (&(p_->value.int_data)) IntVec(val);
 }
 
 void ShaderUniform::Set(float val) {
   Clear();
-  type_ = Type::kFloat;
-  new(&(value_.float_data)) FloatVec({val});
+  p_->type = Type::kFloat;
+  new (&(p_->value.float_data)) FloatVec({val});
 }
 
 void ShaderUniform::Set(const std::vector<float>& val) {
   Clear();
-  type_ = Type::kFloat;
-  new(&(value_.float_data)) FloatVec(val);
+  p_->type = Type::kFloat;
+  new (&(p_->value.float_data)) FloatVec(val);
 }
 
 void ShaderUniform::Set(const QMatrix4x4& val) {
   Clear();
-  type_ = Type::kMat4f;
-  new(&(value_.mat4f)) QMatrix4x4(val);
+  p_->type = Type::kMat4f;
+  new (&(p_->value.mat4f)) QMatrix4x4(val);
 }
 
 void ShaderUniform::Clear() {
-  switch (type_) {
+  switch (p_->type) {
     case Type::kFloat:
-      value_.float_data.~FloatVec();
+      p_->value.float_data.~FloatVec();
       break;
     case Type::kInt:
-      value_.int_data.~IntVec();
+      p_->value.int_data.~IntVec();
       break;
     case Type::kMat4f:
-      value_.mat4f.~QMatrix4x4();
+      p_->value.mat4f.~QMatrix4x4();
       break;
     case Type::kInvalid:
     default:
@@ -70,61 +84,57 @@ void ShaderUniform::Clear() {
 }
 
 void ShaderUniform::LoadToProgram(QOpenGLShaderProgram* program) {
-  if (location_ < 0) {
-    location_ = program->uniformLocation(name_);
-    if (location_ < 0) {
+  if (p_->location < 0) {
+    p_->location = program->uniformLocation(p_->name);
+    if (p_->location < 0) {
       printf("Warning: Unable to find uniform %s\n",
-          name_.toStdString().c_str());
+             p_->name.toStdString().c_str());
       return;
     }
   }
 
-  switch (type_) {
-    case Type::kFloat:
-      {
-        const FloatVec& vec = value_.float_data;
-        switch (vec.size()) {
-          case 1:
-            glUniform1f(location_, vec[0]);
-            break;
-          case 2:
-            glUniform2fv(location_, 1, vec.data());
-            break;
-          case 3:
-            glUniform3fv(location_, 1, vec.data());
-            break;
-          case 4:
-            glUniform4fv(location_, 1, vec.data());
-            break;
-          default:
-            break;
-        }
+  switch (p_->type) {
+    case Type::kFloat: {
+      const FloatVec& vec = p_->value.float_data;
+      switch (vec.size()) {
+        case 1:
+          glUniform1f(p_->location, vec[0]);
+          break;
+        case 2:
+          glUniform2fv(p_->location, 1, vec.data());
+          break;
+        case 3:
+          glUniform3fv(p_->location, 1, vec.data());
+          break;
+        case 4:
+          glUniform4fv(p_->location, 1, vec.data());
+          break;
+        default:
+          break;
       }
-      break;
-    case Type::kInt:
-      {
-        const IntVec& vec = value_.int_data;
-        switch (vec.size()) {
-          case 1:
-            glUniform1i(location_, vec[0]);
-            break;
-          case 2:
-            glUniform2iv(location_, 1, vec.data());
-            break;
-          case 3:
-            glUniform3iv(location_, 1, vec.data());
-            break;
-          case 4:
-            glUniform4iv(location_, 1, vec.data());
-            break;
-          default:
-            break;
-        }
+    } break;
+    case Type::kInt: {
+      const IntVec& vec = p_->value.int_data;
+      switch (vec.size()) {
+        case 1:
+          glUniform1i(p_->location, vec[0]);
+          break;
+        case 2:
+          glUniform2iv(p_->location, 1, vec.data());
+          break;
+        case 3:
+          glUniform3iv(p_->location, 1, vec.data());
+          break;
+        case 4:
+          glUniform4iv(p_->location, 1, vec.data());
+          break;
+        default:
+          break;
       }
-      break;
+    } break;
     case Type::kMat4f:
-      glUniformMatrix4fv(location_, 1, GL_FALSE,
-          value_.mat4f.constData());
+      glUniformMatrix4fv(p_->location, 1, GL_FALSE,
+                         p_->value.mat4f.constData());
       break;
     case Type::kInvalid:
     default:
@@ -134,25 +144,24 @@ void ShaderUniform::LoadToProgram(QOpenGLShaderProgram* program) {
   GLenum gl_err = glGetError();
   if (gl_err != GL_NO_ERROR) {
     printf("Error loading shader uniform %s: %s\n",
-        name_.toStdString().c_str(),
-        sv::glErrorString(gl_err));
+           p_->name.toStdString().c_str(), sv::glErrorString(gl_err));
   }
 }
 
 ShaderUniform& ShaderUniform::operator=(const ShaderUniform& other) {
   Clear();
-  name_ = other.name_;
-  type_ = other.type_;
-  location_ = other.location_;
-  switch (type_) {
+  p_->name = other.p_->name;
+  p_->type = other.p_->type;
+  p_->location = other.p_->location;
+  switch (p_->type) {
     case Type::kInt:
-      new(&(value_.int_data)) IntVec(other.value_.int_data);
+      new (&(p_->value.int_data)) IntVec(other.p_->value.int_data);
       break;
     case Type::kFloat:
-      new(&(value_.float_data)) FloatVec(other.value_.float_data);
+      new (&(p_->value.float_data)) FloatVec(other.p_->value.float_data);
       break;
     case Type::kMat4f:
-      new(&(value_.mat4f)) QMatrix4x4(other.value_.mat4f);
+      new (&(p_->value.mat4f)) QMatrix4x4(other.p_->value.mat4f);
       break;
     case Type::kInvalid:
     default:

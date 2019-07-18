@@ -30,6 +30,8 @@ class RendererWidgetStack : public QDockWidget {
   public:
     explicit RendererWidgetStack(QWidget* parent = nullptr);
 
+    virtual ~RendererWidgetStack();
+
     /**
      * Retrieve the expander widget for the corresponding renderer.
      *
@@ -44,9 +46,8 @@ class RendererWidgetStack : public QDockWidget {
     void AddRendererWidget(Renderer* renderer);
 
   private:
-    QScrollArea* area_;
-    QWidget* container_;
-    QVBoxLayout* layout_;
+    struct Priv;
+    Priv* p_;
 };
 
 }  // namespace sv

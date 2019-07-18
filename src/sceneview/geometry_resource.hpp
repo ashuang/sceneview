@@ -119,49 +119,49 @@ class GeometryResource {
      */
     void Load(const GeometryData& data);
 
-    QOpenGLBuffer* VBO() { return &vbo_; }
+    QOpenGLBuffer* VBO();
 
     QOpenGLBuffer* IndexBuffer();
 
-    int VertexOffset() const { return vertex_offset_; }
+    int VertexOffset() const;
 
-    int NumVertices() const { return num_vertices_; }
+    int NumVertices() const;
 
-    int NormalOffset() const { return normal_offset_; }
+    int NormalOffset() const;
 
-    int NumNormals() const { return num_normals_; }
+    int NumNormals() const;
 
-    int DiffuseOffset() const { return diffuse_offset_; }
+    int DiffuseOffset() const;
 
-    int NumDiffuse() const { return num_diffuse_; }
+    int NumDiffuse() const;
 
-    int NumSpecular() const { return num_specular_; }
+    int NumSpecular() const;
 
-    int SpecularOffset() const { return specular_offset_; }
+    int SpecularOffset() const;
 
-    int NumShininess() const { return num_shininess_; }
+    int NumShininess() const;
 
-    int ShininessOffset() const { return shininess_offset_; }
+    int ShininessOffset() const;
 
-    int TexCoords0Offset() const { return tex_coords_0_offset_; }
+    int TexCoords0Offset() const;
 
-    int NumTexCoords0() const { return num_tex_coords_0_; }
+    int NumTexCoords0() const;
 
-    int NumIndices() const { return num_indices_; }
+    int NumIndices() const;
 
     /**
      * Returns the type parameter to pass to glDrawElements()
      * Either GL_UNSIGNED_BYTE, GL_UNSIGNED_SHORT, or GL_UNSIGNED_INT
      */
-    GLenum IndexType() const { return index_type_; }
+    GLenum IndexType() const;
 
     /**
      * What kind of primitives are in this geometry (GL_POINTS, GL_LINE_STRIP,
      * ...)
      */
-    GLenum GLMode() const { return gl_mode_; }
+    GLenum GLMode() const;
 
-    const AxisAlignedBox& BoundingBox() const { return bounding_box_; }
+    const AxisAlignedBox& BoundingBox() const;
 
   private:
     friend class ResourceManager;
@@ -174,35 +174,9 @@ class GeometryResource {
 
     void RemoveListener(Drawable* drawable);
 
-    const QString name_;
+    struct Priv;
 
-    // Vertex buffer to hold the data in graphics memory
-    bool created_vbo_;
-    QOpenGLBuffer vbo_;
-    QOpenGLBuffer index_buffer_;
-
-    int vertex_offset_;
-    int normal_offset_;
-    int diffuse_offset_;
-    int specular_offset_;
-    int shininess_offset_;
-    int tex_coords_0_offset_;
-
-    int num_vertices_;
-    int num_normals_;
-    int num_diffuse_;
-    int num_specular_;
-    int num_shininess_;
-    int num_tex_coords_0_;
-
-    int num_indices_;
-
-    GLenum gl_mode_;
-    GLenum index_type_;
-
-    AxisAlignedBox bounding_box_;
-
-    std::vector<Drawable*> listeners_;
+    Priv* p_;
 };
 
 }  // namespace sv

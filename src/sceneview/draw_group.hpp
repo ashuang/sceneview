@@ -38,26 +38,28 @@ enum class NodeOrdering {
 
 class DrawGroup {
   public:
-    const QString& Name() const { return name_; }
+    virtual ~DrawGroup();
 
-    int Order() const { return order_; }
+    const QString& Name() const;
 
-    const std::unordered_set<DrawNode*>& DrawNodes() const { return nodes_; }
+    int Order() const;
+
+    const std::unordered_set<DrawNode*>& DrawNodes() const;
 
     /**
      * Sets the sorting method for drawing nodes in this draw group.
      */
-    void SetNodeOrdering(NodeOrdering ordering) { node_ordering_ = ordering; }
+    void SetNodeOrdering(NodeOrdering ordering);
 
-    NodeOrdering GetNodeOrdering() const { return node_ordering_; }
+    NodeOrdering GetNodeOrdering() const;
 
-    void SetFrustumCulling(bool value) { frustum_culling_ = value; }
+    void SetFrustumCulling(bool value);
 
-    bool GetFrustumCulling() const { return frustum_culling_; }
+    bool GetFrustumCulling() const;
 
-    void SetCamera(CameraNode* camera) { camera_ = camera; }
+    void SetCamera(CameraNode* camera);
 
-    CameraNode* GetCamera() { return camera_; }
+    CameraNode* GetCamera();
 
   private:
     friend class Scene;
@@ -68,17 +70,9 @@ class DrawGroup {
 
     void RemoveNode(DrawNode* node);
 
-    const QString name_;
+    class Priv;
 
-    const int order_;
-
-    NodeOrdering node_ordering_ = NodeOrdering::kBackToFront;
-
-    bool frustum_culling_ = true;
-
-    CameraNode* camera_ = nullptr;
-
-    std::unordered_set<DrawNode*> nodes_;
+    Priv* p_;
 };
 
 }  // namespace sv

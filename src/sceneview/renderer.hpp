@@ -8,8 +8,8 @@
 #include <QObject>
 #include <QVariant>
 
-#include <sceneview/scene.hpp>
 #include <sceneview/resource_manager.hpp>
+#include <sceneview/scene.hpp>
 
 namespace sv {
 
@@ -73,151 +73,150 @@ class Viewport;
 class Renderer : public QObject {
   Q_OBJECT
 
-  public:
-    /**
-     * Construct a new renderer with the specified name.
-     */
-    explicit Renderer(const QString& name, QObject* parent = 0);
+ public:
+  /**
+   * Construct a new renderer with the specified name.
+   */
+  explicit Renderer(const QString& name, QObject* parent = 0);
 
-    Renderer(const Renderer&) = delete;
+  virtual ~Renderer();
 
-    Renderer& operator=(const Renderer&) = delete;
+  Renderer(const Renderer&) = delete;
 
-    /**
-     * Retrieve the renderer name.
-     */
-    const QString& Name() const { return name_; }
+  Renderer& operator=(const Renderer&) = delete;
 
-    /**
-     * Retrieve the viewport that manages this renderer.
-     */
-    Viewport* GetViewport() { return viewport_; }
+  /**
+   * Retrieve the renderer name.
+   */
+  const QString& Name() const;
 
-    /**
-     * Retrieve the Scene graph used by the Sceneview rendering engine.
-     */
-    Scene::Ptr GetScene();
+  /**
+   * Retrieve the viewport that manages this renderer.
+   */
+  Viewport* GetViewport();
 
-    /**
-     * Retrieve the ResourceManager for the scene.
-     */
-    ResourceManager::Ptr GetResources();
+  /**
+   * Retrieve the Scene graph used by the Sceneview rendering engine.
+   */
+  Scene::Ptr GetScene();
 
-    /**
-     * Retrieve the group node assigned to this renderer.
-     *
-     * The visibility of the base node is automatically toggled when
-     * the renderer is enabled or disabled. Thus, any nodes that the renderer
-     * creates that have the base node as an ancestor have their visibility
-     * automatically managed by the base node.
-     */
-    GroupNode* GetBaseNode();
+  /**
+   * Retrieve the ResourceManager for the scene.
+   */
+  ResourceManager::Ptr GetResources();
 
-    /**
-     * Override to acquire OpenGL resources required by the Renderer.
-     *
-     * At the time this method is invoked, the following are true:
-     * - The OpenGL context is active.
-     * - The Renderer has a base node.
-     *
-     * It is guaranteed that this method will be called exactly once, and
-     * before any call to RenderBegin().
-     */
-    virtual void InitializeGL() {}
+  /**
+   * Retrieve the group node assigned to this renderer.
+   *
+   * The visibility of the base node is automatically toggled when
+   * the renderer is enabled or disabled. Thus, any nodes that the renderer
+   * creates that have the base node as an ancestor have their visibility
+   * automatically managed by the base node.
+   */
+  GroupNode* GetBaseNode();
 
-    /**
-     * Called at the start of rendering, just before the scene is rendered.
-     *
-     * When this method is called, the following are true:
-     * - No shader programs are active (i.e., glUseProgram(0) has been called)
-     * - The projection matrix (GL_PROJECTION) is setup according to the active
-     *   camera.
-     * - The modelview matrix stack has a single matrix on it that correspnods to
-     *   the camera view matrix.
-     * - The GL_MODELVIEW matrix stack is active.
-     * - OpenGL lights have been configured according to the lights in the
-     *   scene graph.
-     *
-     * In other words, the matrix stack is setup such that you can render in
-     * "world" coordinates.
-     *
-     * You can issue legacy fixed-function OpenGL commands (e.g., glColor3f(),
-     * glBegin(), glVertex3f(), etc. calls)
-     *
-     * You can also use your own vertex and fragment shaders.
-     */
-    virtual void RenderBegin() {}
+  /**
+   * Override to acquire OpenGL resources required by the Renderer.
+   *
+   * At the time this method is invoked, the following are true:
+   * - The OpenGL context is active.
+   * - The Renderer has a base node.
+   *
+   * It is guaranteed that this method will be called exactly once, and
+   * before any call to RenderBegin().
+   */
+  virtual void InitializeGL() {}
 
-    /**
-     * Called at the end of rendering, just after the scene has finished rendering.
-     *
-     * This method has the same guarantees as RenderBegin().
-     */
-    virtual void RenderEnd() {}
+  /**
+   * Called at the start of rendering, just before the scene is rendered.
+   *
+   * When this method is called, the following are true:
+   * - No shader programs are active (i.e., glUseProgram(0) has been called)
+   * - The projection matrix (GL_PROJECTION) is setup according to the active
+   *   camera.
+   * - The modelview matrix stack has a single matrix on it that correspnods to
+   *   the camera view matrix.
+   * - The GL_MODELVIEW matrix stack is active.
+   * - OpenGL lights have been configured according to the lights in the
+   *   scene graph.
+   *
+   * In other words, the matrix stack is setup such that you can render in
+   * "world" coordinates.
+   *
+   * You can issue legacy fixed-function OpenGL commands (e.g., glColor3f(),
+   * glBegin(), glVertex3f(), etc. calls)
+   *
+   * You can also use your own vertex and fragment shaders.
+   */
+  virtual void RenderBegin() {}
 
-    /**
-     * Override this to release any OpenGL resources acquired by the renderer.
-     *
-     * This method is called when the rendering engine is shutting down, just
-     * before the OpenGL context is destroyed.
-     */
-    virtual void ShutdownGL() {}
+  /**
+   * Called at the end of rendering, just after the scene has finished
+   * rendering.
+   *
+   * This method has the same guarantees as RenderBegin().
+   */
+  virtual void RenderEnd() {}
 
-    /**
-     * Override this to provide a custom UI for your renderer.
-     */
-    virtual QWidget* GetWidget() { return nullptr; }
+  /**
+   * Override this to release any OpenGL resources acquired by the renderer.
+   *
+   * This method is called when the rendering engine is shutting down, just
+   * before the OpenGL context is destroyed.
+   */
+  virtual void ShutdownGL() {}
 
-    /**
-     * @return true if the renderer is enabled, false if not.
-     *
-     * If the renderer is disabled, then RenderBegin() and RenderEnd() are not
-     * called during the render cycle. Additinally, the renderer's base node
-     * visibility is automatically set to match wheter or not the renderer is
-     * enabled.
-     */
-    bool Enabled() const { return enabled_; }
+  /**
+   * Override this to provide a custom UI for your renderer.
+   */
+  virtual QWidget* GetWidget() { return nullptr; }
 
-    /**
-     * Called by the viewport to save the renderer state. If your renderer has
-     * any adjustable settings that you want to persist, then save them into
-     * the returned QVariant.
-     */
-    virtual QVariant SaveState() { return QVariant(); }
+  /**
+   * @return true if the renderer is enabled, false if not.
+   *
+   * If the renderer is disabled, then RenderBegin() and RenderEnd() are not
+   * called during the render cycle. Additinally, the renderer's base node
+   * visibility is automatically set to match wheter or not the renderer is
+   * enabled.
+   */
+  bool Enabled() const;
 
-    /**
-     * Called by the viewport to restore the renderer state. If your renderer
-     * has any adjustable settings that you want to persist across sessions,
-     * then load them from the passed in QVariant here.
-     */
-    virtual void LoadState(const QVariant& val) {}
+  /**
+   * Called by the viewport to save the renderer state. If your renderer has
+   * any adjustable settings that you want to persist, then save them into
+   * the returned QVariant.
+   */
+  virtual QVariant SaveState() { return QVariant(); }
 
-  signals:
-    void EnableChanged(bool enabled);
+  /**
+   * Called by the viewport to restore the renderer state. If your renderer
+   * has any adjustable settings that you want to persist across sessions,
+   * then load them from the passed in QVariant here.
+   */
+  virtual void LoadState(const QVariant& val) {}
 
-  public slots:
-    void SetEnabled(bool enabled);
+ signals:
+  void EnableChanged(bool enabled);
 
-  protected:
-    /**
-     *
-     */
-    virtual void OnEnableChanged(bool enabled) {}
+ public slots:
+  void SetEnabled(bool enabled);
 
-  private:
-    friend class Viewport;
+ protected:
+  /**
+   *
+   */
+  virtual void OnEnableChanged(bool enabled) {}
 
-    void SetViewport(Viewport* viewport);
+ private:
+  friend class Viewport;
 
-    void SetBaseNode(GroupNode* node);
+  void SetViewport(Viewport* viewport);
 
-    QString name_;
+  void SetBaseNode(GroupNode* node);
 
-    Viewport* viewport_;
+  struct Priv;
 
-    GroupNode* base_node_;
-
-    bool enabled_;
+  Priv* p_;
 };
 
 }  // namespace sv

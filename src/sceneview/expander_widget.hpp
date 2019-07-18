@@ -5,10 +5,6 @@
 
 #include <QWidget>
 
-class QPushButton;
-class QStackedWidget;
-class QVBoxLayout;
-
 namespace sv {
 
 /**
@@ -23,6 +19,8 @@ class ExpanderWidget : public QWidget {
   public:
     explicit ExpanderWidget(QWidget* parent = nullptr);
 
+    virtual ~ExpanderWidget();
+
     void SetWidget(QWidget* widget);
 
     QSize sizeHint() const override;
@@ -31,16 +29,15 @@ class ExpanderWidget : public QWidget {
     QString Title() const;
 
     void SetExpanded(bool val);
-    bool Expanded() const { return expanded_; }
+    bool Expanded() const;
 
   private slots:
     void ToggleExpanded();
 
   private:
-    QPushButton* button_;
-    QWidget* widget_;
-    QVBoxLayout* layout_;
-    bool expanded_;
+    struct Priv;
+
+    Priv* p_;
 };
 
 }  // namespace sv

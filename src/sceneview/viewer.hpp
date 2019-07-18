@@ -54,17 +54,19 @@ class Viewer : public QMainWindow {
   public:
     explicit Viewer(QWidget* parent = nullptr);
 
-    Viewport* GetViewport() { return viewport_; }
+    virtual ~Viewer();
+
+    Viewport* GetViewport();
 
     void SetAutoRedrawInterval(int milliseconds);
 
-    QMenu* FileMenu() { return file_menu_; }
+    QMenu* FileMenu();
 
     void SaveSettings(QSettings* settings);
 
     void LoadSettings(QSettings* settings);
 
-    RendererWidgetStack* GetRendererWidgetStack() { return renderer_widget_stack_; }
+    RendererWidgetStack* GetRendererWidgetStack();
 
   signals:
     /**
@@ -86,21 +88,8 @@ class Viewer : public QMainWindow {
 
     void SetupShowHideAction(QAction* action, QDockWidget* widget);
 
-    ResourceManager::Ptr resources_;
-    Scene::Ptr default_scene_;
-    Viewport* viewport_;
-
-    RendererWidgetStack* renderer_widget_stack_;
-    InputHandlerWidgetStack* input_handler_widget_;
-
-    QTimer redraw_timer_;
-
-    QMenu* file_menu_;
-    QMenu* renderer_menu_;
-    QMenu* view_menu_;
-    QMenu* input_handler_menu_;
-    QActionGroup* input_action_group_;
-    std::map<InputHandler*, QAction*> input_handler_actions_;
+    struct Priv;
+    Priv* p_;
 };
 
 }  // namespace sv

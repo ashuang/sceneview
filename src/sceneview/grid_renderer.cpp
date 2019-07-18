@@ -25,10 +25,26 @@ static double RoundTo125(double input) {
   return result;
 }
 
-GridRenderer::GridRenderer(const QString& name, QObject* parent) :
-  Renderer(name, parent),
-  grid_size_(100) {
+struct GridRenderer::Priv {
+  MaterialResource::Ptr base_material;
+  MaterialResource::Ptr grid_material;
+  MaterialResource::Ptr depth_write_material;
+
+  GeometryResource::Ptr grid_geom;
+  GeometryResource::Ptr base_geom;
+  DrawNode* draw_node;
+
+  int grid_size;
+
+  GeometryData gdata;
+};
+
+GridRenderer::GridRenderer(const QString& name, QObject* parent)
+    : Renderer(name, parent), p_(new Priv) {
+  p_->grid_size = 100;
 }
+
+GridRenderer::~GridRenderer() { delete p_; }
 
 void GridRenderer::InitializeGL() {
   Scene::Ptr scene = GetScene();
@@ -52,82 +68,82 @@ void GridRenderer::InitializeGL() {
   // with things like glPolygonOffset().
 
   // Base layer material
-  base_material_ = stock.NewMaterial(StockResources::kUniformColorNoLighting);
-  base_material_->SetDepthWrite(false);
-  base_material_->SetTwoSided(true);
-  base_material_->SetParam("color", 0.1, 0.1, 0.1, 1.0);
+  p_->base_material = stock.NewMaterial(StockResources::kUniformColorNoLighting);
+  p_->base_material->SetDepthWrite(false);
+  p_->base_material->SetTwoSided(true);
+  p_->base_material->SetParam("color", 0.1, 0.1, 0.1, 1.0);
 
   // Grid material
-  grid_material_ = stock.NewMaterial(StockResources::kUniformColorNoLighting);
-  grid_material_->SetParam("color", 0.75, 0.75, 0.75, 1.0);
+  p_->grid_material = stock.NewMaterial(StockResources::kUniformColorNoLighting);
+  p_->grid_material->SetParam("color", 0.75, 0.75, 0.75, 1.0);
 
   // Depth write material
-  depth_write_material_ = resources->MakeMaterial(base_material_->Shader());
-  depth_write_material_->SetColorWrite(false);
-  depth_write_material_->SetTwoSided(true);
+  p_->depth_write_material = resources->MakeMaterial(p_->base_material->Shader());
+  p_->depth_write_material->SetColorWrite(false);
+  p_->depth_write_material->SetTwoSided(true);
 
   // Geometry
-  base_geom_ = resources->MakeGeometry();
-  grid_geom_ = resources->MakeGeometry();
+  p_->base_geom = resources->MakeGeometry();
+  p_->grid_geom = resources->MakeGeometry();
 
   UpdateGeometry();
 
-  draw_node_ = scene->MakeDrawNode(GetBaseNode());
-  draw_node_->Add(base_geom_, base_material_);
-  draw_node_->Add(grid_geom_, grid_material_);
-  draw_node_->Add(base_geom_, depth_write_material_);
+  p_->draw_node = scene->MakeDrawNode(GetBaseNode());
+  p_->draw_node->Add(p_->base_geom, p_->base_material);
+  p_->draw_node->Add(p_->grid_geom, p_->grid_material);
+  p_->draw_node->Add(p_->base_geom, p_->depth_write_material);
 }
 
 void GridRenderer::RenderBegin() {
   // Calculate camera distance from grid
   CameraNode* camera = GetViewport()->GetCamera();
   const double distance =
-    (camera->Translation() - camera->GetLookAt()).length();
+      (camera->Translation() - camera->GetLookAt()).length();
 
   const double grid_spacing = RoundTo125(distance / 10);
-  draw_node_->SetScale(grid_spacing, grid_spacing, 1);
+  p_->draw_node->SetScale(grid_spacing, grid_spacing, 1);
 }
 
 void GridRenderer::UpdateGeometry() {
-  gdata_.gl_mode = GL_LINES;
+  p_->gdata.gl_mode = GL_LINES;
 
   const double spacing = 1.0;
-  const double xy_span = spacing * grid_size_;
+  const double xy_span = spacing * p_->grid_size;
   const double xy_min = -xy_span / 2;
   const double xy_max = xy_span / 2;
 
   // X-axis grid lines
-  for (int i = 0; i <= grid_size_; ++i) {
+  for (int i = 0; i <= p_->grid_size; ++i) {
     const double x0 = xy_min;
     const double x1 = xy_max;
     const double y = xy_min + i * spacing;
     const double z = 0;
-    gdata_.vertices.emplace_back(x0, y, z);
-    gdata_.vertices.emplace_back(x1, y, z);
+    p_->gdata.vertices.emplace_back(x0, y, z);
+    p_->gdata.vertices.emplace_back(x1, y, z);
   }
 
   // Y-axis grid lines
-  for (int i = 0; i <= grid_size_; ++i) {
+  for (int i = 0; i <= p_->grid_size; ++i) {
     const double y0 = xy_min;
     const double y1 = xy_max;
     const double x = xy_min + i * spacing;
     const double z = 0;
-    gdata_.vertices.emplace_back(x, y0, z);
-    gdata_.vertices.emplace_back(x, y1, z);
+    p_->gdata.vertices.emplace_back(x, y0, z);
+    p_->gdata.vertices.emplace_back(x, y1, z);
   }
 
-  grid_geom_->Load(gdata_);
+  p_->grid_geom->Load(p_->gdata);
 
   // Calculate the geometry for the base and depth write layers.
   GeometryData bdata;
   bdata.gl_mode = GL_TRIANGLE_STRIP;
   bdata.vertices = {
-    QVector3D(xy_min, xy_min, 0),
-    QVector3D(xy_max, xy_min, 0),
-    QVector3D(xy_min, xy_max, 0),
-    QVector3D(xy_max, xy_max, 0),
+      QVector3D(xy_min, xy_min, 0),
+      QVector3D(xy_max, xy_min, 0),
+      QVector3D(xy_min, xy_max, 0),
+      QVector3D(xy_max, xy_max, 0),
   };
-  base_geom_->Load(bdata);
+  p_->base_geom->Load(bdata);
 }
 
 }  // namespace sv

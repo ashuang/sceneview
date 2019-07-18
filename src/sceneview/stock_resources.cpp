@@ -18,11 +18,19 @@ const QString kSpecular = "specular";
 const QString kShininess = "shininess";
 const QString kTexture0 = "texture0";
 
-StockResources::StockResources(const ResourceManager::Ptr& resources) :
-  resources_(resources) {}
+struct StockResources::Priv {
+  ResourceManager::Ptr resources;
+};
 
-static GeometryResource::Ptr GetOrMakeGeometry(const QString& name,
-    std::function<GeometryData()> data_function,
+StockResources::StockResources(const ResourceManager::Ptr& resources)
+    : p_(new Priv) {
+  p_->resources = resources;
+}
+
+StockResources::~StockResources() { delete p_; }
+
+static GeometryResource::Ptr GetOrMakeGeometry(
+    const QString& name, std::function<GeometryData()> data_function,
     const ResourceManager::Ptr& res) {
   GeometryResource::Ptr geom = res->GetGeometry(name);
   if (!geom) {
@@ -33,33 +41,32 @@ static GeometryResource::Ptr GetOrMakeGeometry(const QString& name,
 }
 
 GeometryResource::Ptr StockResources::Cone() {
-  return GetOrMakeGeometry("geom:sv_cone", ConeData, resources_);
+  return GetOrMakeGeometry("geom:sv_cone", ConeData, p_->resources);
 }
 
 GeometryResource::Ptr StockResources::Cube() {
-  return GetOrMakeGeometry("geom:sv_cube", CubeData, resources_);
+  return GetOrMakeGeometry("geom:sv_cube", CubeData, p_->resources);
 }
 
 GeometryResource::Ptr StockResources::Cylinder() {
-  return GetOrMakeGeometry("geom:sv_cylinder", CylinderData, resources_);
+  return GetOrMakeGeometry("geom:sv_cylinder", CylinderData, p_->resources);
 }
 
 GeometryResource::Ptr StockResources::Sphere() {
-  return GetOrMakeGeometry("geom:sv_sphere", SphereData, resources_);
+  return GetOrMakeGeometry("geom:sv_sphere", SphereData, p_->resources);
 }
 
 Drawable::Ptr StockResources::UnitAxes() {
-  GeometryResource::Ptr geom = GetOrMakeGeometry("geom:sv_unit_axes",
-      UnitAxesData, resources_);
+  GeometryResource::Ptr geom =
+      GetOrMakeGeometry("geom:sv_unit_axes", UnitAxesData, p_->resources);
 
   MaterialResource::Ptr material =
-    resources_->GetMaterial("mat:sv_unit_axes");
+      p_->resources->GetMaterial("mat:sv_unit_axes");
   if (!material) {
-    material = resources_->MakeMaterial(Shader(kPerVertexColorLighting));
+    material = p_->resources->MakeMaterial(Shader(kPerVertexColorLighting));
   }
   return Drawable::Create(geom, material);
 }
-
 
 struct StockShaderData {
   StockResources::StockShaderId id;
@@ -68,23 +75,21 @@ struct StockShaderData {
 };
 
 static std::vector<StockShaderData> g_stock_shader_data = {
-  { StockResources::kUniformColorNoLighting, "no_lighting",
-    "#define COLOR_UNIFORM\n" },
-  { StockResources::kPerVertexColorNoLighting, "no_lighting",
-    "#define COLOR_PER_VERTEX\n" },
-  { StockResources::kTextureUniformColorNoLighting, "no_lighting",
-    "#define COLOR_UNIFORM\n#define USE_TEXTURE0\n" },
-  { StockResources::kUniformColorLighting, "lighting",
-    "#define COLOR_UNIFORM\n" },
-  { StockResources::kPerVertexColorLighting, "lighting",
-    "#define COLOR_PER_VERTEX\n" },
-  { StockResources::kTextureUniformColorLighting, "lighting",
-    "#define COLOR_UNIFORM\n#define USE_TEXTURE0\n" },
-  { StockResources::kBillboardTextured, "billboard",
-    "#define USE_TEXTURE0\n" },
-  { StockResources::kBillboardUniformColor, "billboard",
-    "#define COLOR_UNIFORM\n" }
-};
+    {StockResources::kUniformColorNoLighting, "no_lighting",
+     "#define COLOR_UNIFORM\n"},
+    {StockResources::kPerVertexColorNoLighting, "no_lighting",
+     "#define COLOR_PER_VERTEX\n"},
+    {StockResources::kTextureUniformColorNoLighting, "no_lighting",
+     "#define COLOR_UNIFORM\n#define USE_TEXTURE0\n"},
+    {StockResources::kUniformColorLighting, "lighting",
+     "#define COLOR_UNIFORM\n"},
+    {StockResources::kPerVertexColorLighting, "lighting",
+     "#define COLOR_PER_VERTEX\n"},
+    {StockResources::kTextureUniformColorLighting, "lighting",
+     "#define COLOR_UNIFORM\n#define USE_TEXTURE0\n"},
+    {StockResources::kBillboardTextured, "billboard", "#define USE_TEXTURE0\n"},
+    {StockResources::kBillboardUniformColor, "billboard",
+     "#define COLOR_UNIFORM\n"}};
 
 static const StockShaderData& GetStockShaderData(
     StockResources::StockShaderId id) {
@@ -100,11 +105,11 @@ ShaderResource::Ptr StockResources::Shader(StockShaderId id) {
   const StockShaderData& sdata = GetStockShaderData(id);
   const QString shader_name = "sv_stock_shader:" + QString::number(sdata.id);
 
-  ShaderResource::Ptr shader = resources_->GetShader(shader_name);
+  ShaderResource::Ptr shader = p_->resources->GetShader(shader_name);
   if (!shader) {
-    shader = resources_->MakeShader(shader_name);
+    shader = p_->resources->MakeShader(shader_name);
     shader->LoadFromFiles(":sceneview/stock_shaders/" + sdata.fname_stem,
-        sdata.preamble);
+                          sdata.preamble);
     if (!shader) {
       shader.reset();
     }
@@ -113,7 +118,7 @@ ShaderResource::Ptr StockResources::Shader(StockShaderId id) {
 }
 
 MaterialResource::Ptr StockResources::NewMaterial(StockShaderId id) {
-  return resources_->MakeMaterial(Shader(id));
+  return p_->resources->MakeMaterial(Shader(id));
 }
 
 GeometryData StockResources::CubeData() {
@@ -123,53 +128,46 @@ GeometryData StockResources::CubeData() {
   // TODO(albert) use GL_TRIANGLE_STRIP instead of GL_TRIANGLES
   result.gl_mode = GL_TRIANGLES;
 
-  result.vertices = {
-    QVector3D(t, t, t),
-    QVector3D(t, -t, t),
-    QVector3D(t, -t, -t),
-    QVector3D(t, t, -t),
+  result.vertices = {QVector3D(t, t, t),    QVector3D(t, -t, t),
+                     QVector3D(t, -t, -t),  QVector3D(t, t, -t),
 
-    QVector3D(t, t, t),
-    QVector3D(t, t, -t),
-    QVector3D(-t, t, -t),
-    QVector3D(-t, t, t),
+                     QVector3D(t, t, t),    QVector3D(t, t, -t),
+                     QVector3D(-t, t, -t),  QVector3D(-t, t, t),
 
-    QVector3D(t, t, t),
-    QVector3D(-t, t, t),
-    QVector3D(-t, -t, t),
-    QVector3D(t, -t, t),
+                     QVector3D(t, t, t),    QVector3D(-t, t, t),
+                     QVector3D(-t, -t, t),  QVector3D(t, -t, t),
 
-    QVector3D(-t, t, t),
-    QVector3D(-t, t, -t),
-    QVector3D(-t, -t, -t),
-    QVector3D(-t, -t, t),
+                     QVector3D(-t, t, t),   QVector3D(-t, t, -t),
+                     QVector3D(-t, -t, -t), QVector3D(-t, -t, t),
 
-    QVector3D(t, -t, t),
-    QVector3D(-t, -t, t),
-    QVector3D(-t, -t, -t),
-    QVector3D(t, -t, -t),
+                     QVector3D(t, -t, t),   QVector3D(-t, -t, t),
+                     QVector3D(-t, -t, -t), QVector3D(t, -t, -t),
 
-    QVector3D(t, t, -t),
-    QVector3D(t, -t, -t),
-    QVector3D(-t, -t, -t),
-    QVector3D(-t, t, -t)
-  };
+                     QVector3D(t, t, -t),   QVector3D(t, -t, -t),
+                     QVector3D(-t, -t, -t), QVector3D(-t, t, -t)};
 
-  for (int i = 0; i < 4; ++i) { result.normals.emplace_back(1, 0, 0); }
-  for (int i = 0; i < 4; ++i) { result.normals.emplace_back(0, 1, 0); }
-  for (int i = 0; i < 4; ++i) { result.normals.emplace_back(0, 0, 1); }
-  for (int i = 0; i < 4; ++i) { result.normals.emplace_back(-1, 0, 0); }
-  for (int i = 0; i < 4; ++i) { result.normals.emplace_back(0, -1, 0); }
-  for (int i = 0; i < 4; ++i) { result.normals.emplace_back(0, 0, -1); }
+  for (int i = 0; i < 4; ++i) {
+    result.normals.emplace_back(1, 0, 0);
+  }
+  for (int i = 0; i < 4; ++i) {
+    result.normals.emplace_back(0, 1, 0);
+  }
+  for (int i = 0; i < 4; ++i) {
+    result.normals.emplace_back(0, 0, 1);
+  }
+  for (int i = 0; i < 4; ++i) {
+    result.normals.emplace_back(-1, 0, 0);
+  }
+  for (int i = 0; i < 4; ++i) {
+    result.normals.emplace_back(0, -1, 0);
+  }
+  for (int i = 0; i < 4; ++i) {
+    result.normals.emplace_back(0, 0, -1);
+  }
 
-  result.indices = {
-    0, 1, 2, 2, 3, 0,
-    4, 5, 6, 6, 7, 4,
-    8, 9, 10, 10, 11, 8,
-    12, 13, 14, 14, 15, 12,
-    16, 17, 18, 18, 19, 16,
-    20, 21, 22, 22, 23, 20
-  };
+  result.indices = {0,  1,  2,  2,  3,  0,  4,  5,  6,  6,  7,  4,
+                    8,  9,  10, 10, 11, 8,  12, 13, 14, 14, 15, 12,
+                    16, 17, 18, 18, 19, 16, 20, 21, 22, 22, 23, 20};
 
   return result;
 }
@@ -192,7 +190,7 @@ struct SphereSubdivider {
     output.gl_mode = GL_TRIANGLES;
     output.vertices = input.vertices;
 
-    for (size_t i = 0; i < input.indices.size(); i+=3) {
+    for (size_t i = 0; i < input.indices.size(); i += 3) {
       const int index0 = input.indices[i];
       const int index1 = input.indices[i + 1];
       const int index2 = input.indices[i + 2];
@@ -248,26 +246,22 @@ struct SphereSubdivider {
 GeometryData StockResources::SphereData() {
   GeometryData result;
   result.gl_mode = GL_TRIANGLES;
-  result.vertices = {
-    QVector3D(0.000000, 0.000000, 0.500000),
-    QVector3D(0.364727, 0.264990, 0.216227),
-    QVector3D(-0.139313, 0.428763, 0.216227),
-    QVector3D(-0.450828, 0.000000, 0.216227),
-    QVector3D(-0.139313, -0.428763, 0.216227),
-    QVector3D(0.364727, -0.264990, 0.216227),
-    QVector3D(0.139313, 0.428763, -0.216227),
-    QVector3D(-0.364727, 0.264990, -0.216227),
-    QVector3D(-0.364727, -0.264990, -0.216227),
-    QVector3D(0.139313, -0.428763, -0.216227),
-    QVector3D(0.450828, -0.000000, -0.216227),
-    QVector3D(-0.000000, -0.000000, -0.500000)
-  };
-  result.indices = {
-    0, 1, 2, 0, 2, 3, 0, 3, 4, 0, 4, 5, 0, 5, 1,
-    1, 10, 6, 2, 6, 7, 3, 7, 8, 4, 8, 9, 5, 9, 10,
-    1, 6, 2, 2, 7, 3, 3, 8, 4, 4, 9, 5, 5, 10, 1,
-    11, 6, 10, 11, 7, 6, 11, 8, 7, 11, 9, 8, 11, 10, 9
-  };
+  result.vertices = {QVector3D(0.000000, 0.000000, 0.500000),
+                     QVector3D(0.364727, 0.264990, 0.216227),
+                     QVector3D(-0.139313, 0.428763, 0.216227),
+                     QVector3D(-0.450828, 0.000000, 0.216227),
+                     QVector3D(-0.139313, -0.428763, 0.216227),
+                     QVector3D(0.364727, -0.264990, 0.216227),
+                     QVector3D(0.139313, 0.428763, -0.216227),
+                     QVector3D(-0.364727, 0.264990, -0.216227),
+                     QVector3D(-0.364727, -0.264990, -0.216227),
+                     QVector3D(0.139313, -0.428763, -0.216227),
+                     QVector3D(0.450828, -0.000000, -0.216227),
+                     QVector3D(-0.000000, -0.000000, -0.500000)};
+  result.indices = {0,  1,  2,  0,  2, 3, 0,  3, 4, 0,  4, 5, 0,  5,  1,
+                    1,  10, 6,  2,  6, 7, 3,  7, 8, 4,  8, 9, 5,  9,  10,
+                    1,  6,  2,  2,  7, 3, 3,  8, 4, 4,  9, 5, 5,  10, 1,
+                    11, 6,  10, 11, 7, 6, 11, 8, 7, 11, 9, 8, 11, 10, 9};
   const int num_subdivisions = 2;
   for (int i = 0; i < num_subdivisions; ++i) {
     result = SphereSubdivider(result).output;
@@ -308,8 +302,7 @@ GeometryData StockResources::ConeData() {
     result.vertices.emplace_back(0, 0, half_height);
     result.vertices.emplace_back(x_pts[i], y_pts[i], -half_height);
     result.normals.emplace_back(cos(i * dtheta + half_dtheta) * cosphi,
-        sin(i * dtheta + half_dtheta) * cosphi,
-        sinphi);
+                                sin(i * dtheta + half_dtheta) * cosphi, sinphi);
     result.normals.emplace_back(x_pts[i] * cosphi, y_pts[i] * cosphi, sinphi);
     result.indices.push_back(i * 2);
     result.indices.push_back(i * 2 + 1);
@@ -354,7 +347,7 @@ GeometryData StockResources::CylinderData() {
     result.vertices.emplace_back(x_pts[i], y_pts[i], half_height);
     result.normals.emplace_back(0, 0, 1);
     result.indices.push_back(i + 1);
-    result.indices.push_back((i+1) % num_slices + 1);
+    result.indices.push_back((i + 1) % num_slices + 1);
     result.indices.push_back(0);
   }
 
