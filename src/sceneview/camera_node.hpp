@@ -31,6 +31,8 @@ class CameraNode : public SceneNode {
       kManual
     };
 
+    virtual ~CameraNode();
+
     SceneNodeType NodeType() const override {
       return SceneNodeType::kCameraNode; }
 
@@ -82,7 +84,7 @@ class CameraNode : public SceneNode {
     /**
      * Retrieve the current projection type.
      */
-    ProjectionType GetProjectionType() const { return proj_type_; }
+    ProjectionType GetProjectionType() const;
 
     /**
      * Rotate and translate the camera to look at the specified point.
@@ -93,17 +95,17 @@ class CameraNode : public SceneNode {
     /**
      * Retrieve the vertical field of view, in degrees.
      */
-    double GetVFovDeg() const { return vfov_deg_; }
+    double GetVFovDeg() const;
 
     /**
      * Retrieve the near clipping plane.
      */
-    double GetZNear() const { return z_near_; }
+    double GetZNear() const;
 
     /**
      * Retrieve the far clipping plane.
      */
-    double GetZFar() const { return z_far_; }
+    double GetZFar() const;
 
     /**
      * Retrieve the direction the camera is facing. This is always of unit length.
@@ -172,23 +174,9 @@ class CameraNode : public SceneNode {
 
     void ComputeProjectionMatrix();
 
-    static const AxisAlignedBox kBoundingBox;
+    class Priv;
 
-    QVector3D look_;
-    QVector3D up_;
-    QVector3D look_at_;
-
-    int viewport_width_ = 0;
-    int viewport_height_ = 0;
-
-    ProjectionType proj_type_;
-
-    double vfov_deg_;
-
-    double z_near_;
-    double z_far_;
-
-    QMatrix4x4 projection_matrix_;
+    Priv* p_;
 };
 
 }  // namespace sv

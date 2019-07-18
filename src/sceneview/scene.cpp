@@ -20,30 +20,46 @@ const QString Scene::kAutoName = "";
 
 const QString Scene::kDefaultDrawGroupName = "default";
 
+struct Scene::Priv {
+    QString scene_name_;
+    GroupNode* root_node_;
+    int name_counter_;
+    DrawGroup* default_draw_group_;
+    std::vector<LightNode*> lights_;
+    std::vector<CameraNode*> cameras_;
+    std::vector<DrawGroup*> draw_groups_;
+    std::map<QString, SceneNode*> nodes_;
+};
+
 Scene::Scene(const QString& name) :
-  scene_name_(name),
-  root_node_(new GroupNode("root")),
-  name_counter_(0),
-  default_draw_group_(new DrawGroup(kDefaultDrawGroupName,
-        kDefaultDrawGroupOrder)),
-  lights_(),
-  cameras_(),
-  draw_groups_({ default_draw_group_ }),
-  nodes_({{ root_node_->Name(), root_node_}}) {
+  p_(new Scene::Priv)
+{
+  p_->scene_name_ = name;
+  p_->root_node_ = new GroupNode("root");
+  p_->name_counter_ = 0;
+  p_->default_draw_group_ = new DrawGroup(kDefaultDrawGroupName,
+        kDefaultDrawGroupOrder);
+  p_->draw_groups_.push_back(p_->default_draw_group_);
+  p_->nodes_[p_->root_node_->Name()] = p_->root_node_;
 }
 
 Scene::~Scene() {
-  for (DrawGroup* dgroup : draw_groups_) {
+  for (DrawGroup* dgroup : p_->draw_groups_) {
     delete dgroup;
   }
-  for (auto& item : nodes_) {
+  for (auto& item : p_->nodes_) {
     delete item.second;
   }
+  delete p_;
 }
+
+const QString& Scene::Name() const { return p_->scene_name_; }
+
+GroupNode* Scene::Root() { return p_->root_node_; }
 
 bool Scene::ContainsNode(SceneNode* node) const {
   for (SceneNode* iter = node; iter; iter = iter->ParentNode()) {
-    if (iter == root_node_) {
+    if (iter == p_->root_node_) {
       return true;
     }
   }
@@ -57,7 +73,7 @@ GroupNode* Scene::MakeGroup(GroupNode* parent,
   if (parent) {
     parent->AddChild(node);
   }
-  nodes_[actual_name] = node;
+  p_->nodes_[actual_name] = node;
   return node;
 }
 
@@ -79,8 +95,8 @@ CameraNode* Scene::MakeCamera(GroupNode* parent,
   if (parent) {
     parent->AddChild(camera);
   }
-  cameras_.push_back(camera);
-  nodes_[actual_name] = camera;
+  p_->cameras_.push_back(camera);
+  p_->nodes_[actual_name] = camera;
   return camera;
 }
 
@@ -91,8 +107,8 @@ LightNode* Scene::MakeLight(GroupNode* parent,
   if (parent) {
     parent->AddChild(light);
   }
-  lights_.push_back(light);
-  nodes_[actual_name] = light;
+  p_->lights_.push_back(light);
+  p_->nodes_[actual_name] = light;
   return light;
 }
 
@@ -102,8 +118,8 @@ DrawNode* Scene::MakeDrawNode(GroupNode* parent, const QString& name) {
   if (parent) {
     parent->AddChild(node);
   }
-  nodes_[actual_name] = node;
-  SetDrawGroup(node, default_draw_group_);
+  p_->nodes_[actual_name] = node;
+  SetDrawGroup(node, p_->default_draw_group_);
   return node;
 }
 
@@ -117,14 +133,14 @@ DrawNode* Scene::MakeDrawNode(GroupNode* parent,
 }
 
 DrawGroup* Scene::MakeDrawGroup(int ordering, const QString& name) {
-  for (DrawGroup* dgroup : draw_groups_) {
+  for (DrawGroup* dgroup : p_->draw_groups_) {
     if (dgroup->Name() == name) {
       throw std::invalid_argument("Duplicate group name " + name.toStdString());
     }
   }
   DrawGroup* group = new DrawGroup(name, ordering);
-  draw_groups_.push_back(group);
-  group->SetCamera(default_draw_group_->GetCamera());
+  p_->draw_groups_.push_back(group);
+  group->SetCamera(p_->default_draw_group_->GetCamera());
   return group;
 }
 
@@ -156,8 +172,8 @@ void Scene::SetDrawGroup(GroupNode* node, DrawGroup* draw_group) {
 }
 
 void Scene::DestroyNode(SceneNode* node) {
-  assert(node != root_node_);
-  nodes_.erase(node->Name());
+  assert(node != p_->root_node_);
+  p_->nodes_.erase(node->Name());
   switch (node->NodeType()) {
     case SceneNodeType::kGroupNode:
       {
@@ -171,13 +187,13 @@ void Scene::DestroyNode(SceneNode* node) {
     case SceneNodeType::kCameraNode:
       {
         CameraNode* camera = dynamic_cast<CameraNode*>(node);
-        cameras_.erase(std::find(cameras_.begin(), cameras_.end(), camera));
+        p_->cameras_.erase(std::find(p_->cameras_.begin(), p_->cameras_.end(), camera));
       }
       break;
     case SceneNodeType::kLightNode:
       {
         LightNode* light = dynamic_cast<LightNode*>(node);
-        lights_.erase(std::find(lights_.begin(), lights_.end(), light));
+        p_->lights_.erase(std::find(p_->lights_.begin(), p_->lights_.end(), light));
       }
       break;
     case SceneNodeType::kDrawNode:
@@ -192,8 +208,10 @@ void Scene::DestroyNode(SceneNode* node) {
   delete node;
 }
 
+std::vector<LightNode*>& Scene::Lights() { return p_->lights_; }
+
 DrawGroup* Scene::GetDrawGroup(const QString& name) {
-  for (DrawGroup* group : draw_groups_) {
+  for (DrawGroup* group : p_->draw_groups_) {
     if (group->Name() == name) {
       return group;
     }
@@ -201,8 +219,10 @@ DrawGroup* Scene::GetDrawGroup(const QString& name) {
   throw std::invalid_argument("Unknown draw group: " + name.toStdString());
 }
 
+DrawGroup* Scene::GetDefaultDrawGroup() { return p_->default_draw_group_; }
+
 void Scene::PrintStats() {
-  std::deque<GroupNode*> to_count = { root_node_ };
+  std::deque<GroupNode*> to_count = { p_->root_node_ };
   int num_nodes = 1;
   while (!to_count.empty()) {
     GroupNode* node = to_count.front();
@@ -217,15 +237,15 @@ void Scene::PrintStats() {
   }
 
   printf("nodes: %d\n", static_cast<int>(num_nodes));
-  printf("nodes in map: %d\n", static_cast<int>(nodes_.size()));
+  printf("nodes in map: %d\n", static_cast<int>(p_->nodes_.size()));
 }
 
 QString Scene::AutogenerateName() {
   QString name;
   do {
-    name = "sv_" + QString::number(name_counter_);
-    name_counter_++;
-  } while (nodes_.find(name) != nodes_.end());
+    name = "sv_" + QString::number(p_->name_counter_);
+    p_->name_counter_++;
+  } while (p_->nodes_.find(name) != p_->nodes_.end());
   return name;
 }
 
@@ -233,7 +253,7 @@ QString Scene::PickName(const QString& name) {
   if (name == kAutoName) {
     return AutogenerateName();
   } else {
-    if (nodes_.find(name) != nodes_.end()) {
+    if (p_->nodes_.find(name) != p_->nodes_.end()) {
       throw std::invalid_argument("Duplicate node name " + name.toStdString());
     }
     return name;

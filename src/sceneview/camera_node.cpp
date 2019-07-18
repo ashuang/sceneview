@@ -9,60 +9,81 @@
 
 namespace sv {
 
-const AxisAlignedBox CameraNode::kBoundingBox;
+struct CameraNode::Priv {
+  static const AxisAlignedBox kBoundingBox;
+
+  QVector3D look;
+  QVector3D up;
+  QVector3D look_at;
+
+  int viewport_width = 0;
+  int viewport_height = 0;
+
+  ProjectionType proj_type;
+
+  double vfov_deg;
+
+  double z_near;
+  double z_far;
+
+  QMatrix4x4 projection_matrix;
+};
+
+const AxisAlignedBox CameraNode::Priv::kBoundingBox;
 
 CameraNode::CameraNode(const QString& name) :
   SceneNode(name),
-  look_(),
-  up_(),
-  look_at_(),
-  proj_type_(ProjectionType::kPerspective),
-  vfov_deg_(50),
-  z_near_(0.1),
-  z_far_(10000) {
-    // Choose an initial camera position/orientation such that the
-    // translation/rotation are both identity.
-    LookAt(QVector3D(0, 0, 0),
-        QVector3D(0, 0, -1),
-        QVector3D(0, 1, 0));
+  p_(new Priv) {
+  p_->proj_type = ProjectionType::kPerspective;
+  p_->vfov_deg = 50;
+  p_->z_near = 0.1;
+  p_->z_far = 10000;
+
+  // Choose an initial camera position/orientation such that the
+  // translation/rotation are both identity.
+  LookAt(QVector3D(0, 0, 0), QVector3D(0, 0, -1), QVector3D(0, 1, 0));
+}
+
+CameraNode::~CameraNode() {
+  delete p_;
 }
 
 void CameraNode::CopyFrom(const CameraNode& other) {
-  viewport_width_ = other.viewport_width_;
-  viewport_height_ = other.viewport_height_;
-  vfov_deg_ = other.vfov_deg_;
-  z_near_ = other.z_near_;
-  z_far_ = other.z_far_;
-  projection_matrix_ = other.projection_matrix_;
+  p_->viewport_width = other.p_->viewport_width;
+  p_->viewport_height = other.p_->viewport_height;
+  p_->vfov_deg = other.p_->vfov_deg;
+  p_->z_near = other.p_->z_near;
+  p_->z_far = other.p_->z_far;
+  p_->projection_matrix = other.p_->projection_matrix;
 
-  look_ = other.look_;
-  up_ = other.up_;
+  p_->look = other.p_->look;
+  p_->up = other.p_->up;
   SceneNode::SetTranslation(other.Translation());
   SceneNode::SetRotation(other.Rotation());
 }
 
 void CameraNode::SetViewportSize(int width, int height) {
-  if (viewport_width_ == width && viewport_height_ == height) {
+  if (p_->viewport_width == width && p_->viewport_height == height) {
     return;
   }
-  viewport_width_ = width;
-  viewport_height_ = height;
+  p_->viewport_width = width;
+  p_->viewport_height = height;
 
   ComputeProjectionMatrix();
 }
 
 QSize CameraNode::GetViewportSize() const {
-  return QSize(viewport_width_, viewport_height_);
+  return QSize(p_->viewport_width, p_->viewport_height);
 }
 
 void CameraNode::SetPerspective(double vfov_deg, double z_near, double z_far) {
   if (vfov_deg < 1e-6) {
     throw std::invalid_argument("invalid vfov");
   }
-  vfov_deg_ = vfov_deg;
-  z_near_ = z_near;
-  z_far_ = z_far;
-  proj_type_ = kPerspective;
+  p_->vfov_deg = vfov_deg;
+  p_->z_near = z_near;
+  p_->z_far = z_far;
+  p_->proj_type = kPerspective;
   ComputeProjectionMatrix();
 }
 
@@ -70,17 +91,19 @@ void CameraNode::SetOrthographic(double vfov_deg, double z_near, double z_far) {
   if (vfov_deg < 1e-6) {
     throw std::invalid_argument("invalid vfov");
   }
-  vfov_deg_ = vfov_deg;
-  z_near_ = z_near;
-  z_far_ = z_far;
-  proj_type_ = kOrthographic;
+  p_->vfov_deg = vfov_deg;
+  p_->z_near = z_near;
+  p_->z_far = z_far;
+  p_->proj_type = kOrthographic;
   ComputeProjectionMatrix();
 }
 
 void CameraNode::SetManual(const QMatrix4x4& proj_mat) {
-  projection_matrix_ = proj_mat;
-  proj_type_ = kManual;
+  p_->projection_matrix = proj_mat;
+  p_->proj_type = kManual;
 }
+
+CameraNode::ProjectionType CameraNode::GetProjectionType() const { return p_->proj_type; }
 
 static QQuaternion QuatFromRot(const QMatrix3x3& rot) {
   const double trace = rot(0, 0) + rot(1, 1) + rot(2, 2);
@@ -151,7 +174,7 @@ static QMatrix3x3 RotFromQuat(const QQuaternion& quat) {
 
 void CameraNode::LookAt(const QVector3D& eye, const QVector3D& look_at,
     const QVector3D& up_denorm) {
-  look_at_ = look_at;
+  p_->look_at = look_at;
   const QVector3D look_denorm = look_at - eye;
   if (look_denorm.length() < 1e-9) {
     throw std::invalid_argument("eye and look_at are too close!");
@@ -168,31 +191,43 @@ void CameraNode::LookAt(const QVector3D& eye, const QVector3D& look_at,
   SetTranslation(eye);
   SetRotation(QuatFromRot(QMatrix3x3(rot_data)));
 
-  if (proj_type_ == kOrthographic) {
+  if (p_->proj_type == kOrthographic) {
     ComputeProjectionMatrix();
   }
 }
 
+double CameraNode::GetVFovDeg() const { return p_->vfov_deg; }
+
+/**
+ * Retrieve the near clipping plane.
+ */
+double CameraNode::GetZNear() const { return p_->z_near; }
+
+/**
+ * Retrieve the far clipping plane.
+ */
+double CameraNode::GetZFar() const { return p_->z_far; }
+
 QVector3D CameraNode::GetLookDir() const {
-  return look_;
+  return p_->look;
 }
 
 QVector3D CameraNode::GetLookAt() const {
-  return look_at_;
+  return p_->look_at;
 }
 
 QVector3D CameraNode::GetUpDir() const {
-  return up_;
+  return p_->up;
 }
 
 QVector3D CameraNode::Unproject(double x, double y) {
   // Window coordinates to screen coordinates
   const double screen_x = x;
-  const double screen_y = viewport_height_ - y;
+  const double screen_y = p_->viewport_height - y;
 
   // Screen coordinates to normalized device coordinates (NDC).
-  const QVector4D clip_vec(2 * screen_x / viewport_width_ - 1,
-     2 * screen_y / viewport_height_ - 1,
+  const QVector4D clip_vec(2 * screen_x / p_->viewport_width - 1,
+     2 * screen_y / p_->viewport_height - 1,
       1, 1);
   // NDC to world coordinates
   const QMatrix4x4 vp_inverse = GetViewProjectionMatrix().inverted();
@@ -208,11 +243,11 @@ QVector3D CameraNode::Unproject(double x, double y) {
 QVector3D CameraNode::Unproject(double x, double y, double z) {
   // Window coordinates to screen coordinates
   const double screen_x = x;
-  const double screen_y = viewport_height_ - y;
+  const double screen_y = p_->viewport_height - y;
 
   // Screen coordinates to normalized device coordinates (NDC).
-  const QVector4D clip_vec(2 * screen_x / viewport_width_ - 1,
-     2 * screen_y / viewport_height_ - 1,
+  const QVector4D clip_vec(2 * screen_x / p_->viewport_width - 1,
+     2 * screen_y / p_->viewport_height - 1,
       2 * z - 1, 1);
   // NDC to world coordinates
   const QMatrix4x4 vp_inverse = GetViewProjectionMatrix().inverted();
@@ -225,7 +260,7 @@ QVector3D CameraNode::Unproject(double x, double y, double z) {
 }
 
 QMatrix4x4 CameraNode::GetProjectionMatrix() {
-  return projection_matrix_;
+  return p_->projection_matrix;
 }
 
 QMatrix4x4 CameraNode::GetViewMatrix() {
@@ -233,49 +268,49 @@ QMatrix4x4 CameraNode::GetViewMatrix() {
 }
 
 QMatrix4x4 CameraNode::GetViewProjectionMatrix() {
-  return projection_matrix_ * GetViewMatrix();
+  return p_->projection_matrix * GetViewMatrix();
 }
 
 const AxisAlignedBox& CameraNode::WorldBoundingBox() {
-  return kBoundingBox;
+  return Priv::kBoundingBox;
 }
 
 void CameraNode::ComputeProjectionMatrix() {
-  if (proj_type_ == ProjectionType::kManual) {
+  if (p_->proj_type == ProjectionType::kManual) {
     return;
   }
 
-  projection_matrix_.fill(0.0f);
-  if (viewport_height_ <= 0 || viewport_width_ <= 0 || vfov_deg_ <= 0) {
+  p_->projection_matrix.fill(0.0f);
+  if (p_->viewport_height <= 0 || p_->viewport_width <= 0 || p_->vfov_deg <= 0) {
     return;
   }
 
-  const double aspect = static_cast<double>(viewport_width_) / viewport_height_;
-  const double vfov = vfov_deg_ * M_PI / 180;
-  const double delta_z = z_far_ - z_near_;
+  const double aspect = static_cast<double>(p_->viewport_width) / p_->viewport_height;
+  const double vfov = p_->vfov_deg * M_PI / 180;
+  const double delta_z = p_->z_far - p_->z_near;
 
-  switch (proj_type_) {
+  switch (p_->proj_type) {
     case ProjectionType::kOrthographic:
       {
-        const double dist_to_look_at = (Translation() - look_at_).length();
+        const double dist_to_look_at = (Translation() - p_->look_at).length();
         const double bottom = dist_to_look_at * tan(vfov / 2);
         const double right = bottom * aspect;
-        projection_matrix_(0, 0) = 1 / right;
-        projection_matrix_(1, 1) = 1 / bottom;
-        projection_matrix_(2, 2) = -2 / delta_z;
-        projection_matrix_(2, 3) = -(z_far_ + z_near_) / delta_z;
-        projection_matrix_(3, 3) = 1;
+        p_->projection_matrix(0, 0) = 1 / right;
+        p_->projection_matrix(1, 1) = 1 / bottom;
+        p_->projection_matrix(2, 2) = -2 / delta_z;
+        p_->projection_matrix(2, 3) = -(p_->z_far + p_->z_near) / delta_z;
+        p_->projection_matrix(3, 3) = 1;
       }
       break;
     case ProjectionType::kPerspective:
     default:
       {
         const double cotan = 1 / tan(vfov / 2);
-        projection_matrix_(0, 0) = cotan / aspect;
-        projection_matrix_(1, 1) = cotan;
-        projection_matrix_(2, 2) = -(z_far_ + z_near_) / delta_z;
-        projection_matrix_(3, 2) = -1;
-        projection_matrix_(2, 3) = -2 * z_near_ * z_far_ / delta_z;
+        p_->projection_matrix(0, 0) = cotan / aspect;
+        p_->projection_matrix(1, 1) = cotan;
+        p_->projection_matrix(2, 2) = -(p_->z_far + p_->z_near) / delta_z;
+        p_->projection_matrix(3, 2) = -1;
+        p_->projection_matrix(2, 3) = -2 * p_->z_near * p_->z_far / delta_z;
       }
       break;
   }
@@ -288,8 +323,8 @@ void CameraNode::SetTranslation(const QVector3D& vec) {
 void CameraNode::SetRotation(const QQuaternion& quat) {
   SceneNode::SetRotation(quat);
   const QMatrix3x3 rot = RotFromQuat(quat);
-  look_ = QVector3D(-rot(0, 2), -rot(1, 2), -rot(2, 2));
-  up_ = QVector3D(rot(0, 1), rot(1, 1), rot(2, 1));
+  p_->look = QVector3D(-rot(0, 2), -rot(1, 2), -rot(2, 2));
+  p_->up = QVector3D(rot(0, 1), rot(1, 1), rot(2, 1));
 }
 
 }  // namespace sv

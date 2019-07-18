@@ -44,7 +44,7 @@ class SceneNode {
 
     SceneNode& operator=(const SceneNode&) = delete;
 
-    virtual ~SceneNode() {}
+    virtual ~SceneNode();
 
     /**
      * Retrieve the node type.
@@ -54,22 +54,22 @@ class SceneNode {
     /**
      * Retrieve the node name.
      */
-    const QString Name() const { return node_name_; }
+    const QString Name() const;
 
     /**
      * Retrieve the translation component of the node to parent transform.
      */
-    const QVector3D& Translation() const { return translation_; }
+    const QVector3D& Translation() const;
 
     /**
      * Retrieve the rotation component of the node to parent transform.
      */
-    const QQuaternion& Rotation() const { return rotation_; }
+    const QQuaternion& Rotation() const;
 
     /**
      * Retrieve the scale component of the node to parent transform.
      */
-    const QVector3D& Scale() const { return scale_; }
+    const QVector3D& Scale() const;
 
     /**
      * Retrieve the transform from node coordinates to world coordinates.
@@ -82,7 +82,7 @@ class SceneNode {
     /**
      * Check if the node is visible or not.
      */
-    bool Visible() const { return visible_; }
+    bool Visible() const;
 
     /**
      * Sets the translation component of the node transform.
@@ -124,7 +124,7 @@ class SceneNode {
     /**
      * Retrieve the parent of this node.
      */
-    GroupNode* ParentNode() { return parent_node_; }
+    GroupNode* ParentNode();
 
     /**
      * Sets the node's parent. This is typically automatically handled by the
@@ -139,12 +139,12 @@ class SceneNode {
      *
      * For information on how to use this, see SelectionQuery.
      */
-    void SetSelectionMask(int64_t mask) { selection_mask_ = mask; }
+    void SetSelectionMask(int64_t mask);
 
     /**
      * Retrieve the selection mask for this node.
      */
-    int64_t GetSelectionMask() const { return selection_mask_; }
+    int64_t GetSelectionMask() const;
 
     /**
      * Retrieve the world-space bounding box of the node and all of its
@@ -160,9 +160,9 @@ class SceneNode {
      *
      * Nodes with a lower order are drawn first.
      */
-    void SetDrawOrder(int order) { draw_order_ = order; }
+    void SetDrawOrder(int order);
 
-    int DrawOrder() const { return draw_order_; }
+    int DrawOrder() const;
 
   protected:
     /**
@@ -188,21 +188,9 @@ class SceneNode {
   private:
     friend class GroupNode;
 
-    const QString node_name_;
+    class Priv;
 
-    QVector3D translation_;
-    QQuaternion rotation_;
-    QVector3D scale_{1, 1, 1};
-
-    QMatrix4x4 to_world_;
-    bool to_world_dirty_ = true;
-
-    GroupNode* parent_node_ = nullptr;
-
-    bool visible_ = true;
-    int64_t selection_mask_ = 0;
-
-    int draw_order_ = 0;
+    Priv* p_;
 };
 
 }  // namespace sv

@@ -5,55 +5,111 @@
 
 namespace sv {
 
-SceneNode::SceneNode(const QString& node_name) :
-  node_name_(node_name) {}
+struct SceneNode::Priv {
+  QString node_name;
 
-const QMatrix4x4& SceneNode::WorldTransform() {
-  if (to_world_dirty_) {
-    if (parent_node_) {
-      to_world_ = parent_node_->WorldTransform();
-    } else {
-      to_world_.setToIdentity();
-    }
-    to_world_.translate(translation_);
-    to_world_.rotate(rotation_);
-    to_world_.scale(scale_);
-    to_world_dirty_ = false;
-  }
-  return to_world_;
+  QVector3D translation;
+  QQuaternion rotation;
+  QVector3D scale{1, 1, 1};
+
+  QMatrix4x4 to_world;
+  bool to_world_dirty = true;
+
+  GroupNode* parent_node = nullptr;
+
+  bool visible = true;
+  int64_t selection_mask = 0;
+
+  int draw_order = 0;
+};
+
+SceneNode::SceneNode(const QString& node_name) : p_(new Priv) {
+  p_->node_name = node_name;
 }
 
+SceneNode::~SceneNode()
+{
+  delete p_;
+}
+
+const QString SceneNode::Name() const { return p_->node_name; }
+
+/**
+ * Retrieve the translation component of the node to parent transform.
+ */
+const QVector3D& SceneNode::Translation() const { return p_->translation; }
+
+/**
+ * Retrieve the rotation component of the node to parent transform.
+ */
+const QQuaternion& SceneNode::Rotation() const { return p_->rotation; }
+
+/**
+ * Retrieve the scale component of the node to parent transform.
+ */
+const QVector3D& SceneNode::Scale() const { return p_->scale; }
+
+const QMatrix4x4& SceneNode::WorldTransform() {
+  if (p_->to_world_dirty) {
+    if (p_->parent_node) {
+      p_->to_world = p_->parent_node->WorldTransform();
+    } else {
+      p_->to_world.setToIdentity();
+    }
+    p_->to_world.translate(p_->translation);
+    p_->to_world.rotate(p_->rotation);
+    p_->to_world.scale(p_->scale);
+    p_->to_world_dirty = false;
+  }
+  return p_->to_world;
+}
+
+bool SceneNode::Visible() const { return p_->visible; }
+
 void SceneNode::SetTranslation(const QVector3D& vec) {
-  translation_ = vec;
+  p_->translation = vec;
   TransformChanged();
 }
 
 void SceneNode::SetRotation(const QQuaternion& quat) {
-  rotation_ = quat;
+  p_->rotation = quat;
   TransformChanged();
 }
 
 void SceneNode::SetScale(const QVector3D& vec) {
-  scale_ = vec;
+  p_->scale = vec;
   TransformChanged();
 }
 
 void SceneNode::SetVisible(bool visible) {
-  visible_ = visible;
+  p_->visible = visible;
 }
+
+GroupNode* SceneNode::ParentNode() { return p_->parent_node; }
 
 void SceneNode::SetParentNode(GroupNode* parent) {
-  parent_node_ = parent;
+  p_->parent_node = parent;
 }
 
+void SceneNode::SetSelectionMask(int64_t mask) { p_->selection_mask = mask; }
+
+/**
+ * Retrieve the selection mask for this node.
+ */
+int64_t SceneNode::GetSelectionMask() const { return p_->selection_mask; }
+
+void SceneNode::SetDrawOrder(int order) { p_->draw_order = order; }
+
+int SceneNode::DrawOrder() const { return p_->draw_order; }
+
 void SceneNode::TransformChanged() {
-  to_world_dirty_ = true;
+  p_->to_world_dirty = true;
   BoundingBoxChanged();
 }
 
 void SceneNode::BoundingBoxChanged() {
-  if (parent_node_) {
-    parent_node_->BoundingBoxChanged();
+  if (p_->parent_node) {
+    p_->parent_node->BoundingBoxChanged();
   }
 }
 

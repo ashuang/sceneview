@@ -52,14 +52,14 @@ class Scene {
   public:
     ~Scene();
 
-    const QString& Name() const { return scene_name_; }
+    const QString& Name() const;
 
     /**
      * Retrieve the root node.
      *
      * The root node of a scene is always a group node.
      */
-    GroupNode* Root() { return root_node_; }
+    GroupNode* Root();
 
     bool ContainsNode(SceneNode* node) const;
 
@@ -161,7 +161,7 @@ class Scene {
      *
      * Don't modify the returned vector.
      */
-    std::vector<LightNode*>& Lights() { return lights_; }
+    std::vector<LightNode*>& Lights();
 
     /**
      * Retrieve the draw group with the specified name.
@@ -171,7 +171,7 @@ class Scene {
      */
     DrawGroup* GetDrawGroup(const QString& name);
 
-    DrawGroup* GetDefaultDrawGroup() { return default_draw_group_; }
+    DrawGroup* GetDefaultDrawGroup();
 
     void PrintStats();
 
@@ -184,18 +184,9 @@ class Scene {
 
     QString PickName(const QString& name);
 
-    QString scene_name_;
+    class Priv;
 
-    GroupNode* root_node_;
-
-    int name_counter_;
-
-    DrawGroup* default_draw_group_;
-
-    std::vector<LightNode*> lights_;
-    std::vector<CameraNode*> cameras_;
-    std::vector<DrawGroup*> draw_groups_;
-    std::map<QString, SceneNode*> nodes_;
+    Priv* p_;
 };
 
 }  // namespace sv
