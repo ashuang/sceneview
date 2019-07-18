@@ -148,6 +148,8 @@ struct DrawContext::Priv {
 
   QColor clear_color;
 
+  int clear_stencil = 0;
+
   // Rendering variables
   int viewport_width = 0;
   int viewport_height = 0;
@@ -171,6 +173,9 @@ struct DrawContext::Priv {
   bool gl_blend;
   GLenum gl_sfactor;
   GLenum gl_dfactor;
+
+  bool stencil_enabled;
+  StencilSettings stencil;
 
   // For debugging
   DrawNode* bounding_box_node;
@@ -201,7 +206,9 @@ void DrawContext::Draw(int viewport_width, int viewport_height,
   glClearColor(p_->clear_color.redF(), p_->clear_color.greenF(), p_->clear_color.blueF(),
                p_->clear_color.alphaF());
 
-  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+  glClearStencil(p_->clear_stencil);
+
+  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
   std::vector<Renderer*>& renderers = *prenderers;
 
@@ -232,6 +239,8 @@ void DrawContext::Draw(int viewport_width, int viewport_height,
   glDepthFunc(p_->gl_depth_func);
   p_->gl_depth_write = true;
   glDepthMask(GL_TRUE);
+  p_->stencil_enabled = false;
+  glDisable(GL_STENCIL_TEST);
   p_->gl_color_write = true;
   glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
   p_->gl_point_size = 1;
@@ -510,6 +519,33 @@ void DrawContext::ActivateMaterial() {
     } else {
       glDepthMask(GL_FALSE);
     }
+  }
+
+  const StencilSettings* mat_stencil = p_->material->Stencil();
+  if (mat_stencil) {
+    if (!p_->stencil_enabled) {
+      glEnable(GL_STENCIL_TEST);
+      p_->stencil_enabled = true;
+    }
+
+    if (*mat_stencil != p_->stencil) {
+      p_->stencil = *mat_stencil;
+      glStencilOpSeparate(GL_FRONT, p_->stencil.front.sfail,
+          p_->stencil.front.dpfail, p_->stencil.front.dppass);
+      glStencilOpSeparate(GL_BACK, p_->stencil.back.sfail,
+          p_->stencil.back.dpfail, p_->stencil.back.dppass);
+
+      glStencilFuncSeparate(GL_FRONT, p_->stencil.front.func,
+          p_->stencil.front.func_ref, p_->stencil.front.func_mask);
+      glStencilFuncSeparate(GL_BACK, p_->stencil.back.func,
+          p_->stencil.back.func_ref, p_->stencil.back.func_mask);
+
+      glStencilMaskSeparate(GL_FRONT, p_->stencil.front.mask);
+      glStencilMaskSeparate(GL_BACK, p_->stencil.back.mask);
+    }
+  } else if (p_->stencil_enabled) {
+    glDisable(GL_STENCIL_TEST);
+    p_->stencil_enabled = false;
   }
 
   const bool mat_color_write = p_->material->ColorWrite();

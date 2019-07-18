@@ -33,6 +33,11 @@ class DrawContext {
      */
     void SetClearColor(const QColor& color);
 
+    /**
+      * Value passed to glClearStencil() at the beginning of each render cycle.
+      */
+    void SetClearStencil(int clear_stencil);
+
     void SetDrawGroups(const std::vector<DrawGroup*>& groups);
 
   private:
