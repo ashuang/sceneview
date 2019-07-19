@@ -23,7 +23,7 @@ struct StockResources::Priv {
 };
 
 StockResources::StockResources(const ResourceManager::Ptr& resources)
-    : p_(new Priv) {
+    : p_(new Priv()) {
   p_->resources = resources;
 }
 

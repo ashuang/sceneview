@@ -29,7 +29,7 @@ ResourceManager::Ptr ResourceManager::Create() {
   return Ptr(new ResourceManager());
 }
 
-ResourceManager::ResourceManager() : p_(new Priv) { p_->name_counter = 0; }
+ResourceManager::ResourceManager() : p_(new Priv()) { p_->name_counter = 0; }
 
 MaterialResource::Ptr ResourceManager::MakeMaterial(
     const ShaderResource::Ptr& shader, const QString& name) {

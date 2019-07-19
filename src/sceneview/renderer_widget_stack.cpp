@@ -18,7 +18,7 @@ struct RendererWidgetStack::Priv {
 };
 
 RendererWidgetStack::RendererWidgetStack(QWidget* parent)
-    : QDockWidget(parent), p_(new Priv) {
+    : QDockWidget(parent), p_(new Priv()) {
   setObjectName("sceneview/renderer_widget_stack");
 
   p_->container = new QWidget(this);

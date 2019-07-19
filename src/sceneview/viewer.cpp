@@ -38,7 +38,7 @@ struct Viewer::Priv {
 
 Viewer::Viewer(QWidget* parent) :
   QMainWindow(parent),
-  p_(new Priv) {
+  p_(new Priv()) {
   p_->resources = ResourceManager::Create();
   p_->default_scene = p_->resources->MakeScene("default_scene");
   p_->viewport = new Viewport(p_->resources, p_->default_scene, this);

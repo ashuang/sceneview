@@ -35,7 +35,7 @@ FontResource::Ptr FontResource::Create(const QFont& font) {
   return Ptr(new FontResource(font));
 }
 
-FontResource::FontResource(const QFont& font) : p_(new Priv) { Build(font); }
+FontResource::FontResource(const QFont& font) : p_(new Priv()) { Build(font); }
 
 void FontResource::Build(const QFont& base_font) {
   // Build a texture with a grid of characters.

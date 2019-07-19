@@ -20,7 +20,7 @@ struct ShaderResource::Priv {
   ShaderStandardVariables locations;
 };
 
-ShaderResource::ShaderResource(const QString& name) : p_(new Priv) {
+ShaderResource::ShaderResource(const QString& name) : p_(new Priv()) {
   p_->name = name;
 }
 

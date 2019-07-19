@@ -72,7 +72,7 @@ TextBillboard::Ptr TextBillboard::Create(Viewport* viewport,
 }
 
 TextBillboard::TextBillboard(Viewport* viewport, GroupNode* parent)
-    : p_(new Priv) {
+    : p_(new Priv()) {
   p_->viewport = viewport;
   p_->resources = p_->viewport->GetResources();
   p_->scene = p_->viewport->GetScene();

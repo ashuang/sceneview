@@ -17,7 +17,7 @@ namespace sv {
 
 ExpanderWidget::ExpanderWidget(QWidget* parent) :
   QWidget(parent),
-  p_(new Priv) {
+  p_(new Priv()) {
 
   p_->button = new QPushButton(this);
   p_->widget = nullptr;

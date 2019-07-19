@@ -66,7 +66,7 @@ ShaderUniformMap& MaterialResource::ShaderParameters() {
 
 MaterialResource::MaterialResource(const QString& name,
                                    ShaderResource::Ptr shader)
-    : p_(new Priv) {
+    : p_(new Priv()) {
   p_->name = name;
   p_->shader = shader;
 }

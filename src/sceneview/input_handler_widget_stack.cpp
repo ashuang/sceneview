@@ -22,7 +22,7 @@ struct InputHandlerWidgetStack::Priv {
 
 InputHandlerWidgetStack::InputHandlerWidgetStack(Viewport* viewport,
                                                  QWidget* parent)
-    : QDockWidget(parent), p_(new Priv) {
+    : QDockWidget(parent), p_(new Priv()) {
   p_->viewport = viewport;
   setObjectName("sceneview/input_handler_stack");
 

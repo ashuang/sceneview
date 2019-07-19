@@ -41,7 +41,7 @@ struct Viewport::Priv {
 
 Viewport::Viewport(const ResourceManager::Ptr& resources,
                    const Scene::Ptr& scene, QWidget* parent)
-    : QOpenGLWidget(parent), p_(new Priv) {
+    : QOpenGLWidget(parent), p_(new Priv()) {
   p_->resources = resources;
   p_->scene = scene;
   p_->camera = nullptr;

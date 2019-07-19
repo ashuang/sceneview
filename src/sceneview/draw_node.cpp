@@ -15,7 +15,7 @@ struct DrawNode::Priv {
   DrawGroup* draw_group = nullptr;
 };
 
-DrawNode::DrawNode(const QString& name) : SceneNode(name), p_(new Priv) {
+DrawNode::DrawNode(const QString& name) : SceneNode(name), p_(new Priv()) {
   p_->bounding_box_dirty = true;
 }
 

@@ -22,7 +22,7 @@ struct GroupNode::Priv {
 
 GroupNode::~GroupNode() { delete p_; }
 
-GroupNode::GroupNode(const QString& name) : SceneNode(name), p_(new Priv) {
+GroupNode::GroupNode(const QString& name) : SceneNode(name), p_(new Priv()) {
   p_->bounding_box_dirty = true;
 }
 

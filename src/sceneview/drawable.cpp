@@ -13,7 +13,7 @@ struct Drawable::Priv {
 
 Drawable::Drawable(const GeometryResource::Ptr& geometry,
     const MaterialResource::Ptr& material) :
-  p_(new Priv) {
+  p_(new Priv()) {
   p_->geometry = geometry;
   p_->material = material;
   if (p_->geometry) {

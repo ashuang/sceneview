@@ -183,7 +183,7 @@ struct DrawContext::Priv {
 };
 
 DrawContext::DrawContext(const ResourceManager::Ptr& resources,
-                         const Scene::Ptr& scene) : p_(new Priv) {
+                         const Scene::Ptr& scene) : p_(new Priv()) {
   p_->resources = resources;
   p_->scene = scene;
   p_->clear_color = QColor(0, 0, 0, 255);

@@ -23,7 +23,7 @@ struct SceneNode::Priv {
   int draw_order = 0;
 };
 
-SceneNode::SceneNode(const QString& node_name) : p_(new Priv) {
+SceneNode::SceneNode(const QString& node_name) : p_(new Priv()) {
   p_->node_name = node_name;
 }
 

@@ -14,12 +14,12 @@ struct ShaderUniform::Priv {
   Value value;
 };
 
-ShaderUniform::ShaderUniform() : p_(new Priv) {
+ShaderUniform::ShaderUniform() : p_(new Priv()) {
   p_->type = Type::kInvalid;
   p_->location = -1;
 }
 
-ShaderUniform::ShaderUniform(const QString& name) : p_(new Priv) {
+ShaderUniform::ShaderUniform(const QString& name) : p_(new Priv()) {
   p_->name = name;
   p_->type = Type::kInvalid;
   p_->location = -1;

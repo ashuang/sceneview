@@ -41,7 +41,7 @@ void DrawGroup::SetCamera(CameraNode* camera) { p_->camera = camera; }
 
 CameraNode* DrawGroup::GetCamera() { return p_->camera; }
 
-DrawGroup::DrawGroup(const QString& name, int order) : p_(new Priv) {
+DrawGroup::DrawGroup(const QString& name, int order) : p_(new Priv()) {
   p_->name = name;
   p_->order = order;
 }

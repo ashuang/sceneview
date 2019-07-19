@@ -46,7 +46,7 @@ struct GeometryResource::Priv {
   std::vector<Drawable*> listeners;
 };
 
-GeometryResource::GeometryResource(const QString& name) : p_(new Priv) {
+GeometryResource::GeometryResource(const QString& name) : p_(new Priv()) {
   p_->name = name;
   p_->created_vbo = false;
   p_->index_buffer = QOpenGLBuffer(QOpenGLBuffer::IndexBuffer);

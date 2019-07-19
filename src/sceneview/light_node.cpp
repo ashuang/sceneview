@@ -72,7 +72,7 @@ void LightNode::SetConeAngle(float cone_angle_deg) {
  */
 float LightNode::ConeAngle() const { return p_->cone_angle_deg; }
 
-LightNode::LightNode(const QString& name) : SceneNode(name), p_(new Priv) {
+LightNode::LightNode(const QString& name) : SceneNode(name), p_(new Priv()) {
   p_->light_type = LightType::kPoint;
   p_->direction = QVector3D(0.0, 0.0, 1.0);
   p_->color = QVector3D(1.0, 1.0, 1.0);

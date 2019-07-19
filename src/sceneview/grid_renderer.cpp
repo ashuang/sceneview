@@ -40,7 +40,7 @@ struct GridRenderer::Priv {
 };
 
 GridRenderer::GridRenderer(const QString& name, QObject* parent)
-    : Renderer(name, parent), p_(new Priv) {
+    : Renderer(name, parent), p_(new Priv()) {
   p_->grid_size = 100;
 }
 

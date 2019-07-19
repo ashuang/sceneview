@@ -49,7 +49,8 @@ struct ViewHandlerHorizontal::Priv {
 ViewHandlerHorizontal::ViewHandlerHorizontal(Viewport* viewport,
                                              const QVector3D& zenith_dir,
                                              QObject* parent)
-    : QObject(parent), p_(new Priv) {
+    : QObject(parent) {
+  p_ = new Priv();
   p_->camera = viewport->GetCamera();
   p_->viewport = viewport;
   p_->mouse_speed = 1.5;
@@ -69,7 +70,9 @@ void ViewHandlerHorizontal::SetZenithDir(const QVector3D& dir) {
   p_->zenith_dir = dir.normalized();
 }
 
-const QVector3D& ViewHandlerHorizontal::ZenithDir() const { return p_->zenith_dir; }
+const QVector3D& ViewHandlerHorizontal::ZenithDir() const {
+  return p_->zenith_dir;
+}
 
 void ViewHandlerHorizontal::MousePressEvent(QMouseEvent* event) {
   p_->first_mouse_x = event->x();

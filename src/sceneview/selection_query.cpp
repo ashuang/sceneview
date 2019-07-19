@@ -12,7 +12,7 @@ struct SelectionQuery::Priv {
   Scene::Ptr scene;
 };
 
-SelectionQuery::SelectionQuery(const Scene::Ptr& scene) : p_(new Priv) {
+SelectionQuery::SelectionQuery(const Scene::Ptr& scene) : p_(new Priv()) {
   p_->scene = scene;
 }
 

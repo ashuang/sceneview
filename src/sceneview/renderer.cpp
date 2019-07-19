@@ -19,7 +19,7 @@ struct Renderer::Priv {
 };
 
 Renderer::Renderer(const QString& name, QObject* parent)
-    : QObject(parent), p_(new Priv) {
+    : QObject(parent), p_(new Priv()) {
   p_->name = name;
   p_->enabled = true;
 }
