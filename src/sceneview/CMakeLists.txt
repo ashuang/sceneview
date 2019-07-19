@@ -44,17 +44,17 @@ set(sview_src
     ${sceneview_resources})
 
 # Create the main sceneview library
-add_library(sview SHARED ${sview_src})
-set_target_properties(sview PROPERTIES
+add_library(sceneview1 SHARED ${sview_src})
+set_target_properties(sceneview1 PROPERTIES
                       VERSION ${SV_VERSION}
                       SOVERSION ${SV_VERSION_MAJOR})
-add_library(Sceneview::sview ALIAS sview)
+add_library(Sceneview::sceneview ALIAS sceneview1)
 
-target_link_libraries(sview
+target_link_libraries(sceneview1
                       PUBLIC ${OPENGL_LIBS} Qt5::Widgets Qt5::Gui
                       PRIVATE assimp)
 
-install(TARGETS sview
+install(TARGETS sceneview1
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}${LIB_SUFFIX}
     ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}${LIB_SUFFIX}
     )
@@ -105,7 +105,7 @@ file(WRITE ${pc_fname}
      "Description: Sceneview visualization toolkit\n"
      "Requires: Qt5Widgets Qt5Gui\n"
      "Version: ${SV_VERSION}\n"
-     "Libs: -L\${libdir} -lsview\n"
+     "Libs: -L\${libdir} -lsceneview1\n"
      "Cflags: -I\${includedir}\n")
 install(FILES ${pc_fname} DESTINATION ${CMAKE_INSTALL_LIBDIR}${LIB_SUFFIX}/pkgconfig)
 
@@ -113,12 +113,12 @@ install(FILES ${pc_fname} DESTINATION ${CMAKE_INSTALL_LIBDIR}${LIB_SUFFIX}/pkgco
 add_executable(sv_expander_widget_example
                expander_widget_example.cpp)
 target_link_libraries(sv_expander_widget_example
-                      Sceneview::sview Qt5::Widgets Qt5::Gui)
+                      Sceneview::sceneview Qt5::Widgets Qt5::Gui)
 
 if(HAVE_GTEST)
 macro(sv_test name)
   add_executable(${name}_test ${name}_test.cpp)
-  target_link_libraries(${name}_test Sceneview::sview gtest gtest_main)
+  target_link_libraries(${name}_test Sceneview::sceneview gtest gtest_main)
   add_test(${name}_test ${EXECUTABLE_OUTPUT_PATH}/${name}_test)
 endmacro()
 

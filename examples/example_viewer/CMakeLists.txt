@@ -26,4 +26,4 @@ add_executable(sv_example_viewer
                texture_renderer.cpp)
 
 target_link_libraries(sv_example_viewer
-                      Sceneview::sview Qt5::Widgets Qt5::Gui ${OPENGL_LIBS})
+                      Sceneview::sceneview Qt5::Widgets Qt5::Gui ${OPENGL_LIBS})
